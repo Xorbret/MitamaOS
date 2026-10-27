@@ -126,25 +126,89 @@ namespace MUI {
     // ring, the magatama sigil) inside an aura glow. `size` is the 200-unit
     // design box from docs/ui.html's soul(); (cx,cy) is the centre. `spin`
     // rotates the dashed bones ring (degrees) for the slow idle turn.
-    // `rank` (0-9, from ki) picks the rings' pattern: each rank adds detail.
-    struct RankRing { float on, off; bool inner, outer; float oOn, oOff; };
-    inline const RankRing& rankRing(int rank) {
-        static const RankRing R[10] = {
-            { 3,   6, false, false, 0, 0 },   // Kodama
-            { 1.5, 4, false, false, 0, 0 },   // Kakure
-            { 6,   4, false, false, 0, 0 },   // Hitodama
-            { 3,   6, true,  false, 0, 0 },   // Tsukumo
-            { 10,  3, true,  false, 0, 0 },   // Shikigami
-            { 3,   6, false, true,  2, 5 },   // Onmyoji
-            { 6,   4, false, true,  6, 6 },   // Kannushi
-            { 3,   3, true,  true,  2, 5 },   // Tengu
-            { 10,  3, true,  true,  8, 4 },   // Ryujin
-            { 14,  2, true,  true,  3, 3 },   // Kami
-        };
-        return R[constrain(rank, 0, 9)];
+    // The level ring (ki): drawn inside the soul's accent ring, between it
+    // and the magatama (radius 42-55 of the 200-unit box), where no form
+    // draws, so forms and rings never overlap. Each rank has its own
+    // pattern; the ring is cut into five sectors and each level of the rank
+    // lights one more (`lit` colour), so all 50 levels look different.
+    // Everything turns one way with `spin`, the same way as the forms that
+    // turn (Kekkai, Hyakki). Level 0 = no ki yet (an older build's card):
+    // the plain dashed ring.
+    struct _Ring {
+        LGFX_Sprite& c; int cx, cy; float s, spin; int lit; uint16_t on, off;
+        uint16_t col(float a) const {   // colour at angle a (0-360 from the ring's start)
+            int sec = (int)(fmodf(a + 90 + 720.0f, 360.0f) / 72.0f);   // sector 1 starts at the top
+            return sec < lit ? on : off;
+        }
+        // n dashes (n a multiple of 5) of `duty` of their step, at radius r
+        void dashes(float r, float w, int n, float duty, float phase = 0) const {
+            float step = 360.0f / n;
+            int r0 = (int)(r * s - w / 2), r1 = max(r0, (int)(r * s + w / 2 - 0.5f));
+            for (int i = 0; i < n; i++) {
+                float a = i * step + phase * step;
+                c.fillArc(cx, cy, r0, r1, spin + a, spin + a + step * duty, col(a + step * duty / 2));
+            }
+        }
+        // n radial strokes from r0 to r1, `wd` degrees wide
+        void ticks(float r0, float r1, int n, float wd, float phase = 0) const {
+            float step = 360.0f / n;
+            for (int i = 0; i < n; i++) {
+                float a = i * step + phase * step;
+                c.fillArc(cx, cy, (int)(r0 * s), (int)(r1 * s), spin + a - wd / 2, spin + a + wd / 2, col(a));
+            }
+        }
+        float px(float a, float r) const { return cx + r * s * cosf((a + spin) * (float)DEG_TO_RAD); }
+        float py(float a, float r) const { return cy + r * s * sinf((a + spin) * (float)DEG_TO_RAD); }
+    };
+    inline void levelRing(LGFX_Sprite& c, int cx, int cy, float s, int level, float spin,
+                          uint16_t bones, uint16_t lit) {
+        float w = max(1.0f, 2.2f * s);   // stroke width in px
+        if (level <= 0) { MitamaLogo::_dashRing(c, cx, cy, 50 * s, 1, 3, 6, bones, spin); return; }
+        level = constrain(level, 1, 50);
+        if (lit == bones) bones = YELLOW_DIM;   // Gilded: unlit sectors in dark gold
+        _Ring R{ c, cx, cy, s, spin, (level - 1) % 5 + 1, lit, bones };
+        switch ((level - 1) / 5) {
+        case 0:  // Kodama: the plain dashes
+            R.dashes(50, w, 20, 0.4f); break;
+        case 1:  // Kakure: faint beads
+            R.dashes(50, w, 40, 0.22f); break;
+        case 2:  // Hitodama: long flames
+            R.dashes(50, w, 15, 0.7f); break;
+        case 3:  // Tsukumo: a gauge, dial ticks inside the dashes
+            R.dashes(51, w, 20, 0.4f); R.ticks(43, 47, 30, 2.5f); break;
+        case 4:  // Shikigami: two folds of paper, offset
+            R.dashes(46, w, 20, 0.5f); R.dashes(52, w, 20, 0.5f, 0.5f); break;
+        case 5:  // Onmyoji: a solid line over broken ones, like divination lines
+            R.dashes(53, 1, 5, 0.97f); R.dashes(47, w, 30, 0.38f); break;
+        case 6: {  // Kannushi: a twisted shimenawa rope
+            for (int i = 0; i < 25; i++) {
+                float a = i * 14.4f;
+                uint16_t k = R.col(a);
+                float x0 = R.px(a, 45), y0 = R.py(a, 45), x1 = R.px(a + 9, 53), y1 = R.py(a + 9, 53);
+                if (w > 1.5f) c.drawWideLine(lroundf(x0), lroundf(y0), lroundf(x1), lroundf(y1), w / 2, k);
+                else c.drawLine(lroundf(x0), lroundf(y0), lroundf(x1), lroundf(y1), k);
+            }
+            break; }
+        case 7:  // Tengu: feathers, pointing out
+            for (int i = 0; i < 20; i++) {
+                float a = i * 18;
+                c.fillTriangle(lroundf(R.px(a - 5, 44)), lroundf(R.py(a - 5, 44)),
+                               lroundf(R.px(a + 5, 44)), lroundf(R.py(a + 5, 44)),
+                               lroundf(R.px(a + 2, 54)), lroundf(R.py(a + 2, 54)), R.col(a));
+            }
+            break;
+        case 8: {  // Ryujin: dragon scales, and the pearl at the head of the lit sectors
+            R.dashes(51, w, 20, 0.8f); R.dashes(45, w, 20, 0.8f, 0.5f);
+            float a = R.lit * 72.0f - 90;
+            c.fillCircle(lroundf(R.px(a, 48)), lroundf(R.py(a, 48)), max(1, (int)lroundf(3.4f * s)), WHITE);
+            break; }
+        default:  // Kami: a full halo, rays and beads
+            R.dashes(53, w, 5, 0.97f); R.ticks(42, 46, 30, 3); R.dashes(49, w, 30, 0.2f, 0.5f); break;
+        }
     }
+
     inline void soul(LGFX_Sprite& c, int cx, int cy, int size, uint16_t accent, uint16_t aura,
-                     float spin = 0, uint16_t bones = BONES, int rank = 0) {
+                     float spin = 0, uint16_t bones = BONES, int level = 0) {
         float s = size / 200.0f;
         uint16_t sh[3]; _auraShades(aura, sh);
         int ay = cy + (int)(4 * s);
@@ -154,10 +218,7 @@ namespace MUI {
         c.fillCircle(cx, cy, (int)(58 * s), PANEL);
         int r = (int)(58 * s), w = max(1, (int)(3 * s + 0.5f));
         c.fillArc(cx, cy, r - w + 1, r, 0, 360, accent);
-        const RankRing& rr = rankRing(rank);
-        MitamaLogo::_dashRing(c, cx, cy, 50 * s, 1, rr.on, rr.off, bones, spin);
-        if (rr.inner) MitamaLogo::_dashRing(c, cx, cy, 43 * s, 1, 1, 3, bones, -spin * 0.5f);
-        if (rr.outer) MitamaLogo::_dashRing(c, cx, ay, 64 * s, 1, rr.oOn, rr.oOff, rank >= 9 ? accent : bones, -spin);
+        levelRing(c, cx, cy, s, level, spin, bones, accent);
         MitamaLogo::_magatama(c, cx, cy + 6 * s, 19 * s, 14 * s, -60, 185, 0.82f, accent);
     }
 

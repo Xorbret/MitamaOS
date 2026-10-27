@@ -127,7 +127,7 @@ private:
         auto& ki = Ki::get();
         const int lvY = SCREEN_H - FOOTER_H - 12;   // level and ki bar, under the Mitama
         _canvas.setClipRect(0, HEADER_H + 1, 82, lvY - HEADER_H - 1);
-        MUI::soulForm(_canvas, 40, 66, 92, MUI::YELLOW, aura, _spin, Forms::get().current(), ki.rank());
+        MUI::soulForm(_canvas, 40, 66, 92, MUI::YELLOW, aura, _spin, Forms::get().current(), ki.level());
         _canvas.clearClipRect();
         {
             char lv[8]; snprintf(lv, sizeof(lv), "Lv%d", ki.level());

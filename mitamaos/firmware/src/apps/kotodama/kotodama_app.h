@@ -116,7 +116,7 @@ private:
         _canvas.setClipRect(0, HEADER_H + 1, 86, SCREEN_H - FOOTER_H - HEADER_H - 1);
         int lvl = r->hasCard ? r->card.level : 0;
         MUI::soulForm(_canvas, 42, 68, 80, r->hasCard ? MUI::YELLOW : MUI::DIM,
-                      r->isFriend ? MUI::CYAN : MUI::MAGENTA, 0, (MUI::Form)form, lvl ? (lvl - 1) / 5 : 0);
+                      r->isFriend ? MUI::CYAN : MUI::MAGENTA, 0, (MUI::Form)form, lvl);
         _canvas.clearClipRect();
 
         const int x = 90;

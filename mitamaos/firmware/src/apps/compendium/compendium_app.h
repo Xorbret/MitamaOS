@@ -153,7 +153,7 @@ private:
         bool on = fm.isUnlocked(_fsel);
         if (on) {
             _canvas.setClipRect(LIST_W + 1, HEADER_H + 1, SCREEN_W - LIST_W - 1, 70);
-            MUI::soulForm(_canvas, cx, cy, 62, MUI::YELLOW, MUI::YELLOW, 0, (MUI::Form)_fsel, Ki::get().rank());
+            MUI::soulForm(_canvas, cx, cy, 62, MUI::YELLOW, MUI::YELLOW, 0, (MUI::Form)_fsel, Ki::get().level());
             _canvas.clearClipRect();
         } else {
             _canvas.drawCircle(cx, cy, 20, MUI::DIM);
