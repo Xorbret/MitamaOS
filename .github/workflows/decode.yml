@@ -7,7 +7,7 @@ name: crash-decode
 
 on:
   push:
-    branches: [ "claude/cardputer-adv-os-firmware-okqopr" ]
+    branches: [ "main" ]
     paths: [ "mitamaos/tools/crash-decode.txt" ]
   workflow_dispatch:
 

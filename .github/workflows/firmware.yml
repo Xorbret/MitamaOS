@@ -11,7 +11,7 @@ name: firmware
 
 on:
   push:
-    branches: [ "claude/cardputer-adv-os-firmware-okqopr" ]
+    branches: [ "main" ]
     paths:
       - "mitamaos/firmware/**"
       - "docs/**"

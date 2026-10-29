@@ -7,7 +7,7 @@ name: voice
 
 on:
   push:
-    branches: [ "claude/cardputer-adv-os-firmware-okqopr" ]
+    branches: [ "main" ]
     paths:
       - "mitamaos/voice/**"
       - "mitamaos/firmware/src/mitama/lines.h"

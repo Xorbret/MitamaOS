@@ -15,11 +15,11 @@ page (so the one-click installer can load them same-origin). To turn it on:
    branch" — the workflow handles deployment).
 3. Push anything under `mitamaos/firmware/**` or `docs/**` (or run the workflow
    manually from the **Actions** tab). When it finishes, the site is live at:
-   **https://xorbret.github.io/Xorbret/**
+   **https://xorbret.github.io/MitamaOS/**
 
 Pages:
 - `index.html` — design overview + links
-- **`flash.html` — the web flasher** → **https://xorbret.github.io/Xorbret/flash.html**
+- **`flash.html` — the web flasher** → **https://xorbret.github.io/MitamaOS/flash.html**
 
 > First run doubles as the **M0 compile test**. If the build is red, the
 > binaries (and the flasher) won't appear yet — check the Actions log.
@@ -41,13 +41,13 @@ GitHub shows `.html` as source, so to render a single page without Pages:
 
 | Mockup | View |
 |--------|------|
-| Index / overview | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/Xorbret/blob/claude/cardputer-adv-os-firmware-okqopr/docs/index.html) |
-| Mitama — character | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/Xorbret/blob/claude/cardputer-adv-os-firmware-okqopr/docs/mitama.html) |
-| UI screens | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/Xorbret/blob/claude/cardputer-adv-os-firmware-okqopr/docs/ui.html) |
-| Icons & glyphs | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/Xorbret/blob/claude/cardputer-adv-os-firmware-okqopr/docs/icons.html) |
-| Type scale | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/Xorbret/blob/claude/cardputer-adv-os-firmware-okqopr/docs/type-scale.html) |
-| Sound set (interactive) | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/Xorbret/blob/claude/cardputer-adv-os-firmware-okqopr/docs/sound.html) |
-| Logo | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/Xorbret/blob/claude/cardputer-adv-os-firmware-okqopr/docs/logo.html) |
+| Index / overview | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/MitamaOS/blob/main/docs/index.html) |
+| Mitama — character | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/MitamaOS/blob/main/docs/mitama.html) |
+| UI screens | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/MitamaOS/blob/main/docs/ui.html) |
+| Icons & glyphs | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/MitamaOS/blob/main/docs/icons.html) |
+| Type scale | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/MitamaOS/blob/main/docs/type-scale.html) |
+| Sound set (interactive) | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/MitamaOS/blob/main/docs/sound.html) |
+| Logo | [open](https://htmlpreview.github.io/?https://github.com/Xorbret/MitamaOS/blob/main/docs/logo.html) |
 
 > The sound page uses Web Audio — click a card to play (browsers block autoplay until you interact). Via htmlpreview the index's internal links won't navigate; use the per-page links above, or enable Pages for full navigation.
 
