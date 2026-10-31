@@ -443,6 +443,7 @@ private:
         return ok;
     }
 
+#if PAPEROS_ENABLE_GAMES
     // Compatible with the Games app (games.h): same OTA scheme (ota_1
     // slot, Preferences "app"/RomToLoad/BootTo). BOOT_GAMES=7 must match
     // the value in games.h.
@@ -542,6 +543,8 @@ private:
         _showToast("OK! Rebooting...");
         SdSettings::flush(); ESP.restart();
     }
+
+#endif
 
     // Music app only scans its own /music folder - if the file lives
     // elsewhere, copy it there first, then switch to the app.
@@ -857,8 +860,13 @@ private:
                 if (low.endsWith(".gif")) _showToast("GIF preview not supported (no decoder)");
                 else _viewImage(path, low);
                 return;
+#if PAPEROS_ENABLE_GAMES
             case FK_ROM:     _launchRom(path);     return;
             case FK_ARDUBOY: _launchArduboy(path); return;
+#else
+            case FK_ROM:
+            case FK_ARDUBOY: _showToast("Install emulators through Launcher"); return;
+#endif
             case FK_MODEL3D: _launch3D(path, low); return;
             case FK_AUDIO:   _launchAudio(path);   return;
             case FK_ARCHIVE: _showToast("Archives can't be opened on-device"); return;

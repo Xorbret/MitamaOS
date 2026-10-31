@@ -40,7 +40,9 @@
 #include "net/monster.h"
 #include "apps/calc/calc.h"
 #include "apps/clock/clock_app.h"
+#if PAPEROS_ENABLE_GAMES
 #include "apps/games/games.h"
+#endif
 #if PAPEROS_ENABLE_STORE
 #include "apps/store/store.h"
 #endif
@@ -97,7 +99,9 @@ FileManager   filesApp(canvas);
 Notes         notesApp(canvas);
 Calc          calcApp(canvas);
 ClockApp      clockApp(canvas);
+#if PAPEROS_ENABLE_GAMES
 Games         gamesApp(canvas);
+#endif
 #if PAPEROS_ENABLE_STORE
 Store         storeApp(canvas);
 #endif
@@ -253,7 +257,9 @@ void setup() {
 #if PAPEROS_ENABLE_MUSIC
     AppManager::get().registerApp(&musicApp);
 #endif
+#if PAPEROS_ENABLE_GAMES
     AppManager::get().registerApp(&gamesApp);
+#endif
     AppManager::get().registerApp(&luaApp);
 #if PAPEROS_ENABLE_BROWSER
     AppManager::get().registerApp(&browserApp);
@@ -293,9 +299,13 @@ void setup() {
     // Radios step aside before a heavy app's onStart() allocates.
     AppManager::get().beforeStart = [](const char* n) { DetectionEngine::get().appChanged(n); Kotodama::get().appChanged(n); };
 
+#if PAPEROS_ENABLE_GAMES
     if (bootTo == BOOT_GAMES) {
         AppManager::get().launch("Games");
-    } else {
+    } else
+#endif
+    {
+        (void)bootTo;
         BiosPost::run(canvas);
         showBootScreen();
         AppManager::get().launch("Proxima");
