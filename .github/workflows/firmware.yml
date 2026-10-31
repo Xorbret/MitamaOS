@@ -49,6 +49,16 @@ jobs:
       - name: Install PlatformIO + esptool
         run: pip install --upgrade platformio "esptool~=4.8"
 
+      # Shugyo lessons and Harae drills: the built-in copy must match study/,
+      # and every file must load and be fair (each round can be stopped).
+      - name: Check study content
+        run: |
+          cd mitamaos/firmware
+          python3 tools/mkstudy.py --check
+          g++ -std=gnu++17 -O1 -w -DLUA_32BITS=1 -Ilib/lua/src -Isrc/study test/study_host.cpp \
+              src/study/*.cpp -x c lib/lua/src/lua_all.c -lm -o /tmp/study_host
+          /tmp/study_host
+
       # The build id (short commit hash) is baked in so Molt, the on-device
       # updater, can tell whether the site has something newer.
       - name: Build firmware

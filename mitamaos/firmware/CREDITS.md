@@ -126,6 +126,11 @@ licensed, and no game scripts or other copyrighted dialogue are used:
   Meshtastic® is a registered trademark of Meshtastic LLC; MitamaOS is not
   affiliated with or endorsed by the Meshtastic project.
 
+- **CardLab** (Xorbret) - the lesson engine, Lua sandbox, content format,
+  progress format and the turn-based "Defend the Network" game in
+  `src/study/` and the lessons and drills in `study/` came from CardLab,
+  the same author's earlier project, and are included here under GPLv2.
+
 ## What MitamaOS adds on top
 
 The companion spirit ("the Mitama"), the Proxima home + Compendium, the

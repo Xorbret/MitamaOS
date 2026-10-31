@@ -26,6 +26,8 @@
 #include "apps/compendium/compendium_app.h"
 #include "apps/kotodama/kotodama_app.h"
 #include "apps/omikuji/omikuji_app.h"
+#include "apps/shugyo/shugyo_app.h"
+#include "apps/harae/harae_app.h"
 #include "system/crash_log.h"
 #include "apps/aether/aether_app.h"
 #include "apps/molt/molt_app.h"
@@ -97,6 +99,8 @@ Browser       browserApp(canvas);
 #endif
 FileManager   filesApp(canvas);
 Notes         notesApp(canvas);
+ShugyoApp     shugyoApp(canvas);
+HaraeApp      haraeApp(canvas);
 Calc          calcApp(canvas);
 ClockApp      clockApp(canvas);
 #if PAPEROS_ENABLE_GAMES
@@ -244,6 +248,7 @@ void setup() {
     AppManager::get().registerApp(&launcherApp);
     AppManager::get().registerApp(&proximaApp);
     AppManager::get().registerApp(&compendiumApp);
+    AppManager::get().registerApp(&shugyoApp);
     AppManager::get().registerApp(&scryApp);
     AppManager::get().registerApp(&kotodamaApp);
     AppManager::get().registerApp(&kizunaApp);
@@ -257,6 +262,7 @@ void setup() {
 #if PAPEROS_ENABLE_MUSIC
     AppManager::get().registerApp(&musicApp);
 #endif
+    AppManager::get().registerApp(&haraeApp);     // took the Games tile's place
 #if PAPEROS_ENABLE_GAMES
     AppManager::get().registerApp(&gamesApp);
 #endif

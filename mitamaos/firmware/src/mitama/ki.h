@@ -6,7 +6,8 @@
 // otherwise be a new "device" every few minutes).
 //
 // Most sources are read as changes in counters the OS already keeps, so
-// nothing else has to call in; WiGLE uploads and omikuji call add().
+// nothing else has to call in; WiGLE uploads, omikuji, Shugyo lessons and
+// Harae drills call add().
 // Stored in NVS "ki" and mirrored to settings.conf, so updates keep it.
 // A device that had progress before ki existed starts from its Compendium.
 #include <Arduino.h>
@@ -24,7 +25,7 @@ public:
 
     enum Source : uint8_t {
         S_ENC, S_SPECIES, S_RACE, S_THREAT, S_SCRY, S_WIGLE,
-        S_KOTO, S_CREW, S_FRIEND, S_FORM, S_OMIKUJI, S_VISIT, S_COUNT
+        S_KOTO, S_CREW, S_FRIEND, S_FORM, S_OMIKUJI, S_VISIT, S_SHUGYO, S_HARAE, S_COUNT
     };
     static constexpr int MAX_LEVEL = 50;
 
@@ -32,6 +33,7 @@ public:
         static const char* const N[S_COUNT] = {
             "Devices met", "New pages", "Races done", "Threats seen", "Scry", "WiGLE",
             "Kotodama", "New crew", "Friends", "Forms", "Omikuji", "Daily visit",
+            "Shugyo", "Harae",
         };
         return s < S_COUNT ? N[s] : "?";
     }
@@ -72,9 +74,17 @@ public:
 
     // A deed that isn't a counter elsewhere (WiGLE upload, omikuji draw).
     void add(Source s) {
-        static const uint8_t KI[S_COUNT] = { 1, 50, 150, 10, 1, 25, 2, 30, 20, 40, 5, 0 };
+        static const uint8_t KI[S_COUNT] = { 1, 50, 150, 10, 1, 25, 2, 30, 20, 40, 5, 0, 10, 10 };
         _award(s, KI[s]);
     }
+    // A deed worth a set amount (a passed lesson, a cleared drill), still
+    // under that source's daily limit. Returns what was actually paid.
+    uint32_t add(Source s, uint32_t ki) {
+        uint16_t before = today(s);
+        _award(s, ki);
+        return today(s) - before;
+    }
+    uint16_t cap(uint8_t s) const { return _cap(s); }
 
     uint32_t total() const { return _total; }
     int level() const { return _level; }
@@ -103,7 +113,7 @@ public:
 private:
     // Daily limit per source, in ki (0 = none).
     static uint16_t _cap(uint8_t s) {
-        static const uint16_t C[S_COUNT] = { 200, 0, 0, 100, 300, 25, 40, 150, 100, 0, 5, 0 };
+        static const uint16_t C[S_COUNT] = { 200, 0, 0, 100, 300, 25, 40, 150, 100, 0, 5, 0, 120, 120 };
         return C[s];
     }
 

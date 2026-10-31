@@ -128,6 +128,8 @@ private:
             { "Kizuna",    "Kizuna",   MUI::SIG_KIZUNA,   MUI::MAGENTA },
             { "Omikuji",   "Omikuji",  MUI::SIG_OMIKUJI,  MUI::YELLOW  },
             { "Aether",    "Aether",   MUI::SIG_AETHER,   MUI::CYAN    },
+            { "Shugyo",    "Shugyo",   MUI::SIG_SHUGYO,   MUI::GREEN   },
+            { "Harae",     "Harae",    MUI::SIG_HARAE,    MUI::CREAM   },
         };
         for (auto& l : LOOKS) if (strcmp(l.name, name) == 0) return &l;
         return nullptr;

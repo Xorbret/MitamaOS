@@ -314,7 +314,7 @@ namespace MUI {
     enum Sigil : uint8_t {
         SIG_COMPENDIUM, SIG_PROXIMA, SIG_FILES, SIG_PAINT, SIG_MUSIC, SIG_GAMES,
         SIG_LUA, SIG_GRIMOIRE, SIG_BROWSER, SIG_SETTINGS, SIG_STORE, SIG_PIANO,
-        SIG_CUBE, SIG_CALC, SIG_CLOCK, SIG_ORACLE, SIG_SYSTEM, SIG_SCRY, SIG_MOLT, SIG_KOTODAMA, SIG_OMIKUJI, SIG_AETHER, SIG_KIZUNA, SIG_UNKNOWN
+        SIG_CUBE, SIG_CALC, SIG_CLOCK, SIG_ORACLE, SIG_SYSTEM, SIG_SCRY, SIG_MOLT, SIG_KOTODAMA, SIG_OMIKUJI, SIG_AETHER, SIG_KIZUNA, SIG_SHUGYO, SIG_HARAE, SIG_UNKNOWN
     };
 
     struct _Pen {
@@ -347,6 +347,22 @@ namespace MUI {
             poly(p, 4);
         }
     };
+
+    // Enso: one brush stroke of a circle, left open at the top right, thick
+    // where the brush lands and thinning as it lifts. Shugyo's sigil and its
+    // "check passed" mark.
+    inline void enso(LGFX_Sprite& c, int cx, int cy, float r, uint16_t col) {
+        float w0 = max(1.6f, r / 3.6f), w1 = max(1.0f, r / 11.0f);
+        const int steps = 30;
+        for (int i = 0; i < steps; i++) {
+            float t = i / (float)steps, a = -50 + 300 * t;
+            float w = w0 + (w1 - w0) * t;
+            int ro = lroundf(r + w / 2), ri = max(0, (int)lroundf(r - w / 2));
+            c.fillArc(cx, cy, ri, ro, a, a + 300.0f / steps + 1, col);
+        }
+        float a = -50 * (float)DEG_TO_RAD;   // the brush's landing blot
+        c.fillCircle(lroundf(cx + r * cosf(a)), lroundf(cy + r * sinf(a)), max(1, (int)lroundf(w0 * 0.62f)), col);
+    }
 
     inline void sigil(LGFX_Sprite& c, Sigil id, int cx, int cy, int size, uint16_t col) {
         _Pen p{ c, (float)cx, (float)cy, size / 24.0f, col };
@@ -521,6 +537,17 @@ namespace MUI {
             p.arc(22, 12, 14.5f, 150, 210); p.arc(2, 12, 14.5f, -30, 30);
             p.ring(12, 12, 3.4f);
             break;
+        case SIG_SHUGYO: // enso: one brush stroke, the practice that's never finished
+            enso(c, cx, cy, 8.4f * p.s, col);
+            break;
+        case SIG_HARAE: { // purification: three shide, lightning-folded paper, hung from a sacred rope
+            p.arc(12, -14, 22, 62, 118); p.arc(12, -14, 23.6f, 64, 116);   // the rope, two strands, sagging
+            for (float x : { 5.8f, 11.2f, 16.6f }) {
+                float y = x == 11.2f ? 10 : 9.4f;
+                float sh[] = { x, y, x + 2.6f, y + 3.2f, x + 0.6f, y + 3.6f, x + 3.4f, y + 7.2f, x + 1.4f, y + 7.6f, x + 4.2f, y + 11.6f };
+                p.poly(sh, 6, false);
+            }
+            break; }
         case SIG_SYSTEM: // sealed chip
             p.rect(7.5f, 7.5f, 9, 9);
             for (int i = 0; i < 3; i++) {

@@ -52,6 +52,7 @@ static const Key _SCHEMA[] = {
     { "ki",          "day",    K_INT, 0 },
     { "ki",          "streak", K_U8,  0 },
     { "ki",          "d",      K_STR, 0 },
+    { "study",       "p",      K_STR, 0 },
 };
 
 inline bool     _dirty = false;
