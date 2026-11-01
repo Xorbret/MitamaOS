@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harae Design</title>
+<meta name="description" content="The design of Harae, the card game in MitamaOS: learn real network defences, carry them as ofuda talismans, and purify the spirits of every pantheon.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="harae.css">
+<style>
+.torii{width:64px;height:64px;flex:none}
+.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;counter-reset:s}
+.loop .box{position:relative;padding-top:34px}
+.loop .box::before{counter-increment:s;content:counter(s);position:absolute;top:10px;left:14px;color:var(--yellow);font-weight:700;font-size:15px;letter-spacing:.1em}
+.fac{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.fac a.box{color:inherit;border-color:var(--red)}
+.fac a.box:hover{background:#24103d;text-decoration:none}
+.fac .locked{opacity:.55}
+.fac canvas{width:60px;height:60px}
+.hand{display:flex;gap:10px;flex-wrap:wrap}
+.hand div{background:var(--panel);border:1px solid var(--red-dim);padding:8px 14px;border-radius:4px;text-align:center}
+.hand b{display:block;font-size:26px;color:var(--yellow);line-height:1.1}
+.hand small{color:var(--dim)}
+.anat{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.anat canvas{width:116px;height:208px}
+.anat ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--text);max-width:46ch}
+</style>
+</head>
+<body>
+<nav><a class="home" href="../index.html"><b>Mitama</b>OS</a><span class="links"><a href="index.html" aria-current="page">Harae</a><a href="babel.html">Babel</a><a href="cards.html">Cards</a><a href="../harae.html">How to play</a></span></nav>
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker">The flagship game of MitamaOS</span>
+  <h1><svg class="torii" viewBox="0 0 24 24" fill="none" stroke="#FCEE0A" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2.6,4.2 6.4,5.8 17.6,5.8 21.4,4.2" stroke-width="1.8"/><line x1="5" y1="9.8" x2="19" y2="9.8" stroke-width="1.4"/><line x1="7.6" y1="5.8" x2="7.2" y2="21.4" stroke-width="1.7"/><line x1="16.4" y1="5.8" x2="16.8" y2="21.4" stroke-width="1.7"/><line x1="12" y1="5.8" x2="12" y2="9.8" stroke-width="1.2"/></svg>HARAE<span class="jp">祓</span></h1>
+  <p>Spirits from every pantheon are loose in your network. You learn real defences, carry them as paper talismans called <b>ofuda</b>, and bind each spirit with the one that names it. Every attack is simulated on screen, and nothing is ever transmitted.</p>
+  <p class="txt" style="font-size:17px">Harae (祓) is the Shinto rite of purification. Its icon is the Myōjin torii, the gate between the everyday world and sacred ground: your Domain, and later the way down into the Deep Aether.</p>
+  <span class="badge">IN DEVELOPMENT FOR THE CARDPUTER ADV</span>
+  <p><a class="btn" href="../harae.html">Quick how-to-play</a></p>
+</header>
+
+<section>
+  <h2>The loop</h2>
+  <div class="loop">
+    <div class="box"><h3>Learn</h3><p class="txt">Pass a lesson in <b>Shugyo</b>, the study app, and you earn the ofuda for that defence.</p></div>
+    <div class="box"><h3>Defend</h3><p class="txt">Run drills in your <b>Domain</b>. Read the symptom, gather clues, and play the right Seal.</p></div>
+    <div class="box"><h3>Score</h3><p class="txt">Every win is guaranteed if you hold the Seals. How cleanly and stylishly you win is the score.</p></div>
+    <div class="box"><h3>Descend</h3><p class="txt">Clear a faction's district and the <b>Deep Aether</b> opens: a roguelike dive into the spirits' own world.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Ofuda, the cards</h2>
+  <p class="txt">Seals carry the name of the spirit they bind, the way real sealing charms do. Blessings carry the name of the kami who grants them. On the Cardputer a card has <b>no text at all</b>, only pixel symbols drawn at the screen's real size, so a hand of cards reads at a glance.</p>
+  <div class="anat"><canvas id="anat" class="px" width="116" height="208"></canvas>
+    <ol><li><b>Suit</b>, top left: the part of your world the card guards.</li><li><b>Cost</b>, top right: action points to play it. A dash means free.</li><li><b>Sigil</b>, centre: the spirit a Seal binds, or the kami or object behind the card.</li><li><b>Stamp</b>, bottom: the card's kind, told apart by shape and colour.</li></ol></div>
+  <h3>Five kinds</h3>
+  <div class="legend" id="kinds"></div>
+  <h3>Four suits</h3>
+  <p class="txt">Suits group cards by what they guard, like the months of hanafuda or the suits of mahjong.</p>
+  <div class="legend" id="suits"></div>
+  <p><a class="btn" href="cards.html">Browse every card</a></p>
+</section>
+
+<section>
+  <h2>A round</h2>
+  <p class="txt">A round opens with a <b>symptom</b>, the thing a user would report. You have 3 action points.</p>
+  <ul>
+    <li><b>Investigate:</b> spend points to read clues such as logs, a spectrum view or a status page.</li>
+    <li><b>Play a card:</b> the right Seal binds the spirit. The wrong card only half-works and costs you uptime or data.</li>
+    <li><b>Riichi:</b> press R before reading anything to lock in your next card. Right pays big. Wrong only makes the round partial, never a loss.</li>
+  </ul>
+  <p class="txt">Each faction adds its own rules on top. Babel's are <b>Surge</b> (the outage keeps running while you dig) and <b>Crosstalk</b> (stop the louder spirit first and the quieter one's clues come free).</p>
+</section>
+
+<section>
+  <h2>Your hand and your deck</h2>
+  <p class="txt">The Seals a drill needs always come to hand, so a drill can never be lost to a bad draw. Everything else is your <b>support deck</b>: about six cards in the Domain, shuffled, with two drawn each round. In the Deep Aether your deck grows as you draft one of three cards at the shrines between floors.</p>
+  <p class="txt">Hand size grows as the factions get harder, because juggling more cards is part of the challenge.</p>
+  <div class="hand"><div><b>4</b><small>Faction 1</small></div><div><b>5</b><small>Faction 2</small></div><div><b>5</b><small>Faction 3</small></div><div><b>6</b><small>Faction 4</small></div></div>
+</section>
+
+<section>
+  <h2>Score: Purity × Resonance</h2>
+  <div class="math"><span class="p">Purity 46</span><span>×</span><span class="r">Resonance 3.5</span><span>=</span><span class="s">161</span></div>
+  <p class="txt"><b>Purity</b> is how cleanly you won: the Seal's value, plus the uptime and data you kept, plus <b>Prayer</b>, which pours every unspent action point into your Seal. <b>Resonance</b> is how stylishly you won. It starts at 1, every yaku you complete adds to it, and Charms can multiply it. A sloppy win scores about 20, so there's always a better run to chase.</p>
+  <h3>Yaku</h3>
+  <div class="scroll"><table class="tbl"><thead><tr><th>Yaku</th><th>How</th><th style="text-align:right">Resonance</th></tr></thead><tbody>
+    <tr><td><b>Riichi</b></td><td>Declare before reading any evidence, and be right.</td><td class="n">+2</td></tr>
+    <tr><td><b>Dora</b></td><td>Play today's dora, the one card the daily Hex marks with a gold corner.</td><td class="n">+1 each</td></tr>
+    <tr><td><b>Clear Sky</b></td><td>Every round stopped on the first play.</td><td class="n">+1.5</td></tr>
+    <tr><td><b>Three Winds</b></td><td>Three Wind cards played in one drill.</td><td class="n">+1</td></tr>
+    <tr><td><b>Kindred</b></td><td>A Seal and a Blessing from the same pantheon in one round.</td><td class="n">+1</td></tr>
+    <tr><td><b>Empty Hand</b></td><td>Win a round without reading any evidence.</td><td class="n">+1</td></tr>
+    <tr><td><b>Courtesy</b></td><td>Fix a harmless spirit with Temizu and waste nothing on it.</td><td class="n">+0.5</td></tr>
+    <tr><td><b>Tower Fallen</b></td><td>Break Babel's Tower with Crosstalk in the right order.</td><td class="n">+3</td></tr>
+  </tbody></table></div>
+  <p class="cap">Your Domain shows each drill's best score and stars. The Deep Aether shows the full tally, combo by combo.</p>
+</section>
+
+<section>
+  <h2>Factions</h2>
+  <p class="txt">Each faction is one pantheon's idea of what haunts the wires. The first is a noisy rabble from all of them. The ones after it come from a single tradition each and have a real agenda.</p>
+  <div class="fac" id="fac"></div>
+</section>
+
+<section>
+  <h2>Collecting</h2>
+  <p class="txt">Each faction is a numbered set, like <b>BABEL 01/14</b>, with a binder page in the Hexbook. The card back is the Myōjin torii in yellow on Harae's violet. A card can turn up in four printings, all with the same effect:</p>
+  <div class="grid">
+    <div class="box"><h3>Paper</h3><p class="txt">The normal printing, earned from its lesson.</p></div>
+    <div class="box"><h3 style="color:var(--gold)">Gold leaf</h3><p class="txt">Win a flawless drill with the card.</p></div>
+    <div class="box"><h3 style="color:var(--green)">Field-proven</h3><p class="txt">Do the lesson's optional real task on your own gear.</p></div>
+    <div class="box"><h3 style="color:var(--cyan)">Kami-signed</h3><p class="txt">Rare art, found only in the Deep Aether.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="promise"><p><b>The fairness promise.</b> Every drill can be won with the Seals you've earned, always. Charms change scoring, costs and clues, but they can never cancel a Seal, and every set of Charms is checked against every board before it ships. Luck only changes your score. And everything you learn is a real-world defence.</p></div>
+</section>
+
+<footer>Harae is part of MitamaOS for the M5Stack Cardputer ADV. It borrows the feel of hanafuda, Riichi mahjong, collectible card games and roguelike deck-builders, never their names, rules or art. Spirits are drawn from folklore and myth, and every attack is simulated from the defender's side.</footer>
+</div>
+<script src="ofuda.js"></script>
+<script>
+(function(){const O=window.Ofuda;
+O.slipS(document.getElementById("anat").getContext("2d"),0,0,O.card("frames"),4,false);
+function leg(id,obj,isKind){const el=document.getElementById(id);for(const k in obj){const v=obj[k];const d=document.createElement("div");d.className="sym";
+  d.innerHTML=`<canvas width="27" height="27"></canvas><div><b>${v.name} <span class="jp" style="color:var(--dim);font-size:14px">${v.jp}</span></b><small>${v.desc}</small></div>`;el.appendChild(d);
+  const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,27,27);O.bm(x,k,0,0,isKind?O.INK[k]:"#efe7b5",3)}}
+leg("kinds",O.KINDS,true);leg("suits",O.SUITS,false);
+const F=[["babel.html","tower","Babel","Faction 1 · Many pantheons","A rabble of lesser spirits causing outages for fun.",false],
+ [null,"sealed","Sealed","Faction 2","A single pantheon, and it wants something.",true],
+ [null,"sealed","Sealed","Faction 3","Opens when Faction 2 falls.",true],
+ [null,"sealed","Sealed","Faction 4","Opens when Faction 3 falls.",true]];
+const fac=document.getElementById("fac");
+for(const [href,sp,name,tag,desc,locked] of F){const d=document.createElement(href?"a":"div");if(href)d.href=href;d.className="box"+(locked?" locked":"");
+  d.innerHTML=`<div class="t"><canvas class="px" width="60" height="60"></canvas><div><span class="tag">${tag}</span><h3>${name}</h3></div></div><p class="txt">${desc}</p>${href?'<span style="color:var(--cyan)">Open the faction →</span>':""}`;
+  fac.appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,60,60);O.spirit(x,sp,0,0,locked?"#8c7dad":"#efe7b5",4)}
+})();
+</script>
+</body>
+</html>

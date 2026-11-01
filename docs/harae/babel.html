@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harae: Babel</title>
+<meta name="description" content="Babel, the first faction of Harae: a rabble of noisy lesser spirits from every pantheon, attacking your network's availability just for fun.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="harae.css">
+<style>
+.tongues{font-family:'Noto Serif JP',serif;color:var(--red);font-size:20px;letter-spacing:.2em}
+.spirit{display:grid;grid-template-columns:72px 1fr;gap:16px;background:var(--panel);border:1px solid var(--red-dim);border-radius:4px;padding:16px}
+.spirit canvas{width:72px;height:72px}
+.spirit .body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.spirit .real{border-left:3px solid var(--cyan);padding-left:10px;color:var(--text)}
+.spirit .seal{border-left:3px solid var(--red);padding-left:10px;color:var(--text)}
+.spirit.boss{border-color:var(--yellow)}
+.spirit.harmless{border-color:#4a3d63}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.rules .box h3{color:var(--yellow)}
+.fair{color:var(--green);font-size:15px}
+.strip{display:flex;flex-wrap:wrap;gap:10px}
+.strip a{display:block;line-height:0}
+.strip canvas{width:58px;height:104px}
+@media (max-width:520px){.spirit{grid-template-columns:1fr}.spirit canvas{width:60px;height:60px}}
+</style>
+</head>
+<body>
+<nav><a class="home" href="../index.html"><b>Mitama</b>OS</a><span class="links"><a href="index.html">Harae</a><a href="babel.html" aria-current="page">Babel</a><a href="cards.html">Cards</a><a href="../harae.html">How to play</a></span></nav>
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker">Harae · faction 1 · many pantheons</span>
+  <h1>BABEL</h1>
+  <span class="tongues">בָּבֶל · Βαβέλ · バベル</span>
+  <p>When the tower fell, the builders scattered and their speech broke into a thousand tongues. In the aether the confusion never stopped, and every scattered tongue grew its own small, noisy spirits. Babel is what they're called together. It isn't an army. It's a rabble from every pantheon with no leader and no plan, gathering wherever the air is busy, because making a racket is fun.</p>
+</header>
+
+<section>
+  <h2>Who they are</h2>
+  <div class="grid">
+    <div class="box"><h3>What they attack</h3><p class="txt"><b>Availability.</b> Nothing is stolen. Things just stop working: the Wi-Fi drops, the network list fills with junk, the air goes dead.</p></div>
+    <div class="box"><h3>Why</h3><p class="txt">For fun. Babel's spirits are tricksters and pests. All they want from you is a reaction.</p></div>
+    <div class="box"><h3>How they get on</h3><p class="txt">Badly. They squabble in different languages and trip over each other. A Babel drill feels like a crowd, not a plot.</p></div>
+    <div class="box"><h3>Where they fit</h3><p class="txt">The first district. Babel is the noise you learn on before the factions with a real agenda arrive.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Babel's rules</h2>
+  <div class="rules">
+    <div class="box"><h3>Surge</h3><p class="txt">The outage keeps running while you look. Every action point you spend on evidence also costs <b>5 uptime</b>, because people are offline while you dig. Read one more log, or act now?</p><p class="fair">Fair by rule: no drill ships where reading everything and then playing the right Seal could still run uptime to zero.</p></div>
+    <div class="box"><h3>Crosstalk</h3><p class="txt">When two Babel spirits share a round, stopping the louder one first makes the quieter one's evidence free, because now you can finally hear it. Deal with the outage everyone notices, then the trick underneath.</p><p class="fair">No dice. The wrong order costs points but never locks you out.</p></div>
+    <div class="box"><h3>Not every outage is Babel</h3><p class="txt">Some drills are a harmless spirit getting blamed for Babel's noise. The right move is a Temizu fix, and burning a Seal on it costs points. Rule out the boring cause before you call it an attack.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>The first wave</h2>
+  <div id="wave1" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<section>
+  <h2>Later waves</h2>
+  <p class="txt">More of the rabble, each bringing a new Seal and a new lesson.</p>
+  <div id="wave2" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<section>
+  <h2>In the Deep Aether: the Fallen Tower</h2>
+  <p class="txt">Leave your Domain for the spirits' world and Babel's realm is the first layer down: the rubble of the Tower itself, descended floor by floor. Each floor is a mixed crowd. <b>Surge doubles</b>, and clues arrive "in another tongue", garbled, until Spectrum Eye is played. The Kamaitachi trio and Pan wait as elites. Each floor shows its spirits before you go down, and you can swap cards at the shrine between floors.</p>
+</section>
+
+<section>
+  <h2>Babel's cards</h2>
+  <p class="txt">The BABEL set, as the cards look on the Cardputer. Tap one for details.</p>
+  <div class="strip" id="strip"></div>
+  <p><a class="btn" href="cards.html?set=BABEL">Open the Babel set</a></p>
+</section>
+
+<footer>Babel's spirits come from Japanese, British and Irish, Chinese, Buddhist, German, Slavic, Greek and Biblical tradition. Every attack is simulated on screen and played only from the defender's side. Nothing is transmitted.</footer>
+</div>
+<script src="ofuda.js"></script>
+<script>
+(function(){const O=window.Ofuda;
+const S=[
+ {w:1,sp:"kamaitachi",name:"Kamaitachi",from:"Japan",tag:"Hex · The Severance · the prankster",
+  lore:"Weasels that ride whirlwinds in the snowy mountains, with sickles for claws. The cut comes so fast there's no pain and no blood, and you only find the wound later. The old stories say they hunt in threes.",
+  babel:"In Babel it cuts for the joy of the sudden, and never stays to watch.",
+  real:"Deauthentication flood. Every laptop and camera drops off the Wi-Fi at once and rejoins seconds later.",card:"frames",q:"Snip, snip. Rude."},
+ {w:1,sp:"wisps",name:"Will-o'-the-wisps",from:"Britain and Ireland",tag:"Hex · The Thousand Masks · the show-offs",
+  lore:"Lights over the marsh at night. Follow one and it drifts just out of reach until you're up to your knees in the bog. Their old Latin name is ignis fatuus, \"foolish fire\". In Wales they're the ellylldan.",
+  babel:"In Babel they want an audience. The more lights, the better the show.",
+  real:"Beacon flood. The network list fills with hundreds of fake names, the real one gets buried, and staff tap the wrong \"Office-Guest\".",card:"truename",q:"Foolish fire. It's right there in the name."},
+ {w:1,sp:"nurikabe",name:"Nurikabe",from:"Japan",tag:"Hex · The Silence · the stubborn one",
+  lore:"An invisible wall that appears on a night road in Kyushu. Pushing does nothing and going round takes forever. The folk remedy is to tap its base with a stick, and then it vanishes.",
+  babel:"In Babel it doesn't trick anyone. It just stands there, and it's very good at standing there.",
+  real:"Radio jamming. Every channel is buried in noise and no setting turns it off. Two moves: find it in the spectrum, then go around it.",card:"ironroad",q:"Tap it at the bottom with a stick. Or, you know, run a cable."},
+ {w:1,sp:"zaojun",name:"Zao Jun",from:"China",tag:"Harmless spirit · not Babel",cls:"harmless",
+  lore:"The Kitchen God, who watches over the family stove. At New Year he reports on the household to the Jade Emperor, so families smear honey on his lips to keep his words sweet.",
+  babel:"Not a member. He keeps getting blamed for Babel's noise, and he's tired of it.",
+  real:"Microwave interference. Break-room Wi-Fi dies every day at 12:10 and nowhere else, with a wide hump on 2.4 GHz channels 9 to 11.",card:"band",q:"Leave him alone, he's making lunch. Maybe give him some honey."},
+ {w:1,sp:"tower",name:"The Tower",from:"Babel itself",tag:"Boss · the whole rabble at once",cls:"boss",
+  lore:"In Genesis 11, one people with one language set out to build a tower to the heavens. Their speech was confused, the building stopped, and they scattered across the earth.",
+  babel:"The Tower isn't a spirit. It's what rises when enough of Babel crowds into one network. The Nurikabe walls off 2.4 GHz, and as everyone flees to 5 GHz, the wisps are waiting with a fake copy of the office network.",
+  real:"A three-move round where Crosstalk matters: find the wall (spectrum), name the true network (True Name), go around (Iron Road). Breaking the Tower clears the district.",card:null,q:"Everyone's shouting and nobody's saying anything. Classic Babel."},
+ {w:2,sp:"gaki",name:"Gaki",from:"Buddhist",tag:"Hex · The Hungry · the glutton",
+  lore:"Hungry ghosts, with swollen bellies and throats as thin as a needle. Whatever they eat, they're never full.",
+  babel:"They follow the noise looking for something to eat, and a busy network is a feast.",
+  real:"DHCP starvation. Fake clients eat every address in the pool, so new phones join the Wi-Fi and get nothing.",card:"pool",q:"It ate every address. It's still hungry. It's always still hungry."},
+ {w:2,sp:"poltergeist",name:"Poltergeist",from:"Germany",tag:"Hex · The Rattling · the attention seeker",
+  lore:"Literally \"noisy ghost\": knocking in the walls and plates thrown off shelves, usually around one household. Never seen, only heard.",
+  babel:"The loudest member of a loud crowd, and proud of it.",
+  real:"Bluetooth advert spam. Every phone in the room keeps asking \"pair this device?\" until someone gives up and taps yes.",card:"quiet",q:"Knock knock. Knock knock. Knock knock. Knock kn..."},
+ {w:2,sp:"vikhor",name:"Vikhor",from:"Slavic",tag:"Hex · The Whirlwind · the crowd",
+  lore:"A dust devil with a devil riding inside it. Villagers said that if you threw a knife into the whirlwind, the blade came out bloody.",
+  babel:"It spins up a crowd out of nothing and lets the crowd do the damage.",
+  real:"Association flood. A spinning mass of fake visitors fills the router's guest list, so real devices are turned away at the door.",card:"gatekeeper",q:"Throw a knife in it. Metaphorically. Put the knife down."},
+ {w:2,sp:"pan",name:"Pan",from:"Greece",tag:"Elite · The Panic",cls:"boss",
+  lore:"God of the wild places. His sudden shout could rout an army, and the Greeks credited him with their win at Marathon. \"Panic\" is named after him.",
+  babel:"Babel's noise is his favourite stage. Nothing is broken until somebody panics.",
+  real:"Scareware and the fake \"you've been hacked\" call. A popup screams that the network is infected and gives a number to ring.",card:"steady",q:"Loud doesn't mean true. Breathe."},
+ {w:2,sp:"kamaitachi",name:"Kamaitachi trio",from:"Japan",tag:"Elite · Deep Aether only",cls:"boss",
+  lore:"They come in threes: the first knocks you down, the second cuts, and the third heals the wound so you never notice.",
+  babel:"The one time Babel's pranksters work together, it's on purpose.",
+  real:"A disconnect used to capture a Wi-Fi handshake: knock a phone off, record it rejoining, and let it carry on as if nothing happened.",card:"frames",extra:" plus a long passphrase or WPA3",q:"Three of them. Of course there are three."}
+];
+for(const s of S){const d=document.createElement("article");d.className="spirit"+(s.cls?" "+s.cls:"");const c=s.card&&O.card(s.card);
+  const seal=c?`<p class="seal"><b>${c.kind==="seal"?"Seal":"Fix"}: <a href="cards.html#${c.id}">${c.name}</a></b>${s.extra||""}. ${c.real}</p>`:"";
+  d.innerHTML=`<canvas class="px" width="60" height="60"></canvas><div class="body"><div><span class="tag">${s.tag}</span><h3>${s.name} <span style="color:var(--dim);font-weight:600;font-size:16px">${s.from}</span></h3></div>
+   <p class="txt">${s.lore}</p><p class="txt">${s.babel}</p><p class="real"><b>Real attack:</b> ${s.real}</p>${seal}<p class="quote">"${s.q}"</p></div>`;
+  document.getElementById(s.w===1?"wave1":"wave2").appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,60,60);O.spirit(x,s.sp,0,0,s.cls==="harmless"?"#8c7dad":"#efe7b5",4)}
+const st=document.getElementById("strip");
+for(const c of O.CARDS.filter(c=>c.set==="BABEL")){const a=document.createElement("a");a.href="cards.html#"+c.id;a.title=c.name;const cv=document.createElement("canvas");cv.className="px";cv.width=58;cv.height=104;cv.style.background="transparent";a.appendChild(cv);st.appendChild(a);O.slipS(cv.getContext("2d"),0,0,c,2,false)}
+})();
+</script>
+</body>
+</html>

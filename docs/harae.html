@@ -16,7 +16,7 @@ body{background:var(--bg);color:#fff;font:17px/1.55 'Rajdhani',system-ui,sans-se
  background-image:repeating-linear-gradient(0deg,rgba(229,22,43,.04) 0 1px,transparent 1px 8px)}
 .wrap{max-width:860px;margin:0 auto;padding:0 18px 60px}
 a{color:var(--cyan);text-decoration:none}
-nav{position:sticky;top:0;z-index:20;background:rgba(10,1,24,.9);border-bottom:1px solid var(--red);display:flex;justify-content:space-between;align-items:center;padding:10px 18px;font-size:14px;letter-spacing:.1em;text-transform:uppercase}
+nav{position:sticky;top:0;z-index:20;background:var(--bg);flex-wrap:wrap;gap:6px 16px;border-bottom:1px solid var(--red);display:flex;justify-content:space-between;align-items:center;padding:10px 18px;font-size:14px;letter-spacing:.1em;text-transform:uppercase}
 nav b{color:var(--yellow)}
 h1,h2{margin:0;text-wrap:balance}
 p{margin:0}
@@ -52,14 +52,15 @@ footer{margin-top:40px;color:var(--dim);font-size:14px;border-top:1px solid var(
 </style>
 </head>
 <body>
-<nav><a href="index.html"><b>Mitama</b>OS</a><span style="color:var(--dim)">Harae · how to play</span></nav>
+<nav><a href="index.html"><b>Mitama</b>OS</a><span style="display:flex;flex-wrap:wrap;gap:4px 16px"><a href="harae/index.html" style="color:var(--dim)">Harae</a><a href="harae/babel.html" style="color:var(--dim)">Babel</a><a href="harae/cards.html" style="color:var(--dim)">Cards</a><span style="color:var(--yellow)">How to play</span></span></nav>
 <div class="wrap">
 
 <header class="hero">
   <span class="kicker">The flagship game of MitamaOS</span>
   <h1>HARAE<span>祓</span></h1>
   <p>Noisy spirits are breaking your network. You learn real defences, carry them as paper talismans called <b>ofuda</b>, and slap the right one on the right spirit. Every attack is simulated on screen, and nothing is ever transmitted.</p>
-  <span class="badge">CONCEPT PREVIEW · NOT IN THE FIRMWARE YET</span>
+  <span class="badge">IN DEVELOPMENT FOR THE CARDPUTER ADV</span>
+  <a href="harae/index.html" style="align-self:flex-start">Read the full design →</a>
 </header>
 
 <section>
@@ -141,7 +142,7 @@ const BM={
  seal:["#########","#.......#","#.#####.#","#.#...#.#","#.#.#.#.#","#.#...#.#","#.#####.#","#.......#","#########"],
  bless:["..#####..",".#.....#.","#.......#","#...#...#","#..###..#","#...#...#","#.......#",".#.....#.","..#####.."],
  charm:["....#....","...#.#...","..#...#..",".#..#..#.","#..###..#",".#..#..#.","..#...#..","...#.#...","....#...."],
- rite:["....#....","....#....","...#.#...","...#.#...","..#...#..",".#.....#.",".#.....#.","..#...#..","...###..."],
+ shiki:["...###...","...###...","....#....","#########","...###...","...###...","...#.#...","..#...#..","..#...#.."],
  plain:["#.#.#.#.#",".........","#.......#",".........","#.......#",".........","#.......#",".........","#.#.#.#.#"]
 };
 (function(){const r=[];for(let y=0;y<9;y++)r.push(".........".split(""));const off=[1,0,0,1,2,2,1,0,0];for(const base of [1,5])for(let c=0;c<9;c++)r[base+off[c]][c]="#";BM.wind=r.map(a=>a.join(""))})();
@@ -171,7 +172,7 @@ const SP={
  band(P){P.arc(7,13,4,200,340);P.arc(7,13,8,205,335);P.arc(7,13,12,210,330)}
 };
 function spirit(x,name,X,Y,col,sc){sc=sc||1;const P=grid(15);SP[name](P);x.fillStyle=col;P.g.forEach((row,j)=>row.forEach((v,i)=>{if(v)x.fillRect(X+i*sc,Y+j*sc,sc,sc)}))}
-const INK={seal:"#e71429",bless:"#00b8cc",charm:"#d9a514",rite:"#e0407a",plain:"#8c7dad"};
+const INK={seal:"#e71429",bless:"#00b8cc",charm:"#d9a514",shiki:"#e0407a",plain:"#8c7dad"};
 const DECK={
  frames:{suit:"wind",kind:"seal",cost:1,sp:"kamaitachi",name:"Sealed Frames"},
  truename:{suit:"gate",kind:"seal",cost:1,sp:"wisps",name:"True Name"},
@@ -181,7 +182,7 @@ const DECK={
  honey:{suit:"hearth",kind:"charm",cost:0,sp:"honey",name:"Honey for the Stove"},
  stick:{suit:"hearth",kind:"charm",cost:0,sp:"stick",name:"Stick at the Base"},
  lantern:{suit:"gate",kind:"charm",cost:0,sp:"lantern",name:"Foolish Fire Lantern"},
- misogi:{suit:"hearth",kind:"rite",cost:1,sp:"misogi",name:"Misogi"},
+ misogi:{suit:"hearth",kind:"charm",cost:1,sp:"misogi",name:"Misogi"},
  pool:{suit:"hearth",kind:"seal",cost:1,sp:"gaki",name:"Pool Guard"},
  quiet:{suit:"hand",kind:"seal",cost:1,sp:"poltergeist",name:"Quiet Pockets"},
  steady:{suit:"gate",kind:"seal",cost:1,sp:"pan",name:"Steady Hand"}
@@ -205,7 +206,7 @@ function t(x,s,X,Y,col,sz,wt,al){x.font=`${wt||600} ${sz||11}px ${LAT}`;x.fillSt
 function head(x,a,b,rule){x.fillStyle=rule||C.bones;x.fillRect(0,14,240,1);t(x,a,4,1,C.y,13,700);if(b)t(x,b,236,2,C.dim,11,600,"right")}
 function foot(x,s){x.fillStyle=C.bdim;x.fillRect(0,122,240,1);x.fillStyle=C.y;x.beginPath();x.arc(7,129,3,0,7);x.fill();t(x,s,14,123,C.dim,10.5)}
 function meter(x,X,Y,w,v,col,ghost){x.strokeStyle=C.bdim;x.lineWidth=1;x.strokeRect(X+.5,Y+.5,w-1,5);const f=Math.round((w-2)*v);x.fillStyle=col;x.fillRect(X+1,Y+1,f,4);if(ghost){const g=Math.round((w-2)*ghost);x.fillStyle=C.ember;x.fillRect(X+1+f-g,Y+1,g,4)}}
-function anat(){const x=setup("anat");head(x,"OFUDA","Babel 01/12");slipS(x,14,16,DECK.frames,2,false);
+function anat(){const x=setup("anat");head(x,"OFUDA","Babel 01/14");slipS(x,14,16,DECK.frames,2,false);
   const arrow=(y,lab,col)=>{x.fillStyle=C.bdim;x.fillRect(80,y+5,14,1);t(x,lab,98,y,col,11)};
   arrow(24,"Suit: Wind",C.label);arrow(36,"Cost: 1 point",C.label);arrow(58,"Targets: Kamaitachi",C.label);arrow(96,"Kind: Seal",C.label);
   t(x,"Sealed Frames",236,20,C.cream,12,700,"right");foot(x,"; . flip   ENT equip   ` back")}
@@ -226,7 +227,7 @@ function legend(id,items,kind){const el=document.getElementById(id);for(const [k
   d.innerHTML=`<canvas width="${n*3}" height="${n*3}"></canvas><div><b>${name}</b><small>${desc}</small></div>`;el.appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,n*3,n*3);
   if(kind==="sp")spirit(x,k,0,0,"#efe7b5",3);else bm(x,k,0,0,kind==="kind"?INK[k]:"#efe7b5",3)}}
 function all(){anat();loadout();round();strike()}
-legend("kinds",[["seal","Seal","Binds one spirit. How you win."],["bless","Blessing","A kami's help investigating."],["charm","Charm","Bends a rule, once or all drill."],["plain","Temizu","Everyday fixes. Cyber hygiene."]],"kind");
+legend("kinds",[["seal","Seal","Binds one spirit. How you win."],["bless","Blessing","A kami's help investigating."],["shiki","Shikigami","A paper familiar that acts every round."],["charm","Charm","Bends a rule, worn or spent once."],["plain","Temizu","Everyday fixes. Cyber hygiene."]],"kind");
 legend("suits",[["wind","Wind","Radio and Wi-Fi"],["hearth","Hearth","Your network's plumbing"],["gate","Gate","Logins and trust"],["hand","Hand","Things you plug in or carry"]],"suit");
 legend("spirits",[["kamaitachi","Kamaitachi","Japan. Cuts you off the Wi-Fi."],["wisps","Will-o'-wisps","Britain. Fake networks everywhere."],["nurikabe","Nurikabe","Japan. A wall of radio noise."],["zaojun","Zao Jun","China. Harmless. It's the microwave."],["tower","The Tower","Boss. All of Babel at once."]],"sp");
 all();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(all);

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harae Cards</title>
+<meta name="description" content="Every ofuda card in Harae, the card game in MitamaOS, drawn as it appears on the Cardputer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="harae.css">
+<style>
+.filters{display:flex;flex-direction:column;gap:8px}
+.frow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.frow .lab{color:var(--dim);font-size:13px;letter-spacing:.1em;text-transform:uppercase;width:52px}
+.chip{font:600 14px 'Rajdhani',sans-serif;letter-spacing:.05em;background:transparent;color:var(--text);border:1px solid var(--red-dim);border-radius:999px;padding:4px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--yellow);color:var(--yellow);background:rgba(252,238,10,.06)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px}
+.tile{background:var(--panel);border:1px solid var(--red-dim);border-radius:4px;padding:12px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;color:inherit;font:inherit;text-align:center}
+.tile:hover,.tile:focus-visible{border-color:var(--yellow);outline:none;background:#24103d}
+.tile canvas{width:87px;height:156px}
+.tile .nm{font-weight:700;line-height:1.15}
+.tile .no{font:11px 'Share Tech Mono',monospace;color:var(--dim);letter-spacing:.08em}
+.count{color:var(--dim);font-size:15px}
+dialog{background:var(--bg);color:#fff;border:1px solid var(--red);border-radius:6px;padding:0;max-width:min(680px,calc(100vw - 24px));width:100%}
+dialog::backdrop{background:rgba(5,0,12,.8)}
+.det{display:grid;grid-template-columns:auto 1fr;gap:20px;padding:20px}
+.det canvas{width:145px;height:260px}
+.det .info{display:flex;flex-direction:column;gap:10px;min-width:0}
+.det h2{font-size:30px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:16px}
+.facts dt{color:var(--dim)}
+.facts dd{margin:0;color:var(--text)}
+.close{position:absolute;top:8px;right:10px;background:none;border:0;color:var(--dim);font-size:26px;cursor:pointer;line-height:1}
+.views{display:flex;gap:6px}
+@media (max-width:560px){.det{grid-template-columns:1fr;justify-items:center}.det .info{width:100%}}
+</style>
+</head>
+<body>
+<nav><a class="home" href="../index.html"><b>Mitama</b>OS</a><span class="links"><a href="index.html">Harae</a><a href="babel.html">Babel</a><a href="cards.html" aria-current="page">Cards</a><a href="../harae.html">How to play</a></span></nav>
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker">Harae · the card list</span>
+  <h1>OFUDA<span class="jp">御札</span></h1>
+  <p>Every card in Harae, drawn pixel for pixel as it appears on the Cardputer. Tap a card for what it does, which real defence it stands for, and how to earn it.</p>
+</header>
+
+<section style="padding-top:12px">
+  <div class="filters" id="filters"></div>
+  <p class="count" id="count"></p>
+  <div class="gal" id="gal"></div>
+</section>
+
+<footer>Card symbols are drawn at the Cardputer's real size and scaled up without smoothing. New sets join this page as each faction is added.</footer>
+</div>
+
+<dialog id="dlg"><div style="position:relative"><button class="close" id="x" aria-label="Close">×</button><div class="det">
+  <div style="display:flex;flex-direction:column;gap:8px;align-items:center"><canvas id="big" class="px" width="145" height="260" style="background:transparent"></canvas>
+  <div class="views"><button class="chip" id="vf" aria-pressed="true">Front</button><button class="chip" id="vb" aria-pressed="false">Back</button></div></div>
+  <div class="info"><span class="tag" id="dno"></span><h2 id="dname"></h2><p class="txt" id="deff"></p>
+  <dl class="facts" id="dfacts"></dl></div>
+</div></div></dialog>
+
+<script src="ofuda.js"></script>
+<script>
+(function(){const O=window.Ofuda;const C=O.CARDS;
+const sets=[...new Set(C.map(c=>c.set))];
+const F={set:"all",kind:"all",suit:"all"};
+const q=new URLSearchParams(location.search);if(q.get("set")&&sets.includes(q.get("set").toUpperCase()))F.set=q.get("set").toUpperCase();
+const nameOf={set:s=>s[0]+s.slice(1).toLowerCase(),kind:k=>O.KINDS[k].name,suit:s=>O.SUITS[s].name};
+const rows=[["set","Set",sets],["kind","Kind",Object.keys(O.KINDS)],["suit","Suit",Object.keys(O.SUITS)]];
+const fe=document.getElementById("filters");
+for(const [key,lab,vals] of rows){const r=document.createElement("div");r.className="frow";r.innerHTML=`<span class="lab">${lab}</span>`;
+  for(const v of ["all",...vals]){const b=document.createElement("button");b.className="chip";b.textContent=v==="all"?"All":nameOf[key](v);b.dataset.k=key;b.dataset.v=v;b.setAttribute("aria-pressed",F[key]===v);
+    b.onclick=()=>{F[key]=v;r.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.v===v));draw()};r.appendChild(b)}
+  fe.appendChild(r)}
+const gal=document.getElementById("gal");
+function draw(){gal.innerHTML="";const list=C.filter(c=>(F.set==="all"||c.set===F.set)&&(F.kind==="all"||c.kind===F.kind)&&(F.suit==="all"||c.suit===F.suit));
+  document.getElementById("count").textContent=list.length===1?"1 card":list.length+" cards";
+  for(const c of list){const b=document.createElement("button");b.className="tile";b.innerHTML=`<canvas class="px" width="87" height="156" style="background:transparent"></canvas><span class="nm">${c.name}</span><span class="no">${c.set} ${String(c.no).padStart(2,"0")}/${c.of}</span>`;
+    b.onclick=()=>{history.replaceState(null,"","#"+c.id);open(c)};gal.appendChild(b);O.slipS(b.querySelector("canvas").getContext("2d"),0,0,c,3,false)}}
+const dlg=document.getElementById("dlg"),big=document.getElementById("big").getContext("2d");let cur=null;
+function face(front){big.clearRect(0,0,145,260);if(front)O.slipS(big,0,0,cur,5,false);else O.back(big,0,0,5);
+  document.getElementById("vf").setAttribute("aria-pressed",front);document.getElementById("vb").setAttribute("aria-pressed",!front)}
+function open(c){cur=c;face(true);
+  document.getElementById("dno").textContent=`${c.set} ${String(c.no).padStart(2,"0")}/${c.of}`+(c.wave>1?" · later wave":"");
+  document.getElementById("dname").textContent=c.name;document.getElementById("deff").textContent=c.effect;
+  const k=O.KINDS[c.kind],s=O.SUITS[c.suit];
+  const facts=[["Kind",k.name+(c.kind==="charm"?(c.spent?" (spent)":" (worn)"):"")],["Suit",s.name+", "+s.desc.split(":")[0].toLowerCase()],["Cost",c.cost===0?"Free":c.cost+" action point"+(c.cost>1?"s":"")],
+    c.centre?[c.kind==="seal"?"Binds":"Sigil",c.centre+(c.pantheon?" ("+c.pantheon+")":"")]:null,["Real defence",c.real],["Earned",c.earn]].filter(Boolean);
+  document.getElementById("dfacts").innerHTML=facts.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("");
+  if(!dlg.open)dlg.showModal()}
+document.getElementById("vf").onclick=()=>face(true);document.getElementById("vb").onclick=()=>face(false);
+document.getElementById("x").onclick=()=>dlg.close();
+dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});
+dlg.addEventListener("close",()=>history.replaceState(null,"",location.pathname+location.search));
+draw();
+const h=location.hash.slice(1);if(h&&O.card(h))open(O.card(h));
+})();
+</script>
+</body>
+</html>
