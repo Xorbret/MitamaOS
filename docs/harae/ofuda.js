@@ -10,6 +10,7 @@ const BM={
  bless:["..#####..",".#.....#.","#.......#","#...#...#","#..###..#","#...#...#","#.......#",".#.....#.","..#####.."],
  shiki:["...###...","...###...","....#....","#########","...###...","...###...","...#.#...","..#...#..","..#...#.."],
  charm:["....#....","...#.#...","..#...#..",".#..#..#.","#..###..#",".#..#..#.","..#...#..","...#.#...","....#...."],
+ norito:["....#....","....#....","...#.#...","...#.#...","..#...#..",".#.....#.",".#.....#.","..#...#..","...###..."],
  temizu:["#.#.#.#.#",".........","#.......#",".........","#.......#",".........","#.......#",".........","#.#.#.#.#"]
 };
 (function(){const r=[];for(let y=0;y<9;y++)r.push(".........".split(""));const off=[1,0,0,1,2,2,1,0,0];for(const base of [1,5])for(let c=0;c<9;c++)r[base+off[c]][c]="#";BM.wind=r.map(a=>a.join(""))})();
@@ -42,12 +43,13 @@ const SP={
  sealed(P){P.rect(2,2,10,10);P.line(5,7,9,7);P.px(7,5);P.px(7,9)}
 };
 function spirit(x,name,X,Y,col,sc){sc=sc||1;const P=grid(15);SP[name](P);x.fillStyle=col;P.g.forEach((row,j)=>row.forEach((v,i)=>{if(v)x.fillRect(X+i*sc,Y+j*sc,sc,sc)}))}
-const INK={seal:"#e71429",bless:"#00b8cc",shiki:"#e0407a",charm:"#d9a514",temizu:"#8c7dad"};
+const INK={seal:"#e71429",bless:"#00b8cc",shiki:"#e0407a",charm:"#d9a514",norito:"#ff6d00",temizu:"#8c7dad"};
 const KINDS={
  seal:{name:"Seal",jp:"封",desc:"Binds one spirit. The only way to stop it, and every drill can be won with the Seals you've earned."},
  bless:{name:"Blessing",jp:"加護",desc:"A kami's help with investigating: a free clue, a cheaper read. Never needed to win."},
  shiki:{name:"Shikigami",jp:"式神",desc:"Your partner for a Deep Aether dive. It acts every round and charges one Summon per floor. It's paper, so some spirits tear it."},
- charm:{name:"Charm",jp:"守",desc:"Bends a rule. Worn for a whole drill, or spent once for a big effect. Builds and broken combos live here."},
+ charm:{name:"Charm",jp:"守",desc:"Worn in a charm slot and bends a rule for as long as it stays there. Builds and broken combos live here."},
+ norito:{name:"Norito",jp:"祝詞",desc:"A spoken prayer. One big effect, used once, then it's gone. Your emergency button."},
  temizu:{name:"Temizu",jp:"手水",desc:"The basics everyone holds: everyday cyber hygiene. Fixes harmless spirits and scores modestly."}
 };
 const SUITS={
@@ -74,8 +76,8 @@ const CARDS=[
   effect:"Worn. The first move against any wall costs no action points.",real:"Knowing where to look first.",earn:"Deep Aether shrine"},
  {id:"lantern",no:8,set:"BABEL",name:"Foolish Fire Lantern",kind:"charm",suit:"gate",cost:0,sp:"lantern",centre:"Will-o'-the-wisps",pantheon:"British and Irish",wave:1,
   effect:"Worn. The first false clue in each drill is marked for you.",real:"Spotting a decoy before you follow it.",earn:"Deep Aether shrine"},
- {id:"misogi",no:9,set:"BABEL",name:"Misogi",kind:"charm",suit:"hearth",cost:1,sp:"misogi",centre:"Waterfall",pantheon:"Japanese",wave:1,spent:true,
-  effect:"Spent. A purifying waterfall: restore 20 uptime once, then the charm is used up.",real:"A planned restart that brings services back fast.",earn:"Deep Aether shrine"},
+ {id:"misogi",no:9,set:"BABEL",name:"Misogi",kind:"norito",suit:"hearth",cost:1,sp:"misogi",centre:"Waterfall",pantheon:"Japanese",wave:1,spent:true,
+  effect:"A purifying waterfall: restore 20 uptime, once.",real:"A planned restart that brings services back fast.",earn:"Deep Aether shrine"},
  {id:"pool",no:10,set:"BABEL",name:"Pool Guard",kind:"seal",suit:"hearth",cost:1,sp:"gaki",centre:"Gaki",pantheon:"Buddhist",wave:2,
   effect:"Binds the Gaki, the hungry ghosts that eat every address.",real:"DHCP snooping and a lease limit per port.",earn:"Shugyo lesson: DHCP and DNS by hand"},
  {id:"quiet",no:11,set:"BABEL",name:"Quiet Pockets",kind:"seal",suit:"hand",cost:1,sp:"poltergeist",centre:"Poltergeist",pantheon:"German",wave:2,
