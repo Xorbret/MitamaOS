@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harae: The Night-Roamers</title>
+<meta name="description" content="The Night-Roamers, the third faction of Harae: Ravana's rakshasa court from the Ramayana, who watch your network and carry off your secrets.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="harae.css">
+<style>
+.tongues{color:#ffb347;font-size:19px;letter-spacing:.12em;font-style:italic}
+.spirit{display:grid;grid-template-columns:72px 1fr;gap:16px;background:var(--panel);border:1px solid var(--red-dim);border-radius:4px;padding:16px}
+.spirit canvas{width:72px;height:72px}
+.spirit .body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.spirit .real{border-left:3px solid var(--cyan);padding-left:10px;color:var(--text)}
+.spirit .seal{border-left:3px solid var(--red);padding-left:10px;color:var(--text)}
+.spirit.boss{border-color:var(--yellow)}
+.spirit.harmless{border-color:#4a3d63}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.rules .box h3{color:var(--yellow)}
+.fair{color:var(--green);font-size:15px}
+.draft{border:1px dashed var(--dim);color:var(--dim);padding:8px 12px;border-radius:4px;font-size:15px}
+.cardrow{display:grid;grid-template-columns:60px 1fr;gap:14px;align-items:center;border-bottom:1px solid var(--red-dim);padding:10px 0}
+.cardrow canvas{width:58px;height:104px}
+.cardrow .k{font:12px 'Share Tech Mono',monospace;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+.strip{display:flex;flex-wrap:wrap;gap:10px}.strip a{display:block;line-height:0}.strip canvas{width:58px;height:104px}
+.holds{display:flex;gap:8px;flex-wrap:wrap;counter-reset:h}
+.holds span{border:1px solid var(--yellow);color:var(--text);padding:4px 10px;border-radius:3px;font-size:15px}
+@media (max-width:520px){.spirit{grid-template-columns:1fr}.spirit canvas{width:60px;height:60px}}
+</style>
+</head>
+<body>
+<nav><a class="home" href="../index.html"><b>Mitama</b>OS</a><span class="links"><a href="index.html">Harae</a><a href="babel.html">Babel</a><a href="neighbours.html">Neighbours</a><a href="roamers.html" aria-current="page">Roamers</a><a href="cards.html">Cards</a><a href="../harae.html">How to play</a></span></nav>
+<div class="wrap">
+<header class="hero">
+  <span class="kicker">Harae · faction 3 · Hindu epic and folklore</span>
+  <h1>THE NIGHT-ROAMERS</h1>
+  <span class="tongues">Nishācara · निशाचर · the Rākṣasa court of Lanka</span>
+  <p>The Ramayana calls the rakshasas <i>nishācara</i>, "those who walk at night". They change shape at will, they're strongest after dark, and their king Ravana rules from a city of gold built on what he has taken. They don't break your network or copy it. They <b>watch</b> it, and they carry off whatever they see.</p>
+</header>
+
+<section>
+  <h2>Who they are</h2>
+  <div class="grid">
+    <div class="box"><h3>What they attack</h3><p class="txt"><b>Confidentiality.</b> Everything keeps working and nothing looks fake. Your secrets just leave: messages, locations, photos, passwords.</p></div>
+    <div class="box"><h3>Why</h3><p class="txt">Desire. Ravana saw Sita and wanted her, so he took her. His court is the same: they covet what's private because it's private.</p></div>
+    <div class="box"><h3>How they act</h3><p class="txt">Patient and quiet, and in the dark. A lure first, then the snatch. They're a real court with a king, brothers and generals, and they work to a plan.</p></div>
+    <div class="box"><h3>Where they fit</h3><p class="txt">After Babel's noise and the Neighbours' copies, the Night-Roamers just listen. The Fae wanted your logins. Ravana wants everything those logins protect.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Their rules</h2>
+  <div class="rules">
+    <div class="box"><h3>Leak</h3><p class="txt">Babel drains uptime. The Night-Roamers drain <b>data</b>. Every round a spirit stays unsealed, 5 data leaks away, and leaked data can't be won back. What's encrypted is worthless to them, so encryption cards stop the bleed.</p><p class="fair">Fair by rule: playing the right Seal on the first round always leaves you with data to spare.</p></div>
+    <div class="box"><h3>The Boon</h3><p class="txt">Brahma granted Ravana a boon: no god, demon or spirit of heaven could kill him. He didn't bother asking for protection from humans or animals. So <b>Blessings do nothing</b> against his court, but Shikigami, your paper animals, work fine, just as Hanuman and the monkey army did.</p><p class="fair">Blessings were never needed to win, so this only changes your score.</p></div>
+    <div class="box"><h3>The Lure</h3><p class="txt">Once per drill a <b>golden clue</b> appears, cheaper and shinier than the rest. It's Maricha's deer. Chase it and you leave your hand unguarded for a round, and the court acts freely. It's always marked in gold, so you can learn to let it run.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>The first wave</h2>
+  <div id="wave1" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<section>
+  <h2>Later waves</h2>
+  <div id="wave2" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<section>
+  <h2>In the Deep Aether: Lanka</h2>
+  <p class="txt">The golden city on its island, where every stolen secret is kept in the vaults. <b>Data doesn't refill between floors</b>, so a leak on floor one is still gone on floor five. The court's generals guard the gates: Indrajit fights from inside the clouds and Kumbhakarna sleeps under the walls until something wakes him. Rahu circles overhead as an elite. Halfway down, a Shikigami run can do what Hanuman did and set the city alight: clear a floor without a single leak and the next floor's vault burns open.</p>
+</section>
+
+<section>
+  <h2>Their cards</h2>
+  <p class="txt">The LANKA set. Seals carry the spirit they bind, and the support cards come from the Ramayana itself. Tap one for details.</p>
+  <div class="strip" id="strip"></div>
+  <p><a class="btn" href="cards.html?set=LANKA">Open the Night-Roamers set</a></p>
+</section>
+
+<footer>Spirits come from the Ramayana, the Puranas and the Vetala Panchavimshati. Every attack is simulated on screen and played only from the defender's side. Nothing is transmitted.</footer>
+</div>
+<script src="ofuda.js"></script>
+<script>
+(function(){const O=window.Ofuda;
+
+const S=[
+ {w:1,sp:"rakshasa",name:"Rakshasas",from:"Ramayana",tag:"The Listeners · the night-walkers",
+  lore:"Shapeshifting man-eaters who prowl after dark, when their strength grows. In the Ramayana they swarm the forest ashrams at night to wreck the sages' rites, and Lanka is full of them.",
+  them:"They don't touch anything. They stand outside the walls and listen.",
+  real:"Sniffing unencrypted traffic. On open or shared Wi-Fi, anything sent without encryption (old web pages, old mail and chat apps, plain IoT dashboards) can be read by anyone nearby.",
+  seal:["Whisper","Encryption everywhere: HTTPS only, WPA3 or a VPN on shared networks, and retiring apps that still talk in the clear."],q:"Talk all you like. Just make sure they hear static."},
+ {w:1,sp:"vetala",name:"Vetala",from:"Vetala Panchavimshati",tag:"The Rider · the voice on your shoulder",
+  lore:"A spirit that lives in a corpse hanging from a tree in the cremation ground. King Vikramaditya must carry it on his shoulder in silence, but every night it tells him a story ending in a riddle, and every time he answers, it flies back to the tree. Twenty-five stories, twenty-five nights.",
+  them:"It rides along with you, and it's chatty.",
+  real:"Stalkerware and shoulder-surfing. An app hidden on a phone that reports messages and location to someone else, or someone simply reading your screen over your shoulder.",
+  seal:["Empty Shoulder","Check installed apps, profiles and device admins, use a strong lock screen, and keep your phone out of other people's hands."],q:"Twenty-five stories in, and you still haven't checked who's riding you."},
+ {w:1,sp:"pishacha",name:"Pishachas",from:"Vedas and Puranas",tag:"The Unseen · the ones that slip inside",
+  lore:"The lowest of the demons: flesh-eaters that haunt cremation grounds, go invisible at will, and slip into people to possess them. You only know they're there by what goes missing.",
+  them:"Invisible, small, and everywhere you carry your phone.",
+  real:"Trackers. A tracking tag slipped into a bag or car, or apps quietly sharing location and contacts with ad networks.",
+  seal:["Nothing Follows","Scan for unknown trackers travelling with you, and keep app location and contact permissions to the minimum."],q:"If it's invisible, check what it's eating."},
+ {w:1,sp:"maricha",name:"Maricha",from:"Ramayana",tag:"The Lure · the golden deer",
+  lore:"Ravana's uncle, ordered to take the shape of a golden deer and graze near Rama's hut. Rama chased it deep into the forest. When the arrow struck, Maricha cried out in Rama's own voice, so Lakshmana ran to help too, and the hut was left unguarded.",
+  them:"It doesn't take anything itself. It gets you to walk away.",
+  real:"Bait. A free USB stick in the car park, a QR code taped over the real one, or an app that's too good and too free.",
+  seal:["Let the Deer Go","Never plug in a found drive, check where a QR code really goes, and only install from sources you trust."],q:"It's very pretty. It's also Ravana's uncle."},
+ {w:1,sp:"yaksha",name:"Yakshas",from:"Hindu and Buddhist folklore",tag:"Harmless spirit · treasure keepers",cls:"harmless",
+  lore:"Nature spirits who serve Kubera, the god of wealth, and guard treasure buried at the roots of trees. Usually kindly, if you respect them. Kubera is Ravana's half-brother, and it was his city of Lanka that Ravana took.",
+  them:"Not part of the court. Their old master is the one Ravana robbed.",
+  real:"A big upload every night at 2 a.m. that looks like data being stolen. It's your own photo backup syncing to the cloud.",
+  seal:["Count the Treasury","Know what your devices back up, where it goes, and when."],q:"They're counting your treasure, not taking it. Rude to accuse them."},
+ {w:1,sp:"ravana",name:"Ravana",from:"Ramayana",tag:"Boss · the ten-headed king of Lanka",cls:"boss",
+  lore:"The king of Lanka: a great scholar, a master of the veena and a devotee of Shiva, with ten heads that look in every direction. He sent the golden deer, came to Sita's door disguised as a wandering holy man begging alms, and carried her off to Lanka in his flying chariot.",
+  them:"The whole court working one plan, in three steps.",
+  real:"A full data theft. The lure draws you away, a polite stranger gets past the boundary, and the data is flown out. Three steps, and you stop each one.",
+  holds:["The deer: Let the Deer Go","The doorstep: Lakshmana's Line","The flight: Whisper"],q:"Ten heads, and every one of them is looking at your files."},
+ {w:2,sp:"rahu",name:"Rahu",from:"Puranas",tag:"Elite · the eclipse",cls:"boss",
+  lore:"When the gods and asuras churned the ocean for the nectar of immortality, the asura Svarbhanu sat in line among the gods in disguise. The Sun and Moon spotted him and Vishnu's discus, Sudarshana, cut off his head, but he'd already swallowed. His head, Rahu, now chases the Sun and Moon and swallows them, and they fall out through his severed throat.",
+  them:"He steals from the gods' own table, not from you.",
+  real:"Someone else's breach. A site you use leaks its passwords, and the same password then opens your other accounts.",
+  seal:["Sudarshana","A different password everywhere, a password manager, and changing a password the day you hear it leaked."],q:"He swallows the sun. It always comes out the other side."},
+ {w:2,sp:"kumbhakarna",name:"Kumbhakarna",from:"Ramayana",tag:"Elite · the sleeping giant",cls:"boss",
+  lore:"Ravana's giant brother. He meant to ask Brahma for Indra's throne, but the goddess Saraswati tied his tongue, and he asked for eternal sleep instead. Brahma softened it: six months asleep, one day awake, and he wakes hungry.",
+  them:"Asleep for months, forgotten by everyone, then suddenly very awake.",
+  real:"The forgotten device or account. An old router, camera or user account nobody remembers, still on default passwords and old software.",
+  seal:["Long Sleep","Retire what you don't use, remove old accounts, and update or replace old devices."],q:"Let sleeping giants lie. Better: unplug them."},
+ {w:2,sp:"indrajit",name:"Indrajit",from:"Ramayana",tag:"Elite · the warrior in the clouds",cls:"boss",
+  lore:"Ravana's son Meghanada, \"voice of the thunder cloud\", renamed Indrajit after he defeated Indra, the king of the gods. He fought hidden inside the clouds by illusion, striking from where nobody could see him.",
+  them:"He doesn't need to break in. Your data is already up in the clouds.",
+  real:"Exposed cloud storage. A shared folder or link set to \"anyone with the link\", or a cloud bucket left public.",
+  seal:["Closed Sky","Check what you've shared and with whom, expire old links, and keep cloud storage private by default."],q:"Your files are in the cloud. So is he."}
+];
+for(const s of S){const d=document.createElement("article");d.className="spirit"+(s.cls?" "+s.cls:"");
+  const seal=s.seal?`<p class="seal"><b>${s.cls==="harmless"?"Fix":"Seal"}: ${s.seal[0]}.</b> ${s.seal[1]}</p>`:"";
+  const holds=s.holds?`<p class="txt"><b>Three moves, in order:</b></p><div class="holds">${s.holds.map((h,i)=>`<span>${i+1}. ${h}</span>`).join("")}</div><p class="txt">Breaking Ravana clears the district.</p>`:"";
+  d.innerHTML=`<canvas class="px" width="60" height="60"></canvas><div class="body"><div><span class="tag">${s.tag}</span><h3>${s.name} <span style="color:var(--dim);font-weight:600;font-size:16px">${s.from}</span></h3></div>
+   <p class="txt">${s.lore}</p><p class="txt">${s.them}</p><p class="real"><b>Real attack:</b> ${s.real}</p>${seal}${holds}<p class="quote">"${s.q}"</p></div>`;
+  document.getElementById(s.w===1?"wave1":"wave2").appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,60,60);O.spirit(x,s.sp,0,0,s.cls==="harmless"?"#8c7dad":"#ffd38a",4)}
+const st=document.getElementById("strip");
+for(const c of O.CARDS.filter(c=>c.set==="LANKA")){const a=document.createElement("a");a.href="cards.html#"+c.id;a.title=c.name;const cv=document.createElement("canvas");cv.className="px";cv.width=58;cv.height=104;cv.style.background="transparent";a.appendChild(cv);st.appendChild(a);O.slipS(cv.getContext("2d"),0,0,c,2,false)}
+})();
+</script>
+</body>
+</html>

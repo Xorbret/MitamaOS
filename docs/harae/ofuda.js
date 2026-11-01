@@ -65,6 +65,21 @@ Object.assign(SP,{
  cream(P){P.line(0,8,14,8);P.arc(7,8,6,0,180);P.line(5,14,9,14);P.px(7,1);P.line(6,2,8,2);P.line(6,3,8,3);P.px(7,4)},
  saltline(P){P.line(0,12,14,12);for(let i=1;i<14;i+=3){P.px(i,10);P.px(i+1,11)}P.rect(4,1,6,7)}
 });
+Object.assign(SP,{
+ rakshasa(P){P.line(2,0,4,4);P.line(12,0,10,4);P.arc(7,8,5,0,360);P.px(5,7);P.px(9,7);P.line(5,11,5,13);P.line(9,11,9,13)},
+ vetala(P){P.line(0,1,14,1);P.line(7,1,7,3);P.arc(7,7,3,0,360);P.line(4,6,0,10);P.line(10,6,14,10);P.line(0,10,3,9);P.line(14,10,11,9);P.px(6,8);P.px(8,8)},
+ pishacha(P){const pts=[];for(let i=0;i<10;i++){const a=i*Math.PI/5;P.px(7+3*Math.cos(a),3+3*Math.sin(a))}for(let y=7;y<=14;y+=2){P.px(4,y);P.px(10,y)}for(let x=0;x<=14;x+=2)P.px(x,8)},
+ maricha(P){P.arc(7,11,3,0,360);P.line(7,8,7,6);P.line(6,8,2,2);P.line(8,8,12,2);P.line(3,4,1,4);P.line(11,4,13,4);P.line(4,2,4,0);P.line(10,2,10,0);P.px(6,11);P.px(8,11)},
+ yaksha(P){P.arc(7,10,5,0,180);P.line(2,10,12,10);P.line(4,6,10,6);P.line(4,6,2,10);P.line(10,6,12,10);P.px(5,3);P.px(9,3);P.px(7,1);P.px(7,4)},
+ ravana(P){P.arc(7,10,3,0,360);P.px(6,10);P.px(8,10);P.line(4,6,10,6);P.px(4,5);P.px(7,5);P.px(10,5);[[0,9],[1,5],[3,1],[6,0],[9,1],[12,5],[13,9]].forEach(([x,y])=>{P.px(x,y);P.px(x+1,y);P.px(x,y+1);P.px(x+1,y+1)});P.line(5,14,9,14)},
+ rahu(P){P.arc(7,7,6,0,360);P.arc(11,7,5,110,250);P.px(6,4);P.px(5,7);P.px(6,10)},
+ kumbhakarna(P){P.arc(6,7,5,20,160);P.px(2,13);P.px(6,14);P.px(10,13);P.line(9,0,13,0);P.line(13,0,9,4);P.line(9,4,13,4)},
+ indrajit(P){P.arc(4,5,3,180,360);P.arc(8,4,3,180,360);P.arc(11,5,3,180,360);P.line(1,7,14,7);P.line(8,8,6,11);P.line(6,11,9,11);P.line(9,11,7,14)},
+ rekha(P){for(let i=0;i<16;i++){if(i%2)continue;const a=i*Math.PI/8;P.px(7+6.5*Math.cos(a),8+6*Math.sin(a))}P.line(4,7,7,4);P.line(7,4,10,7);P.rect(5,7,4,4)},
+ ring(P){P.arc(7,9,4,0,360);P.line(5,4,9,4);P.line(5,4,7,1);P.line(9,4,7,1)},
+ diya(P){P.arc(7,10,5,0,180);P.line(2,10,12,10);P.line(11,10,13,8);P.px(7,3);P.px(7,4);P.line(6,5,8,5);P.line(6,6,8,6);P.px(7,7)},
+ sanjeevani(P){P.line(0,14,6,4);P.line(6,4,9,8);P.line(9,8,11,6);P.line(11,6,14,14);P.line(0,14,14,14);P.px(6,2);P.px(5,1);P.px(7,1)}
+});
 function spirit(x,name,X,Y,col,sc){sc=sc||1;const P=grid(15);SP[name](P);x.fillStyle=col;P.g.forEach((row,j)=>row.forEach((v,i)=>{if(v)x.fillRect(X+i*sc,Y+j*sc,sc,sc)}))}
 const INK={seal:"#e71429",bless:"#00b8cc",shiki:"#e0407a",charm:"#d9a514",shio:"#ff6d00",temizu:"#8c7dad"};
 const KINDS={
@@ -137,6 +152,33 @@ CARDS.push(
 {id:"cream",no:12,set:"GENTRY",name:"Cream for the Brownie",kind:"charm",suit:"hearth",cost:0,sp:"cream",centre:"Cream",pantheon:"Scottish",wave:1,
   effect:"Worn. After a harmless round, start the next with 1 extra point.",real:"Not panicking over a friendly device.",earn:"Clear the Brownie without wasting a Seal"}
 );
+/* Faction 3: the Night-Roamers */
+CARDS.push(
+{id:"whisper",no:1,set:"LANKA",name:"Whisper",kind:"seal",suit:"wind",cost:1,sp:"rakshasa",centre:"Rakshasas",pantheon:"Ramayana",wave:1,
+  effect:"Binds the Rakshasas. Encryption: stops this round's Leak.",real:"HTTPS only, WPA3 or a VPN on shared networks, and retiring apps that talk in the clear.",earn:"Shugyo lesson: Encryption in transit"},
+{id:"emptyshoulde",no:2,set:"LANKA",name:"Empty Shoulder",kind:"seal",suit:"hand",cost:1,sp:"vetala",centre:"Vetala",pantheon:"Vetala Panchavimshati",wave:1,
+  effect:"Binds the Vetala.",real:"Check installed apps, profiles and device admins, and use a strong lock screen.",earn:"Shugyo lesson: Finding stalkerware"},
+{id:"nothingfollo",no:3,set:"LANKA",name:"Nothing Follows",kind:"seal",suit:"hand",cost:1,sp:"pishacha",centre:"Pishachas",pantheon:"Puranas",wave:1,
+  effect:"Binds the Pishachas.",real:"Scan for unknown trackers and keep app location and contact permissions minimal.",earn:"Shugyo lesson: Trackers and app permissions"},
+{id:"letthedeergo",no:4,set:"LANKA",name:"Let the Deer Go",kind:"seal",suit:"hand",cost:1,sp:"maricha",centre:"Maricha",pantheon:"Ramayana",wave:1,
+  effect:"Binds Maricha. Also ends the Lure for this drill.",real:"Never plug in a found drive, check where a QR code goes, install only from trusted sources.",earn:"Shugyo lesson: Bait, USB drops and QR codes"},
+{id:"sudarshana",no:5,set:"LANKA",name:"Sudarshana",kind:"seal",suit:"gate",cost:1,sp:"rahu",centre:"Rahu",pantheon:"Puranas",wave:2,
+  effect:"Binds Rahu.",real:"A different password everywhere, a password manager, and changing a password the day it leaks.",earn:"Shugyo lesson: Password reuse and breaches"},
+{id:"longsleep",no:6,set:"LANKA",name:"Long Sleep",kind:"seal",suit:"hearth",cost:1,sp:"kumbhakarna",centre:"Kumbhakarna",pantheon:"Ramayana",wave:2,
+  effect:"Binds Kumbhakarna.",real:"Retire what you don't use, remove old accounts, and update or replace old devices.",earn:"Shugyo lesson: Old devices and forgotten accounts"},
+{id:"closedsky",no:7,set:"LANKA",name:"Closed Sky",kind:"seal",suit:"hearth",cost:1,sp:"indrajit",centre:"Indrajit",pantheon:"Ramayana",wave:2,
+  effect:"Binds Indrajit.",real:"Check what you've shared, expire old links, and keep cloud storage private by default.",earn:"Shugyo lesson: Cloud sharing and public links"},
+{id:"countthetrea",no:8,set:"LANKA",name:"Count the Treasury",kind:"temizu",suit:"hearth",cost:1,sp:"yaksha",centre:"Yakshas",pantheon:"Hindu",wave:1,
+  effect:"Clears the Yakshas' false alarm.",real:"Know what your devices back up, where it goes, and when.",earn:"Shugyo lesson: Knowing your backups"},
+{id:"lakshmanasli",no:9,set:"LANKA",name:"Lakshmana's Line",kind:"charm",suit:"gate",cost:0,sp:"rekha",centre:"Lakshmana's line",pantheon:"Ramayana",wave:1,
+  effect:"Worn. In later tellings Lakshmana drew a line round the hut that nothing evil could cross. The Lure can't pull you out of a round.",real:"Staying inside the boundary when something shiny calls you out.",earn:"Deep Aether shrine"},
+{id:"ramasring",no:10,set:"LANKA",name:"Rama's Ring",kind:"charm",suit:"gate",cost:0,sp:"ring",centre:"Rama's ring",pantheon:"Ramayana",wave:1,
+  effect:"Worn. Hanuman carried Rama's ring so Sita would know he was a true messenger. Once per drill, verify a clue for free.",real:"Proof of who a message is really from.",earn:"Break Ravana"},
+{id:"lampatdusk",no:11,set:"LANKA",name:"Lamp at Dusk",kind:"shio",suit:"hearth",cost:1,sp:"diya",centre:"Diya lamp",pantheon:"Hindu",wave:1,
+  effect:"Light a lamp at sunset and the night-walkers keep away: no Leak this round.",real:"Locking down while you investigate.",earn:"Deep Aether shrine"},
+{id:"sanjeevani",no:12,set:"LANKA",name:"Sanjeevani",kind:"shio",suit:"hearth",cost:1,sp:"sanjeevani",centre:"Sanjeevani herb",pantheon:"Ramayana",wave:1,
+  effect:"The herb Hanuman flew a whole mountain back for: restore all leaked data, once.",real:"A tested restore from backup.",earn:"Deep Aether shrine"}
+);
 /* Shikigami: Deep Aether partners. Pick one per dive. */
 CARDS.push(
  {id:"hitogata",no:1,set:"SHIKI",name:"Hitogata",kind:"shiki",suit:"hearth",cost:0,sp:"hitogata",centre:"Paper doll",pantheon:"Japanese",wave:1,
@@ -163,7 +205,7 @@ function back(x,X,Y,sc){sc=sc||1;const w=29*sc,h=52*sc;x.fillStyle="#210052";x.f
   spirit(x,"torii",X+7*sc,Y+18*sc,"#ffee08",sc)}
 /* draw a pixel thing into a fresh canvas inside el, at scale sc */
 function canvasIn(el,w,h,sc,bg){const cv=document.createElement("canvas");cv.width=w*sc;cv.height=h*sc;el.appendChild(cv);const x=cv.getContext("2d");if(bg){x.fillStyle=bg;x.fillRect(0,0,cv.width,cv.height)}return x}
-const SETS={BABEL:"Babel",GENTRY:"Good Neighbours",SHIKI:"Shikigami"};
+const SETS={BABEL:"Babel",GENTRY:"Good Neighbours",LANKA:"Night-Roamers",SHIKI:"Shikigami"};
 window.Ofuda={SETS,BM,SP,INK,KINDS,SUITS,CARDS,bm,spirit,slipS,back,canvasIn,
   card:id=>CARDS.find(c=>c.id===id)};
 })();
