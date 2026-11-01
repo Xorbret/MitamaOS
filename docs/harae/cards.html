@@ -68,7 +68,7 @@ dialog::backdrop{background:rgba(5,0,12,.8)}
 const sets=[...new Set(C.map(c=>c.set))];
 const F={set:"all",kind:"all",suit:"all"};
 const q=new URLSearchParams(location.search);if(q.get("set")&&sets.includes(q.get("set").toUpperCase()))F.set=q.get("set").toUpperCase();
-const nameOf={set:s=>s[0]+s.slice(1).toLowerCase(),kind:k=>O.KINDS[k].name,suit:s=>O.SUITS[s].name};
+const nameOf={set:s=>O.SETS[s]||s,kind:k=>O.KINDS[k].name,suit:s=>O.SUITS[s].name};
 const rows=[["set","Set",sets],["kind","Kind",Object.keys(O.KINDS)],["suit","Suit",Object.keys(O.SUITS)]];
 const fe=document.getElementById("filters");
 for(const [key,lab,vals] of rows){const r=document.createElement("div");r.className="frow";r.innerHTML=`<span class="lab">${lab}</span>`;
@@ -87,7 +87,7 @@ function open(c){cur=c;face(true);
   document.getElementById("dno").textContent=`${c.set} ${String(c.no).padStart(2,"0")}/${c.of}`+(c.wave>1?" · later wave":"");
   document.getElementById("dname").textContent=c.name;document.getElementById("deff").textContent=c.effect;
   const k=O.KINDS[c.kind],s=O.SUITS[c.suit];
-  const facts=[["Kind",k.name+(c.kind==="charm"?(c.spent?" (spent)":" (worn)"):"")],["Suit",s.name+", "+s.desc.split(":")[0].toLowerCase()],["Cost",c.cost===0?"Free":c.cost+" action point"+(c.cost>1?"s":"")],
+  const facts=[["Kind",k.name+(c.kind==="charm"?(c.spent?" (spent)":" (worn)"):"")],["Suit",s.name+", "+s.desc.split(":")[0].toLowerCase()],c.kind==="shiki"?["Style",c.style+", Deep Aether partner"]:["Cost",c.cost===0?"Free":c.cost+" action point"+(c.cost>1?"s":"")],
     c.centre?[c.kind==="seal"?"Binds":"Sigil",c.centre+(c.pantheon?" ("+c.pantheon+")":"")]:null,["Real defence",c.real],["Earned",c.earn]].filter(Boolean);
   document.getElementById("dfacts").innerHTML=facts.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("");
   if(!dlg.open)dlg.showModal()}

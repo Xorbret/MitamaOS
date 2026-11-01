@@ -206,7 +206,7 @@ function t(x,s,X,Y,col,sz,wt,al){x.font=`${wt||600} ${sz||11}px ${LAT}`;x.fillSt
 function head(x,a,b,rule){x.fillStyle=rule||C.bones;x.fillRect(0,14,240,1);t(x,a,4,1,C.y,13,700);if(b)t(x,b,236,2,C.dim,11,600,"right")}
 function foot(x,s){x.fillStyle=C.bdim;x.fillRect(0,122,240,1);x.fillStyle=C.y;x.beginPath();x.arc(7,129,3,0,7);x.fill();t(x,s,14,123,C.dim,10.5)}
 function meter(x,X,Y,w,v,col,ghost){x.strokeStyle=C.bdim;x.lineWidth=1;x.strokeRect(X+.5,Y+.5,w-1,5);const f=Math.round((w-2)*v);x.fillStyle=col;x.fillRect(X+1,Y+1,f,4);if(ghost){const g=Math.round((w-2)*ghost);x.fillStyle=C.ember;x.fillRect(X+1+f-g,Y+1,g,4)}}
-function anat(){const x=setup("anat");head(x,"OFUDA","Babel 01/14");slipS(x,14,16,DECK.frames,2,false);
+function anat(){const x=setup("anat");head(x,"OFUDA","Babel 01/13");slipS(x,14,16,DECK.frames,2,false);
   const arrow=(y,lab,col)=>{x.fillStyle=C.bdim;x.fillRect(80,y+5,14,1);t(x,lab,98,y,col,11)};
   arrow(24,"Suit: Wind",C.label);arrow(36,"Cost: 1 point",C.label);arrow(58,"Targets: Kamaitachi",C.label);arrow(96,"Kind: Seal",C.label);
   t(x,"Sealed Frames",236,20,C.cream,12,700,"right");foot(x,"; . flip   ENT equip   ` back")}
@@ -227,7 +227,7 @@ function legend(id,items,kind){const el=document.getElementById(id);for(const [k
   d.innerHTML=`<canvas width="${n*3}" height="${n*3}"></canvas><div><b>${name}</b><small>${desc}</small></div>`;el.appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,n*3,n*3);
   if(kind==="sp")spirit(x,k,0,0,"#efe7b5",3);else bm(x,k,0,0,kind==="kind"?INK[k]:"#efe7b5",3)}}
 function all(){anat();loadout();round();strike()}
-legend("kinds",[["seal","Seal","Binds one spirit. How you win."],["bless","Blessing","A kami's help investigating."],["shiki","Shikigami","A paper familiar that acts every round."],["charm","Charm","Bends a rule, worn or spent once."],["plain","Temizu","Everyday fixes. Cyber hygiene."]],"kind");
+legend("kinds",[["seal","Seal","Binds one spirit. How you win."],["bless","Blessing","A kami's help investigating."],["shiki","Shikigami","Your paper partner in the Deep Aether."],["charm","Charm","Bends a rule, worn or spent once."],["plain","Temizu","Everyday fixes. Cyber hygiene."]],"kind");
 legend("suits",[["wind","Wind","Radio and Wi-Fi"],["hearth","Hearth","Your network's plumbing"],["gate","Gate","Logins and trust"],["hand","Hand","Things you plug in or carry"]],"suit");
 legend("spirits",[["kamaitachi","Kamaitachi","Japan. Cuts you off the Wi-Fi."],["wisps","Will-o'-wisps","Britain. Fake networks everywhere."],["nurikabe","Nurikabe","Japan. A wall of radio noise."],["zaojun","Zao Jun","China. Harmless. It's the microwave."],["tower","The Tower","Boss. All of Babel at once."]],"sp");
 all();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(all);

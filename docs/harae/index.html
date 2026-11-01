@@ -83,6 +83,17 @@
 </section>
 
 <section>
+  <h2>Shikigami: your partner in the deep</h2>
+  <p class="txt">Before each Deep Aether dive you choose one <b>Shikigami</b>, a paper familiar that sits beside your hand for the whole run and sets its style. It levels up at the shrines between floors, from plain paper to painted to inked.</p>
+  <ul>
+    <li><b>Every round</b> it does its small job by itself, like soaking a Surge hit or making a clue cheaper.</li>
+    <li><b>Summon:</b> the action points you leave unspent charge its big move, which you can fire once per floor.</li>
+    <li><b>Paper:</b> it has 3 pips, and some spirits tear it. The Kamaitachi cuts paper. Torn up, it's gone for the rest of the floor. It never decides whether you can win.</li>
+  </ul>
+  <div class="legend" id="shiki"></div>
+</section>
+
+<section>
   <h2>Score: Purity × Resonance</h2>
   <div class="math"><span class="p">Purity 46</span><span>×</span><span class="r">Resonance 3.5</span><span>=</span><span class="s">161</span></div>
   <p class="txt"><b>Purity</b> is how cleanly you won: the Seal's value, plus the uptime and data you kept, plus <b>Prayer</b>, which pours every unspent action point into your Seal. <b>Resonance</b> is how stylishly you won. It starts at 1, every yaku you complete adds to it, and Charms can multiply it. A sloppy win scores about 20, so there's always a better run to chase.</p>
@@ -108,7 +119,7 @@
 
 <section>
   <h2>Collecting</h2>
-  <p class="txt">Each faction is a numbered set, like <b>BABEL 01/14</b>, with a binder page in the Hexbook. The card back is the Myōjin torii in yellow on Harae's violet. A card can turn up in four printings, all with the same effect:</p>
+  <p class="txt">Each faction is a numbered set, like <b>BABEL 01/13</b>, with a binder page in the Hexbook. The card back is the Myōjin torii in yellow on Harae's violet. A card can turn up in four printings, all with the same effect:</p>
   <div class="grid">
     <div class="box"><h3>Paper</h3><p class="txt">The normal printing, earned from its lesson.</p></div>
     <div class="box"><h3 style="color:var(--gold)">Gold leaf</h3><p class="txt">Win a flawless drill with the card.</p></div>
@@ -131,6 +142,8 @@ function leg(id,obj,isKind){const el=document.getElementById(id);for(const k in 
   d.innerHTML=`<canvas width="27" height="27"></canvas><div><b>${v.name} <span class="jp" style="color:var(--dim);font-size:14px">${v.jp}</span></b><small>${v.desc}</small></div>`;el.appendChild(d);
   const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,27,27);O.bm(x,k,0,0,isKind?O.INK[k]:"#efe7b5",3)}}
 leg("kinds",O.KINDS,true);leg("suits",O.SUITS,false);
+const sh=document.getElementById("shiki");for(const c of O.CARDS.filter(c=>c.set==="SHIKI")){const a=document.createElement("a");a.className="sym";a.href="cards.html#"+c.id;a.style.color="inherit";
+  a.innerHTML=`<canvas width="45" height="45"></canvas><div><b>${c.name}</b><small>${c.style}. ${c.effect}</small></div>`;sh.appendChild(a);const x=a.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,45,45);O.spirit(x,c.sp,0,0,"#efe7b5",3)}
 const F=[["babel.html","tower","Babel","Faction 1 · Many pantheons","A rabble of lesser spirits causing outages for fun.",false],
  [null,"sealed","Sealed","Faction 2","A single pantheon, and it wants something.",true],
  [null,"sealed","Sealed","Faction 3","Opens when Faction 2 falls.",true],

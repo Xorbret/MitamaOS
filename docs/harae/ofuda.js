@@ -37,6 +37,8 @@ const SP={
  misogi(P){P.line(4,0,4,9);P.line(7,0,7,10);P.line(10,0,10,9);P.line(1,12,4,11);P.line(4,11,7,13);P.line(7,13,10,11);P.line(10,11,13,12)},
  band(P){P.arc(7,13,4,200,340);P.arc(7,13,8,205,335);P.arc(7,13,12,210,330)},
  torii(P){P.line(0,2,3,3);P.line(3,3,11,3);P.line(11,3,14,2);P.line(2,6,12,6);P.line(4,3,4,14);P.line(10,3,10,14);P.px(7,4);P.px(7,5)},
+ orizuru(P){P.line(1,10,7,10);P.line(7,10,11,6);P.line(11,6,12,3);P.line(12,3,14,4);P.line(3,10,6,2);P.line(6,2,8,10);P.line(1,10,3,13)},
+ kitsune(P){P.line(2,1,4,6);P.line(2,1,6,4);P.line(12,1,10,6);P.line(12,1,8,4);P.line(6,4,8,4);P.line(4,6,7,13);P.line(10,6,7,13);P.px(5,8);P.px(9,8)},
  sealed(P){P.rect(2,2,10,10);P.line(5,7,9,7);P.px(7,5);P.px(7,9)}
 };
 function spirit(x,name,X,Y,col,sc){sc=sc||1;const P=grid(15);SP[name](P);x.fillStyle=col;P.g.forEach((row,j)=>row.forEach((v,i)=>{if(v)x.fillRect(X+i*sc,Y+j*sc,sc,sc)}))}
@@ -44,7 +46,7 @@ const INK={seal:"#e71429",bless:"#00b8cc",shiki:"#e0407a",charm:"#d9a514",temizu
 const KINDS={
  seal:{name:"Seal",jp:"封",desc:"Binds one spirit. The only way to stop it, and every drill can be won with the Seals you've earned."},
  bless:{name:"Blessing",jp:"加護",desc:"A kami's help with investigating: a free clue, a cheaper read. Never needed to win."},
- shiki:{name:"Shikigami",jp:"式神",desc:"A paper familiar. Summon it once and it acts by itself every round. You can field one at a time."},
+ shiki:{name:"Shikigami",jp:"式神",desc:"Your partner for a Deep Aether dive. It acts every round and charges one Summon per floor. It's paper, so some spirits tear it."},
  charm:{name:"Charm",jp:"守",desc:"Bends a rule. Worn for a whole drill, or spent once for a big effect. Builds and broken combos live here."},
  temizu:{name:"Temizu",jp:"手水",desc:"The basics everyone holds: everyday cyber hygiene. Fixes harmless spirits and scores modestly."}
 };
@@ -64,27 +66,34 @@ const CARDS=[
   effect:"Binds the Nurikabe and halves any outage damage. The third move against the Tower.",real:"Cables for the things that matter, then report the jamming, because it's illegal.",earn:"Shugyo lesson: Wired backups"},
  {id:"eye",no:4,set:"BABEL",name:"Spectrum Eye",kind:"bless",suit:"wind",cost:0,sp:"omoikane",centre:"Omoikane",pantheon:"Japanese",wave:1,
   effect:"Omoikane, kami of wisdom, lends you sight: the spectrum view is free and never triggers Surge.",real:"Reading a spectrum analyser to tell interference from jamming.",earn:"Shugyo lesson: Interference or jamming?"},
- {id:"hitogata",no:5,set:"BABEL",name:"Hitogata",kind:"shiki",suit:"hearth",cost:1,sp:"hitogata",centre:"Paper doll",pantheon:"Japanese",wave:1,
-  effect:"A paper doll that takes the blow for you: it soaks the first Surge hit every round.",real:"A spare path that keeps people working while you investigate.",earn:"Break the Tower"},
- {id:"band",no:6,set:"BABEL",name:"Change Band",kind:"temizu",suit:"wind",cost:1,sp:"band",centre:"",pantheon:"",wave:1,
+ {id:"band",no:5,set:"BABEL",name:"Change Band",kind:"temizu",suit:"wind",cost:1,sp:"band",centre:"",pantheon:"",wave:1,
   effect:"Fixes Zao Jun's microwave trouble. Partly helps against a Kamaitachi stuck on 2.4 GHz.",real:"Move to 5 GHz or a clear channel.",earn:"Held from the start"},
- {id:"honey",no:7,set:"BABEL",name:"Honey for the Stove",kind:"charm",suit:"hearth",cost:0,sp:"honey",centre:"Zao Jun",pantheon:"Chinese",wave:1,
+ {id:"honey",no:6,set:"BABEL",name:"Honey for the Stove",kind:"charm",suit:"hearth",cost:0,sp:"honey",centre:"Zao Jun",pantheon:"Chinese",wave:1,
   effect:"Worn. Harmless spirits score double Purity.",real:"Ruling out the boring cause before calling it an attack.",earn:"Deep Aether shrine"},
- {id:"stick",no:8,set:"BABEL",name:"Stick at the Base",kind:"charm",suit:"hearth",cost:0,sp:"stick",centre:"Nurikabe",pantheon:"Japanese",wave:1,
+ {id:"stick",no:7,set:"BABEL",name:"Stick at the Base",kind:"charm",suit:"hearth",cost:0,sp:"stick",centre:"Nurikabe",pantheon:"Japanese",wave:1,
   effect:"Worn. The first move against any wall costs no action points.",real:"Knowing where to look first.",earn:"Deep Aether shrine"},
- {id:"lantern",no:9,set:"BABEL",name:"Foolish Fire Lantern",kind:"charm",suit:"gate",cost:0,sp:"lantern",centre:"Will-o'-the-wisps",pantheon:"British and Irish",wave:1,
+ {id:"lantern",no:8,set:"BABEL",name:"Foolish Fire Lantern",kind:"charm",suit:"gate",cost:0,sp:"lantern",centre:"Will-o'-the-wisps",pantheon:"British and Irish",wave:1,
   effect:"Worn. The first false clue in each drill is marked for you.",real:"Spotting a decoy before you follow it.",earn:"Deep Aether shrine"},
- {id:"misogi",no:10,set:"BABEL",name:"Misogi",kind:"charm",suit:"hearth",cost:1,sp:"misogi",centre:"Waterfall",pantheon:"Japanese",wave:1,spent:true,
+ {id:"misogi",no:9,set:"BABEL",name:"Misogi",kind:"charm",suit:"hearth",cost:1,sp:"misogi",centre:"Waterfall",pantheon:"Japanese",wave:1,spent:true,
   effect:"Spent. A purifying waterfall: restore 20 uptime once, then the charm is used up.",real:"A planned restart that brings services back fast.",earn:"Deep Aether shrine"},
- {id:"pool",no:11,set:"BABEL",name:"Pool Guard",kind:"seal",suit:"hearth",cost:1,sp:"gaki",centre:"Gaki",pantheon:"Buddhist",wave:2,
+ {id:"pool",no:10,set:"BABEL",name:"Pool Guard",kind:"seal",suit:"hearth",cost:1,sp:"gaki",centre:"Gaki",pantheon:"Buddhist",wave:2,
   effect:"Binds the Gaki, the hungry ghosts that eat every address.",real:"DHCP snooping and a lease limit per port.",earn:"Shugyo lesson: DHCP and DNS by hand"},
- {id:"quiet",no:12,set:"BABEL",name:"Quiet Pockets",kind:"seal",suit:"hand",cost:1,sp:"poltergeist",centre:"Poltergeist",pantheon:"German",wave:2,
+ {id:"quiet",no:11,set:"BABEL",name:"Quiet Pockets",kind:"seal",suit:"hand",cost:1,sp:"poltergeist",centre:"Poltergeist",pantheon:"German",wave:2,
   effect:"Binds the Poltergeist and its endless \"pair this device?\" popups.",real:"Nearby-device popups off, phones updated, Bluetooth off when unused.",earn:"Shugyo lesson: Bluetooth advertising"},
- {id:"gatekeeper",no:13,set:"BABEL",name:"Gatekeeper",kind:"seal",suit:"wind",cost:1,sp:"vikhor",centre:"Vikhor",pantheon:"Slavic",wave:2,
+ {id:"gatekeeper",no:12,set:"BABEL",name:"Gatekeeper",kind:"seal",suit:"wind",cost:1,sp:"vikhor",centre:"Vikhor",pantheon:"Slavic",wave:2,
   effect:"Binds the Vikhor, the whirlwind of fake visitors at the router's door.",real:"Client limits, rate limiting, and an alert when joins spike.",earn:"Shugyo lesson: Floods and rate limits"},
- {id:"steady",no:14,set:"BABEL",name:"Steady Hand",kind:"seal",suit:"gate",cost:1,sp:"pan",centre:"Pan",pantheon:"Greek",wave:2,
+ {id:"steady",no:13,set:"BABEL",name:"Steady Hand",kind:"seal",suit:"gate",cost:1,sp:"pan",centre:"Pan",pantheon:"Greek",wave:2,
   effect:"Binds Pan and the panic he spreads with fake \"you've been hacked\" calls.",real:"Check through a channel you already trust. Never call a number from a popup.",earn:"Shugyo lesson: Scareware and fake calls"}
 ];
+/* Shikigami: Deep Aether partners. Pick one per dive. */
+CARDS.push(
+ {id:"hitogata",no:1,set:"SHIKI",name:"Hitogata",kind:"shiki",suit:"hearth",cost:0,sp:"hitogata",centre:"Paper doll",pantheon:"Japanese",wave:1,
+  effect:"Every round: soaks the first Surge hit. Summon, once per floor: takes all the damage of one round.",real:"A spare path that keeps people working while you investigate.",earn:"Break the Tower",style:"Defence"},
+ {id:"orizuru",no:2,set:"SHIKI",name:"Orizuru",kind:"shiki",suit:"wind",cost:0,sp:"orizuru",centre:"Paper crane",pantheon:"Japanese",wave:1,
+  effect:"Every round: your first clue costs 1 less. Summon, once per floor: every clue on the board is revealed for free.",real:"Good monitoring that tells you where to look first.",earn:"Find it at a Deep Aether shrine",style:"Scouting"},
+ {id:"kitsune",no:3,set:"SHIKI",name:"Kitsune",kind:"shiki",suit:"gate",cost:0,sp:"kitsune",centre:"Fox",pantheon:"Japanese",wave:1,
+  effect:"Every round: Kindred combos add +0.5 more Resonance. Summon, once per floor: copies the last Seal you played.",real:"Reusing a fix that already worked somewhere else.",earn:"Score Kindred ten times",style:"Combo"}
+);
 CARDS.forEach(c=>c.of=CARDS.filter(d=>d.set===c.set).length);
 // a text-free slip, 29x52 at sc=1
 function slipS(x,X,Y,c,sc,sel){sc=sc||1;const w=29*sc,h=52*sc;x.fillStyle=sel?"#fff6d6":"#efe7b5";x.fillRect(X,Y,w,h);
@@ -102,6 +111,7 @@ function back(x,X,Y,sc){sc=sc||1;const w=29*sc,h=52*sc;x.fillStyle="#210052";x.f
   spirit(x,"torii",X+7*sc,Y+18*sc,"#ffee08",sc)}
 /* draw a pixel thing into a fresh canvas inside el, at scale sc */
 function canvasIn(el,w,h,sc,bg){const cv=document.createElement("canvas");cv.width=w*sc;cv.height=h*sc;el.appendChild(cv);const x=cv.getContext("2d");if(bg){x.fillStyle=bg;x.fillRect(0,0,cv.width,cv.height)}return x}
-window.Ofuda={BM,SP,INK,KINDS,SUITS,CARDS,bm,spirit,slipS,back,canvasIn,
+const SETS={BABEL:"Babel",SHIKI:"Shikigami"};
+window.Ofuda={SETS,BM,SP,INK,KINDS,SUITS,CARDS,bm,spirit,slipS,back,canvasIn,
   card:id=>CARDS.find(c=>c.id===id)};
 })();
