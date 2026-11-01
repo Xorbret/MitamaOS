@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harae: How to Play</title>
+<meta name="description" content="A quick tutorial for Harae, the card game in MitamaOS: purify the noisy spirits of Babel with ofuda talismans.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+<style>
+:root{--red:#E5162B;--red-dim:#7A0A18;--yellow:#FCEE0A;--magenta:#FF2A6D;--cyan:#05D9E8;--green:#39FF14;--bg:#0A0118;--panel:#1A0B2E;--dim:#8A7CA8;--washi:#efe7cf;--ember:#ff6d00}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:#fff;font:17px/1.55 'Rajdhani',system-ui,sans-serif;font-weight:500;
+ background-image:repeating-linear-gradient(0deg,rgba(229,22,43,.04) 0 1px,transparent 1px 8px)}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px 60px}
+a{color:var(--cyan);text-decoration:none}
+nav{position:sticky;top:0;z-index:20;background:rgba(10,1,24,.9);border-bottom:1px solid var(--red);display:flex;justify-content:space-between;align-items:center;padding:10px 18px;font-size:14px;letter-spacing:.1em;text-transform:uppercase}
+nav b{color:var(--yellow)}
+h1,h2{margin:0;text-wrap:balance}
+p{margin:0}
+.hero{padding:44px 0 20px;display:flex;flex-direction:column;gap:12px}
+.hero .kicker{font:13px 'Share Tech Mono',monospace;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase}
+.hero h1{font-size:clamp(44px,9vw,72px);line-height:1;letter-spacing:.06em}
+.hero h1 span{font-family:'Noto Serif JP',serif;color:var(--red);margin-left:.2em;font-size:.8em}
+.hero p{font-size:19px;max-width:62ch;color:#e8e2f4}
+.badge{display:inline-block;border:1px solid var(--yellow);color:var(--yellow);font:12px 'Share Tech Mono',monospace;letter-spacing:.1em;padding:3px 8px;align-self:flex-start}
+section{display:flex;flex-direction:column;gap:14px;padding-top:36px}
+.step{display:flex;gap:14px;align-items:baseline}
+.step .n{flex:none;width:30px;height:30px;border:1px solid var(--yellow);color:var(--yellow);border-radius:50%;display:grid;place-items:center;font-weight:700}
+h2{font-size:26px;color:var(--yellow);letter-spacing:.03em}
+.txt{max-width:64ch;color:#e8e2f4}
+b{color:#fff}
+.screen{background:#1b1b1f;border:1px solid #33333a;border-radius:10px;padding:10px;max-width:520px}
+.screen canvas{display:block;width:100%;height:auto}
+.cap{color:var(--dim);font-size:15px;max-width:520px}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.sym{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--red-dim);border-radius:4px;padding:10px}
+.sym canvas{image-rendering:pixelated;width:45px;height:45px;flex:none;background:#000}
+.sym div{min-width:0;line-height:1.25}
+.sym b{display:block}
+.sym small{color:var(--dim);font-size:14px}
+.math{font-size:clamp(22px,5vw,32px);font-weight:700;display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}
+.math .p{color:var(--cyan)}.math .r{color:var(--magenta)}.math .s{color:var(--yellow)}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:64ch;color:#e8e2f4}
+.promise{border:1px solid var(--green);border-left-width:4px;background:rgba(57,255,20,.05);padding:14px 16px;border-radius:4px}
+.promise b{color:var(--green)}
+.ask{border:1px solid var(--yellow);padding:16px;border-radius:4px;background:rgba(252,238,10,.04)}
+.ask ol{margin:8px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+footer{margin-top:40px;color:var(--dim);font-size:14px;border-top:1px solid var(--red-dim);padding-top:14px}
+</style>
+</head>
+<body>
+<nav><a href="index.html"><b>Mitama</b>OS</a><span style="color:var(--dim)">Harae · how to play</span></nav>
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker">The flagship game of MitamaOS</span>
+  <h1>HARAE<span>祓</span></h1>
+  <p>Noisy spirits are breaking your network. You learn real defences, carry them as paper talismans called <b>ofuda</b>, and slap the right one on the right spirit. Every attack is simulated on screen, and nothing is ever transmitted.</p>
+  <span class="badge">CONCEPT PREVIEW · NOT IN THE FIRMWARE YET</span>
+</header>
+
+<section>
+  <div class="step"><span class="n">1</span><h2>Learn a defence, earn a card</h2></div>
+  <p class="txt">Every lesson you pass in <b>Shugyo</b>, the lesson app, hands you an ofuda. Pass "Wi-Fi recon" and you get <b>Sealed Frames</b>, the real fix for a Wi-Fi disconnect attack. What you study becomes what you fight with.</p>
+</section>
+
+<section>
+  <div class="step"><span class="n">2</span><h2>Read a card at a glance</h2></div>
+  <p class="txt">Cards carry no words, only symbols, so they read on a tiny screen. <b>Suit</b> top left, <b>cost</b> dots top right, the <b>spirit it targets</b> in the middle, and the <b>kind</b> stamp at the bottom.</p>
+  <div class="screen"><canvas id="anat" width="480" height="270"></canvas></div>
+  <p class="cap">Sealed Frames: a Wind card, costs 1, targets the Kamaitachi, a Seal.</p>
+  <h2 style="font-size:19px;color:#fff;margin-top:6px">Kinds</h2>
+  <div class="legend" id="kinds"></div>
+  <h2 style="font-size:19px;color:#fff;margin-top:6px">Suits</h2>
+  <div class="legend" id="suits"></div>
+</section>
+
+<section>
+  <div class="step"><span class="n">3</span><h2>Pick your hand</h2></div>
+  <p class="txt">Before a drill you see which spirits are coming. The <b>Seals</b> you need go in your hand automatically, so the drill is always winnable. You add support cards, and a few of those are drawn at random each round.</p>
+  <div class="screen"><canvas id="loadout" width="480" height="270"></canvas></div>
+</section>
+
+<section>
+  <div class="step"><span class="n">4</span><h2>Play a round</h2></div>
+  <p class="txt">A round starts with a <b>symptom</b>, the thing a user would report. You have 3 action points.</p>
+  <ul>
+    <li><b>Investigate:</b> spend points to read clues such as logs or a spectrum view.</li>
+    <li><b>Surge:</b> the outage keeps going while you look. Every point you spend also costs 5 uptime.</li>
+    <li><b>Play a card:</b> the right Seal binds the spirit. The wrong card only half-works and costs you uptime or data.</li>
+    <li><b>Riichi:</b> feeling sure? Press R before reading anything. Your next card is locked in, and if you're right it pays big. If you're wrong, the round just counts as partial.</li>
+  </ul>
+  <div class="screen"><canvas id="round" width="480" height="270"></canvas></div>
+  <p class="cap">The orange sliver on Uptime shows what Surge will take if you read one more clue.</p>
+</section>
+
+<section>
+  <div class="step"><span class="n">5</span><h2>Score: Purity × Resonance</h2></div>
+  <p class="txt"><b>Purity</b> is how cleanly you won: the Seal's value, plus the uptime you kept, plus <b>Prayer</b> (every point you didn't spend). <b>Resonance</b> is how stylishly you won: it starts at 1 and grows with every combo you complete.</p>
+  <div class="math"><span class="p">Purity 46</span><span>×</span><span class="r">Resonance 3.5</span><span>=</span><span class="s">161</span></div>
+  <ul>
+    <li><b>Riichi:</b> called it before reading evidence, +2</li>
+    <li><b>Clear Sky:</b> every round stopped on the first play</li>
+    <li><b>Dora:</b> played today's lucky card, marked with a gold corner</li>
+    <li><b>Kindred:</b> a Seal and a Blessing from the same pantheon together</li>
+  </ul>
+  <p class="txt">A sloppy win, where you read everything and make no combos, scores about 20. Chasing the gap is the game.</p>
+  <div class="screen"><canvas id="strike" width="480" height="270"></canvas></div>
+</section>
+
+<section>
+  <div class="step"><span class="n">6</span><h2>Meet Babel, the first faction</h2></div>
+  <p class="txt">A rabble of lesser spirits from every pantheon, causing outages just because it's fun. Not every outage is them, though. Sometimes it's just the microwave.</p>
+  <div class="legend" id="spirits"></div>
+</section>
+
+<section>
+  <div class="step"><span class="n">7</span><h2>Then go deeper</h2></div>
+  <p class="txt">Clear your Domain and the <b>Deep Aether</b> opens: a roguelike descent through the ruins of the Fallen Tower. Your deck grows as you draft new cards at shrines between floors, and Charms bend the rules into bigger and bigger scores.</p>
+</section>
+
+<section>
+  <div class="promise"><p><b>The fairness promise.</b> Every drill can be won with the Seals you've earned, always. Luck only changes your score. And everything you learn is a real-world defence.</p></div>
+</section>
+
+<section>
+  <div class="ask">
+    <h2 style="font-size:20px">Tester: tell Robert</h2>
+    <ol>
+      <li>After reading this once, could you play a round without help?</li>
+      <li>Do the card symbols make sense, or do any confuse you?</li>
+      <li>Which sounds most fun: Riichi, Surge, combos or collecting?</li>
+      <li>Is Purity × Resonance clear, or too much?</li>
+      <li>Would you come back to beat your score? What would make you?</li>
+    </ol>
+  </div>
+</section>
+
+<footer>Harae is part of MitamaOS for the M5Stack Cardputer ADV. The screens above are drawn at the device's real 240×135 layout. Spirits come from Japanese, British and Irish, Chinese, Buddhist, German, Slavic, Greek and Biblical folklore.</footer>
+</div>
+
+<script>
+(function(){
+// ---- pixel symbol set (no smoothing, 1 px lines) ----
+const BM={
+ wind:null,
+ hearth:["....#....","...##....","..#..#...","..#...#..",".#..#..#.",".#.##..#.",".#.....#.","..#...#..","...###..."],
+ gate:["...###...","..#...#..","..#...#..","..#...#..","...#.#...","...#.#...","..#...#..","..#####..","........."],
+ hand:["....#....","...###...","....#....",".........","#.......#","#.......#",".#.....#.","..#####..","........."],
+ seal:["#########","#.......#","#.#####.#","#.#...#.#","#.#.#.#.#","#.#...#.#","#.#####.#","#.......#","#########"],
+ bless:["..#####..",".#.....#.","#.......#","#...#...#","#..###..#","#...#...#","#.......#",".#.....#.","..#####.."],
+ charm:["....#....","...#.#...","..#...#..",".#..#..#.","#..###..#",".#..#..#.","..#...#..","...#.#...","....#...."],
+ rite:["....#....","....#....","...#.#...","...#.#...","..#...#..",".#.....#.",".#.....#.","..#...#..","...###..."],
+ plain:["#.#.#.#.#",".........","#.......#",".........","#.......#",".........","#.......#",".........","#.#.#.#.#"]
+};
+(function(){const r=[];for(let y=0;y<9;y++)r.push(".........".split(""));const off=[1,0,0,1,2,2,1,0,0];for(const base of [1,5])for(let c=0;c<9;c++)r[base+off[c]][c]="#";BM.wind=r.map(a=>a.join(""))})();
+function bm(x,name,X,Y,col,sc){sc=sc||1;x.fillStyle=col;BM[name].forEach((row,j)=>{for(let i=0;i<row.length;i++)if(row[i]==="#")x.fillRect(X+i*sc,Y+j*sc,sc,sc)})}
+// tiny raster pen for 15x15 spirit sigils
+function grid(n){const g=[];for(let y=0;y<n;y++)g.push(new Array(n).fill(0));const P={g,
+ px(x,y){x=Math.round(x);y=Math.round(y);if(x>=0&&y>=0&&x<n&&y<n)g[y][x]=1},
+ line(x0,y0,x1,y1){x0=Math.round(x0);y0=Math.round(y0);x1=Math.round(x1);y1=Math.round(y1);let dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1,e=dx+dy;for(;;){P.px(x0,y0);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx}if(e2<=dx){e+=dx;y0+=sy}}},
+ arc(cx,cy,r,a0,a1){const st=Math.max(12,r*8);let px=null;for(let i=0;i<=st;i++){const a=(a0+(a1-a0)*i/st)*Math.PI/180;const p=[cx+r*Math.cos(a),cy+r*Math.sin(a)];if(px)P.line(px[0],px[1],p[0],p[1]);px=p}},
+ rect(x,y,w,h){P.line(x,y,x+w,y);P.line(x+w,y,x+w,y+h);P.line(x+w,y+h,x,y+h);P.line(x,y+h,x,y)},
+ fill(x,y,w,h){for(let j=0;j<h;j++)for(let i=0;i<w;i++)P.px(x+i,y+j)}};return P}
+const SP={
+ kamaitachi(P){P.arc(9,11,8,195,285);P.arc(10,12,6,200,275);P.line(2,12,4,10);P.line(3,13,12,13);P.line(6,14,13,14)},
+ wisps(P){const f=(x,y)=>{P.px(x,y);P.line(x-1,y+1,x+1,y+1);P.line(x-1,y+2,x+1,y+2);P.px(x,y+3)};f(3,8);f(7,3);f(11,7);P.px(3,13);P.px(7,9);P.px(11,13)},
+ nurikabe(P){P.rect(1,2,12,11);P.line(1,6,13,6);P.line(1,9,13,9);P.line(5,2,5,6);P.line(9,6,9,9);P.line(4,9,4,13);P.line(10,9,10,13)},
+ zaojun(P){P.line(2,8,12,8);P.arc(7,8,5,0,180);P.line(4,14,10,14);P.line(5,1,5,3);P.px(6,4);P.line(5,5,5,6);P.line(9,1,9,3);P.px(8,4);P.line(9,5,9,6)},
+ gaki(P){P.arc(7,9,5,0,360);P.line(7,1,7,4);P.line(5,1,9,1);P.px(7,9)},
+ poltergeist(P){P.rect(1,2,6,11);P.px(5,8);P.arc(6,7,4,-50,50);P.arc(6,7,6,-50,50);P.arc(6,7,8,-45,45)},
+ vikhor(P){let px=null;for(let i=0;i<=60;i++){const a=i*0.32,r=0.6+i*0.105;const p=[7+r*Math.cos(a),7+r*Math.sin(a)];if(px)P.line(px[0],px[1],p[0],p[1]);px=p}},
+ pan(P){[[1,3],[4,5],[7,7],[10,9],[13,11]].forEach(([x,top])=>P.line(x,top,x,13));P.line(0,10,14,10)},
+ tower(P){P.rect(5,1,4,3);P.rect(3,4,8,4);P.rect(1,8,12,5);P.line(7,4,8,7);P.line(8,7,6,10)},
+ omoikane(P){P.line(7,0,7,14);P.line(0,7,14,7);P.line(4,4,10,10);P.line(10,4,4,10);for(const [x,y] of [[7,0],[7,14],[0,7],[14,7]])P.px(x,y)},
+ honey(P){P.line(7,1,7,3);P.arc(7,9,5,-90,270);P.line(5,8,9,8)},
+ stick(P){P.line(2,1,11,12);P.line(9,13,14,13);P.line(11,12,13,12)},
+ lantern(P){P.line(5,1,9,1);P.rect(4,2,6,9);P.line(5,12,9,12);P.line(7,4,7,8)},
+ misogi(P){P.line(4,0,4,9);P.line(7,0,7,10);P.line(10,0,10,9);P.line(1,12,4,11);P.line(4,11,7,13);P.line(7,13,10,11);P.line(10,11,13,12)},
+ band(P){P.arc(7,13,4,200,340);P.arc(7,13,8,205,335);P.arc(7,13,12,210,330)}
+};
+function spirit(x,name,X,Y,col,sc){sc=sc||1;const P=grid(15);SP[name](P);x.fillStyle=col;P.g.forEach((row,j)=>row.forEach((v,i)=>{if(v)x.fillRect(X+i*sc,Y+j*sc,sc,sc)}))}
+const INK={seal:"#e71429",bless:"#00b8cc",charm:"#d9a514",rite:"#e0407a",plain:"#8c7dad"};
+const DECK={
+ frames:{suit:"wind",kind:"seal",cost:1,sp:"kamaitachi",name:"Sealed Frames"},
+ truename:{suit:"gate",kind:"seal",cost:1,sp:"wisps",name:"True Name"},
+ ironroad:{suit:"hearth",kind:"seal",cost:1,sp:"nurikabe",name:"Iron Road"},
+ eye:{suit:"wind",kind:"bless",cost:0,sp:"omoikane",name:"Spectrum Eye"},
+ band:{suit:"wind",kind:"plain",cost:1,sp:"band",name:"Change Band"},
+ honey:{suit:"hearth",kind:"charm",cost:0,sp:"honey",name:"Honey for the Stove"},
+ stick:{suit:"hearth",kind:"charm",cost:0,sp:"stick",name:"Stick at the Base"},
+ lantern:{suit:"gate",kind:"charm",cost:0,sp:"lantern",name:"Foolish Fire Lantern"},
+ misogi:{suit:"hearth",kind:"rite",cost:1,sp:"misogi",name:"Misogi"},
+ pool:{suit:"hearth",kind:"seal",cost:1,sp:"gaki",name:"Pool Guard"},
+ quiet:{suit:"hand",kind:"seal",cost:1,sp:"poltergeist",name:"Quiet Pockets"},
+ steady:{suit:"gate",kind:"seal",cost:1,sp:"pan",name:"Steady Hand"}
+};
+// a text-free slip: w>=29, h>=50. sc=1 small, 2 big
+function slipS(x,X,Y,c,sc,sel){sc=sc||1;const w=29*sc,h=52*sc;const paper=sel?"#fff6d6":"#efe7b5";x.fillStyle=paper;x.fillRect(X,Y,w,h);
+  x.fillStyle=c.kind==="charm"?"#d9a514":"#7b0818";x.fillRect(X,Y,w,sc);x.fillRect(X,Y+h-sc,w,sc);x.fillRect(X,Y,sc,h);x.fillRect(X+w-sc,Y,sc,h);
+  if(sel){x.strokeStyle="#ffee08";x.lineWidth=1;x.strokeRect(X-1.5,Y-1.5,w+3,h+3)}
+  const ink="#1a0f12";bm(x,c.suit,X+3*sc,Y+3*sc,ink,sc);
+  for(let i=0;i<c.cost;i++){x.fillStyle=INK[c.kind]==="#8c7dad"?ink:INK[c.kind];x.fillRect(X+w-6*sc-i*4*sc,Y+4*sc,3*sc,3*sc)}
+  if(c.cost===0){x.fillStyle=ink;x.fillRect(X+w-6*sc,Y+5*sc,3*sc,sc)}
+  x.fillStyle=ink;x.fillRect(X+3*sc,Y+14*sc,w-6*sc,sc);
+  spirit(x,c.sp,X+7*sc,Y+17*sc,ink,sc);
+  x.fillRect(X+3*sc,Y+35*sc,w-6*sc,sc);
+  bm(x,c.kind,X+10*sc,Y+39*sc,INK[c.kind],sc)}
+
+const C={bg:"#000",panel:"#210052",bones:"#e71429",bdim:"#7b0818",y:"#ffee08",c:"#00dbef",g:"#39ff10",cream:"#efe7b5",dim:"#8c7dad",label:"#cec2e7",w:"#fff",ember:"#ff6d00"};
+const LAT='"Rajdhani", sans-serif';
+function setup(id){const x=document.getElementById(id).getContext("2d");x.setTransform(2,0,0,2,0,0);x.fillStyle=C.bg;x.fillRect(0,0,240,135);x.textBaseline="top";return x}
+function t(x,s,X,Y,col,sz,wt,al){x.font=`${wt||600} ${sz||11}px ${LAT}`;x.fillStyle=col;x.textAlign=al||"left";x.fillText(s,X,Y)}
+function head(x,a,b,rule){x.fillStyle=rule||C.bones;x.fillRect(0,14,240,1);t(x,a,4,1,C.y,13,700);if(b)t(x,b,236,2,C.dim,11,600,"right")}
+function foot(x,s){x.fillStyle=C.bdim;x.fillRect(0,122,240,1);x.fillStyle=C.y;x.beginPath();x.arc(7,129,3,0,7);x.fill();t(x,s,14,123,C.dim,10.5)}
+function meter(x,X,Y,w,v,col,ghost){x.strokeStyle=C.bdim;x.lineWidth=1;x.strokeRect(X+.5,Y+.5,w-1,5);const f=Math.round((w-2)*v);x.fillStyle=col;x.fillRect(X+1,Y+1,f,4);if(ghost){const g=Math.round((w-2)*ghost);x.fillStyle=C.ember;x.fillRect(X+1+f-g,Y+1,g,4)}}
+function anat(){const x=setup("anat");head(x,"OFUDA","Babel 01/12");slipS(x,14,16,DECK.frames,2,false);
+  const arrow=(y,lab,col)=>{x.fillStyle=C.bdim;x.fillRect(80,y+5,14,1);t(x,lab,98,y,col,11)};
+  arrow(24,"Suit: Wind",C.label);arrow(36,"Cost: 1 point",C.label);arrow(58,"Targets: Kamaitachi",C.label);arrow(96,"Kind: Seal",C.label);
+  t(x,"Sealed Frames",236,20,C.cream,12,700,"right");foot(x,"; . flip   ENT equip   ` back")}
+function loadout(){const x=setup("loadout");head(x,"LOADOUT","Office after dark",C.ember);
+  [DECK.frames,DECK.truename,DECK.eye,DECK.band].forEach((c,i)=>{const sel=i===1;slipS(x,30+i*48,sel?20:26,c,1,sel)});
+  x.fillStyle=C.bdim;x.fillRect(4,84,232,1);["kamaitachi","wisps","zaojun"].forEach((k,i)=>{spirit(x,k,8+i*22,88,C.cream,1);x.fillStyle=C.g;x.fillRect(8+i*22+16,100,3,3)});
+  t(x,"True Name",236,88,C.y,13,700,"right");foot(x,"; . pick   SPC equip   ENT start")}
+function round(){const x=setup("round");head(x,"OFFICE AFTER DARK","Round 1/3",C.ember);
+  t(x,"SYMPTOM",5,17,C.c,10);["Every few minutes, all laptops and cameras","drop off Wi-Fi together, then rejoin."].forEach((l,i)=>t(x,l,5,27+i*10,C.cream,11));
+  let Y=52;t(x,"UPTIME",5,Y,C.dim,10);meter(x,44,Y+3,70,1,C.g,.05);t(x,"SURGE −5",118,Y,C.ember,10);t(x,"DATA",172,Y,C.dim,10);meter(x,196,Y+3,38,1,C.c);
+  Y+=12;t(x,"AP",5,Y,C.dim,10);for(let i=0;i<3;i++){x.fillStyle=C.y;x.fillRect(22+i*9,Y+3,6,6)}t(x,"R = RIICHI",234,Y,C.y,10,600,"right");
+  Y+=14;[["AP event log","1 AP",false],["Spectrum view","2 AP",false],["ISP status page","1 AP",false]].forEach((e,i)=>{const yy=Y+i*12;if(i===1){x.fillStyle=C.panel;x.fillRect(3,yy-1,234,12);x.strokeStyle=C.y;x.strokeRect(3.5,yy-.5,233,11)}t(x,e[0],8,yy,i===1?C.w:e[2]?C.g:C.label,11);t(x,e[1],234,yy,C.dim,10,600,"right")});
+  foot(x,"; . move   ENT read   D play a card")}
+function strike(){const x=setup("strike");head(x,"BROKEN","",C.ember);x.save();x.translate(38,64);x.rotate(-.2);slipS(x,-15,-27,DECK.frames,1,false);x.restore();
+  t(x,"PURITY",100,22,C.c,10);t(x,"46",236,20,C.c,14,700,"right");t(x,"RESONANCE",100,40,"#ff4050",10);t(x,"×3.5",236,38,"#ff4050",14,700,"right");
+  t(x,"Riichi  ·  Clear Sky",100,56,C.dim,10);x.fillStyle=C.bdim;x.fillRect(100,72,136,1);t(x,"161",236,78,C.y,22,700,"right");t(x,"new best",100,86,C.g,11);foot(x,"ENT continue")}
+function legend(id,items,kind){const el=document.getElementById(id);for(const [k,name,desc] of items){const d=document.createElement("div");d.className="sym";const n=kind==="sp"?15:9;
+  d.innerHTML=`<canvas width="${n*3}" height="${n*3}"></canvas><div><b>${name}</b><small>${desc}</small></div>`;el.appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,n*3,n*3);
+  if(kind==="sp")spirit(x,k,0,0,"#efe7b5",3);else bm(x,k,0,0,kind==="kind"?INK[k]:"#efe7b5",3)}}
+function all(){anat();loadout();round();strike()}
+legend("kinds",[["seal","Seal","Binds one spirit. How you win."],["bless","Blessing","A kami's help investigating."],["charm","Charm","Bends a rule, once or all drill."],["plain","Temizu","Everyday fixes. Cyber hygiene."]],"kind");
+legend("suits",[["wind","Wind","Radio and Wi-Fi"],["hearth","Hearth","Your network's plumbing"],["gate","Gate","Logins and trust"],["hand","Hand","Things you plug in or carry"]],"suit");
+legend("spirits",[["kamaitachi","Kamaitachi","Japan. Cuts you off the Wi-Fi."],["wisps","Will-o'-wisps","Britain. Fake networks everywhere."],["nurikabe","Nurikabe","Japan. A wall of radio noise."],["zaojun","Zao Jun","China. Harmless. It's the microwave."],["tower","The Tower","Boss. All of Babel at once."]],"sp");
+all();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(all);
+})();
+</script>
+</body>
+</html>
