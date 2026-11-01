@@ -80,6 +80,22 @@ Object.assign(SP,{
  diya(P){P.arc(7,10,5,0,180);P.line(2,10,12,10);P.line(11,10,13,8);P.px(7,3);P.px(7,4);P.line(6,5,8,5);P.line(6,6,8,6);P.px(7,7)},
  sanjeevani(P){P.line(0,14,6,4);P.line(6,4,9,8);P.line(9,8,11,6);P.line(11,6,14,14);P.line(0,14,14,14);P.px(6,2);P.px(5,1);P.px(7,1)}
 });
+Object.assign(SP,{
+ azazel(P){P.line(5,4,2,0);P.line(2,0,0,2);P.line(9,4,12,0);P.line(12,0,14,2);P.line(3,5,11,5);P.line(3,5,5,11);P.line(11,5,9,11);P.line(5,11,9,11);P.px(5,7);P.px(9,7);P.line(6,12,7,14);P.line(8,12,7,14);P.line(1,6,3,6);P.line(11,6,13,6)},
+ ornias(P){P.arc(7,5,5,0,180);P.line(2,5,12,5);P.line(4,6,5,9);P.line(10,6,9,9);P.line(8,9,6,12);P.line(6,12,8,12);P.line(8,12,6,14)},
+ iblis(P){P.line(7,0,4,6);P.line(7,0,10,6);P.line(4,6,2,10);P.line(10,6,12,10);P.arc(7,10,5,0,180);P.line(7,6,6,10);P.line(6,10,8,12)},
+ lilith(P){P.arc(7,8,6,0,360);P.arc(5,7,1.5,0,360);P.arc(9,7,1.5,0,360);P.line(7,9,7,10);P.line(2,1,4,3);P.line(12,1,10,3)},
+ dumah(P){P.arc(7,7,6,0,360);P.line(3,5,5,5);P.line(9,5,11,5);P.line(4,10,10,10);P.line(7,6,7,13)},
+ legion(P){for(let y=1;y<14;y+=3)for(let x=1;x<14;x+=3){P.px(x,y);P.px(x+1,y)}},
+ mammon(P){for(let i=0;i<4;i++){P.line(3,12-i*3,11,12-i*3);P.line(3,13-i*3,11,13-i*3)}P.line(1,14,13,14)},
+ mastema(P){P.arc(7,7,6,0,360);P.line(7,7,7,1);P.line(7,7,11,3);P.line(8,2,10,3);P.line(8,3,9,3)},
+ resheph(P){[[1,13,9,5],[4,13,12,5],[7,13,14,7]].forEach(([a,b,c,d])=>{P.line(a,b,c,d);P.line(c,d,c-3,d);P.line(c,d,c,d+3)})},
+ asmodeus(P){P.arc(4,7,3,90,450);P.arc(10,7,3,-270,90);P.arc(4,7,1,0,360);P.arc(10,7,1,0,360);P.line(4,10,10,10);P.line(7,10,7,14)},
+ leviathan(P){P.arc(4,4,3,180,360);P.arc(7,4,3,0,180);P.arc(10,10,3,180,360);P.arc(7,10,3,0,180);P.line(13,10,14,9);P.px(1,3);P.line(1,4,2,5)},
+ harp(P){P.arc(7,6,6,0,180);P.line(1,6,1,1);P.line(13,6,13,1);P.line(0,1,14,1);P.line(5,1,5,10);P.line(7,1,7,12);P.line(9,1,9,10);P.line(5,13,9,13)},
+ cruse(P){P.arc(7,9,5,0,180);P.line(2,9,12,9);P.line(5,5,9,5);P.line(5,5,4,9);P.line(9,5,10,9);P.px(6,2);P.px(8,1);P.px(7,3)},
+ lintel(P){P.rect(3,2,8,12);P.line(1,2,13,2);P.line(1,1,13,1);P.px(7,0);P.px(2,6);P.px(12,6)}
+});
 function spirit(x,name,X,Y,col,sc){sc=sc||1;const P=grid(15);SP[name](P);x.fillStyle=col;P.g.forEach((row,j)=>row.forEach((v,i)=>{if(v)x.fillRect(X+i*sc,Y+j*sc,sc,sc)}))}
 const INK={seal:"#e71429",bless:"#00b8cc",shiki:"#e0407a",charm:"#d9a514",shio:"#ff6d00",temizu:"#8c7dad"};
 const KINDS={
@@ -179,6 +195,37 @@ CARDS.push(
 {id:"sanjeevani",no:12,set:"LANKA",name:"Sanjeevani",kind:"shio",suit:"hearth",cost:1,sp:"sanjeevani",centre:"Sanjeevani herb",pantheon:"Ramayana",wave:1,
   effect:"The herb Hanuman flew a whole mountain back for: restore all leaked data, once.",real:"A tested restore from backup.",earn:"Deep Aether shrine"}
 );
+/* Faction 4: the Fallen */
+CARDS.push(
+{id:"thescapegoat",no:1,set:"FALLEN",name:"The Scapegoat",kind:"seal",suit:"hand",cost:1,sp:"azazel",centre:"Azazel",pantheon:"1 Enoch",wave:1,
+  effect:"Binds Azazel. Also the second move against Legion.",real:"Only install signed software from real sources, and quarantine or sandbox anything suspicious.",earn:"Shugyo lesson: Where your software comes from"},
+{id:"solomonsring",no:2,set:"FALLEN",name:"Solomon's Ring",kind:"seal",suit:"hearth",cost:1,sp:"ornias",centre:"Ornias",pantheon:"Testament of Solomon",wave:1,
+  effect:"Binds Ornias. Also the first move against Legion.",real:"Watch for processes using power they shouldn't, block miners, remove what you can't account for.",earn:"Shugyo lesson: Spotting what's using your machine"},
+{id:"knowyourplac",no:3,set:"FALLEN",name:"Know Your Place",kind:"seal",suit:"gate",cost:1,sp:"iblis",centre:"Iblis",pantheon:"Quran",wave:1,
+  effect:"Binds Iblis.",real:"Least privilege: everyday accounts aren't admins and apps get only the rights they need.",earn:"Shugyo lesson: Least privilege"},
+{id:"threenames",no:4,set:"FALLEN",name:"Three Names",kind:"seal",suit:"hand",cost:1,sp:"lilith",centre:"Lilith",pantheon:"Alphabet of Ben Sira",wave:1,
+  effect:"Binds Lilith.",real:"Change default passwords first, update before first use, buy from sellers you trust.",earn:"Shugyo lesson: Setting up a new device safely"},
+{id:"cleanslate",no:5,set:"FALLEN",name:"Clean Slate",kind:"seal",suit:"hearth",cost:1,sp:"legion",centre:"Legion",pantheon:"Gospel of Mark",wave:1,
+  effect:"Binds Legion, the last move. Wipe and rebuild from a known-good image.",real:"Wipe and rebuild from a known-good image, then restore data from clean backups.",earn:"Shugyo lesson: Rebuilding a compromised device"},
+{id:"theark",no:6,set:"FALLEN",name:"The Ark",kind:"seal",suit:"hearth",cost:1,sp:"mammon",centre:"Mammon",pantheon:"Gospel of Matthew",wave:2,
+  effect:"Binds Mammon.",real:"Offline, tested backups a flood can't reach. Patch, and never pay.",earn:"Shugyo lesson: Backups that survive ransomware"},
+{id:"jubilee",no:7,set:"FALLEN",name:"Jubilee",kind:"seal",suit:"gate",cost:1,sp:"mastema",centre:"Mastema",pantheon:"Jubilees",wave:2,
+  effect:"Binds Mastema. Ends 'a tenth remain' for the drill.",real:"Rebuild from clean, rotate every password and key, remove accounts you didn't create.",earn:"Shugyo lesson: Cleaning up after a breach"},
+{id:"hedge",no:8,set:"FALLEN",name:"Hedge",kind:"seal",suit:"hearth",cost:1,sp:"resheph",centre:"Resheph",pantheon:"Ugaritic",wave:2,
+  effect:"Binds Resheph.",real:"Patch quickly, segment the network, and close services nobody needs.",earn:"Shugyo lesson: Patching and segmentation"},
+{id:"tobiasssmoke",no:9,set:"FALLEN",name:"Tobias's Smoke",kind:"seal",suit:"gate",cost:1,sp:"asmodeus",centre:"Asmodeus",pantheon:"Tobit",wave:2,
+  effect:"Binds Asmodeus.",real:"Strong sign-in protection, saved recovery codes, alerts when recovery details change.",earn:"Shugyo lesson: Account recovery"},
+{id:"thehook",no:10,set:"FALLEN",name:"The Hook",kind:"seal",suit:"hand",cost:1,sp:"leviathan",centre:"Leviathan",pantheon:"Job",wave:2,
+  effect:"Binds Leviathan.",real:"Secure boot, verified firmware, and reflashing when you can't trust the layers above.",earn:"Shugyo lesson: Secure boot and firmware"},
+{id:"checkthequar",no:11,set:"FALLEN",name:"Check the Quarantine",kind:"temizu",suit:"hand",cost:1,sp:"dumah",centre:"Dumah",pantheon:"Talmud",wave:1,
+  effect:"Clears Dumah's false alarm, and sweeps up a remnant.",real:"Look in your antivirus quarantine before assuming files were destroyed.",earn:"Shugyo lesson: What your antivirus does"},
+{id:"davidsharp",no:12,set:"FALLEN",name:"David's Harp",kind:"charm",suit:"hearth",cost:0,sp:"harp",centre:"David's harp",pantheon:"1 Samuel",wave:1,
+  effect:"Worn. When David played, the evil spirit left Saul (1 Samuel 16:23). Each round, one possessed card is freed.",real:"Steady cleanup, one device at a time.",earn:"Deep Aether shrine"},
+{id:"saltofelisha",no:13,set:"FALLEN",name:"Salt of Elisha",kind:"shio",suit:"hearth",cost:1,sp:"cruse",centre:"Elisha's bowl",pantheon:"2 Kings",wave:1,
+  effect:"Elisha threw salt from a new bowl into the bad spring and healed it (2 Kings 2). Free every possessed card, once.",real:"A full clean sweep of everything at once.",earn:"Deep Aether shrine"},
+{id:"bloodontheli",no:14,set:"FALLEN",name:"Blood on the Lintel",kind:"shio",suit:"gate",cost:1,sp:"lintel",centre:"The lintel",pantheon:"Exodus",wave:1,
+  effect:"Mark the doorposts and the destroyer passes over (Exodus 12). No spirit acts this round.",real:"Isolating the network while the danger passes.",earn:"Break Legion"}
+);
 /* Shikigami: Deep Aether partners. Pick one per dive. */
 CARDS.push(
  {id:"hitogata",no:1,set:"SHIKI",name:"Hitogata",kind:"shiki",suit:"hearth",cost:0,sp:"hitogata",centre:"Paper doll",pantheon:"Japanese",wave:1,
@@ -205,7 +252,7 @@ function back(x,X,Y,sc){sc=sc||1;const w=29*sc,h=52*sc;x.fillStyle="#210052";x.f
   spirit(x,"torii",X+7*sc,Y+18*sc,"#ffee08",sc)}
 /* draw a pixel thing into a fresh canvas inside el, at scale sc */
 function canvasIn(el,w,h,sc,bg){const cv=document.createElement("canvas");cv.width=w*sc;cv.height=h*sc;el.appendChild(cv);const x=cv.getContext("2d");if(bg){x.fillStyle=bg;x.fillRect(0,0,cv.width,cv.height)}return x}
-const SETS={BABEL:"Babel",GENTRY:"Good Neighbours",LANKA:"Night-Roamers",SHIKI:"Shikigami"};
+const SETS={BABEL:"Babel",GENTRY:"Good Neighbours",LANKA:"Night-Roamers",FALLEN:"The Fallen",SHIKI:"Shikigami"};
 window.Ofuda={SETS,BM,SP,INK,KINDS,SUITS,CARDS,bm,spirit,slipS,back,canvasIn,
   card:id=>CARDS.find(c=>c.id===id)};
 })();

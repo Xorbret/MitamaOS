@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harae: The Fallen</title>
+<meta name="description" content="The Fallen, the fourth faction of Harae: demons and fallen angels from the Torah, Enoch, Tobit, the Testament of Solomon, the Gospels, the Quran and the Gnostic texts, who want to own your devices.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="harae.css">
+<style>
+.tongues{color:#c9b8ff;font-size:19px;letter-spacing:.12em;font-style:italic}
+.spirit{display:grid;grid-template-columns:72px 1fr;gap:16px;background:var(--panel);border:1px solid var(--red-dim);border-radius:4px;padding:16px}
+.spirit canvas{width:72px;height:72px}
+.spirit .body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.spirit .real{border-left:3px solid var(--cyan);padding-left:10px;color:var(--text)}
+.spirit .seal{border-left:3px solid var(--red);padding-left:10px;color:var(--text)}
+.spirit.boss{border-color:var(--yellow)}
+.spirit.harmless{border-color:#4a3d63}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.rules .box h3{color:var(--yellow)}
+.fair{color:var(--green);font-size:15px}
+.draft{border:1px dashed var(--dim);color:var(--dim);padding:8px 12px;border-radius:4px;font-size:15px}
+.cardrow{display:grid;grid-template-columns:60px 1fr;gap:14px;align-items:center;border-bottom:1px solid var(--red-dim);padding:10px 0}
+.cardrow canvas{width:58px;height:104px}
+.cardrow .k{font:12px 'Share Tech Mono',monospace;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+.strip{display:flex;flex-wrap:wrap;gap:10px}.strip a{display:block;line-height:0}.strip canvas{width:58px;height:104px}
+.holds{display:flex;gap:8px;flex-wrap:wrap;counter-reset:h}
+.holds span{border:1px solid var(--yellow);color:var(--text);padding:4px 10px;border-radius:3px;font-size:15px}
+@media (max-width:520px){.spirit{grid-template-columns:1fr}.spirit canvas{width:60px;height:60px}}
+.realm{border:1px solid var(--yellow);border-radius:4px;padding:16px;display:flex;flex-direction:column;gap:10px;background:rgba(252,238,10,.03)}
+.src{color:var(--dim);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a class="home" href="../index.html"><b>Mitama</b>OS</a><span class="links"><a href="index.html">Harae</a><a href="babel.html">Babel</a><a href="neighbours.html">Neighbours</a><a href="roamers.html">Roamers</a><a href="fallen.html" aria-current="page">Fallen</a><a href="cards.html">Cards</a><a href="../harae.html">How to play</a></span></nav>
+<div class="wrap">
+<header class="hero">
+  <span class="kicker">Harae · faction 4 · Abrahamic scripture and lore</span>
+  <h1>THE FALLEN</h1>
+  <span class="tongues">Shedim · the Watchers · Jinn and Shayatin · Legion</span>
+  <p>Angels who came down and taught forbidden arts. Spirits Solomon bound with a ring and set to building the Temple. A tenth of the demons left on earth by agreement, to lead humans astray. A spirit in a man among the tombs who answered, "My name is Legion, for we are many." The other factions wanted a reaction, your logins or your secrets. The Fallen want <b>you</b>: your devices, working for them, for as long as they can hold on.</p>
+</header>
+
+<section>
+  <h2>Who they are</h2>
+  <div class="grid">
+    <div class="box"><h3>What they attack</h3><p class="txt"><b>Control.</b> Everything still works, but not for you any more. Your laptop mines for someone else, your account answers to a new password, your camera joins a swarm.</p></div>
+    <div class="box"><h3>Why</h3><p class="txt">Possession. In every one of these texts, the demons want a body to live in or a soul to bind by contract. A device is a body, and a ransom note is a contract.</p></div>
+    <div class="box"><h3>How they act</h3><p class="txt">They organise. The Goetia ranks seventy-two spirits as kings, dukes and presidents, each with legions under them. They move in, dig in, and leave something behind when you throw them out.</p></div>
+    <div class="box"><h3>Where they fit</h3><p class="txt">The last district. Everything the earlier factions stole (handshakes, passwords, secrets) is how the Fallen get inside. Beat them and the way up opens.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Their rules</h2>
+  <div class="rules">
+    <div class="box"><h3>Possession</h3><p class="txt">Every round a spirit stays unsealed, it <b>possesses one support card</b> in your hand. A possessed card shows the spirit's sigil and can't be played. Seal the spirit and every card it held is freed.</p><p class="fair">Fair by rule: Seals can never be possessed.</p></div>
+    <div class="box"><h3>Name and angel</h3><p class="txt">In the Testament of Solomon, every demon Solomon questions must tell him its name and the angel who thwarts it. Spend <b>2 points to interrogate</b> a spirit and it confesses exactly which Seal binds it. Expensive, and certain.</p><p class="src">Testament of Solomon</p></div>
+    <div class="box"><h3>A tenth remain</h3><p class="txt">In Jubilees, Mastema begs God to leave him a tenth of the spirits, and God agrees. Here, <b>a sealed spirit leaves a remnant</b> that comes back one round later, weaker, unless you clean up with the right Temizu. Persistence is the whole faction.</p><p class="src">Book of Jubilees 10</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>The first wave</h2>
+  <div id="wave1" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<section>
+  <h2>Later waves</h2>
+  <div id="wave2" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<section>
+  <h2>In the Deep Aether: the ascent</h2>
+  <div class="realm">
+    <p class="txt">Every other realm goes down. This one goes <b>up</b>. In the Gnostic texts the world is ruled by <b>Archons</b>, and a soul leaving it has to climb past their gates one heaven at a time, giving each gatekeeper the right answer or being turned back.</p>
+    <p class="txt">So each floor of the ascent is a gate with an Archon on it, and the Archon asks a question from a lesson you passed in Shugyo. Answer and you climb. Miss it and you fight that floor with one less card. Leviathan coils around the lower heavens as an elite. This is the point of no return: from here, the run only ends at the top.</p>
+    <p class="txt">At the top sits <b>Yaldabaoth</b>, the lion-faced serpent of the Apocryphon of John: the flawed creator who made the world, rules it through the Archons, and declares, "I am God and there is no other God beside me." In Harae he's the last boss of the whole game: <b>compromised firmware</b>, the layer underneath everything, which tells every other layer that it's fine.</p>
+    <p class="src">Apocryphon of John, Hypostasis of the Archons, First Apocalypse of James</p>
+  </div>
+</section>
+
+<section>
+  <h2>Their cards</h2>
+  <p class="txt">The FALLEN set. Seals carry the spirit they bind, and the support cards come from the same texts. Tap one for details.</p>
+  <div class="strip" id="strip"></div>
+  <p><a class="btn" href="cards.html?set=FALLEN">Open the Fallen set</a></p>
+</section>
+
+<footer>Sources: the Torah and Hebrew Bible, 1 Enoch, Jubilees, Tobit, the Testament of Solomon, the Alphabet of Ben Sira, the Gospel of Mark, the Talmud, the Quran, the Gnostic Nag Hammadi texts, and the Lesser Key of Solomon. Ugaritic texts for Resheph. Every attack is simulated on screen and played only from the defender's side. Nothing is transmitted.</footer>
+</div>
+<script src="ofuda.js"></script>
+<script>
+(function(){const O=window.Ofuda;
+
+const S=[
+ {w:1,sp:"azazel",name:"Azazel",from:"Leviticus 16 · 1 Enoch 8",tag:"The Teacher · the gift with a hook",
+  lore:"In Leviticus, one goat on the Day of Atonement is sent off into the wilderness \"for Azazel\", carrying the people's sins. In 1 Enoch, Azazel is a Watcher, a fallen angel who taught humans to forge weapons and make cosmetics and charms: knowledge they weren't meant to have, and it corrupted them.",
+  them:"He doesn't break in. He gives you something useful and lets you carry him in yourself.",
+  real:"Trojans in cracked software. A free copy of a paid app, a game crack or a \"helpful\" tool that works perfectly and installs something else alongside it.",
+  seal:["The Scapegoat","Only install signed software from real sources, and send anything suspicious off to a quarantine or sandbox instead of your own system."],src:"",q:"He'll teach you anything. Read the licence."},
+ {w:1,sp:"ornias",name:"Ornias",from:"Testament of Solomon",tag:"The Drain · the first demon bound",
+  lore:"The demon that tormented a boy working on Solomon's Temple: every evening it sucked the boy's thumb, draining his strength, and took half his wages. Solomon prayed, and the archangel Michael brought him a ring engraved with a seal. Ornias was the first demon it bound.",
+  them:"He doesn't want your files. He wants your power, quietly, every night.",
+  real:"Cryptojacking. A hidden miner using your computer, phone or router to make money for someone else. Things run hot and slow and the power bill goes up.",
+  seal:["Solomon's Ring","Watch for processes and sites using power they shouldn't, block known miners, and remove anything you can't account for."],q:"Half your wages and your strength. Every single night."},
+ {w:1,sp:"iblis",name:"Iblis",from:"Quran 7 and 38",tag:"The Proud · the one who wouldn't bow",
+  lore:"Commanded to bow to Adam with the angels, Iblis refused: \"I am better than him. You created me from fire and him from clay.\" He was cast out, and asked for a reprieve until the Day of Judgement to lead humans astray. It was granted.",
+  them:"He's sure he deserves to be higher than you. He'll climb until he is.",
+  real:"Privilege escalation. A foothold as an ordinary user, then a climb to administrator through a weak setting, an old flaw or an over-powered account.",
+  seal:["Know Your Place","Least privilege: everyday accounts aren't admins, apps get only the rights they need, and admin use is rare and logged."],q:"Fire thinks it's better than clay. Clay has the admin password."},
+ {w:1,sp:"lilith",name:"Lilith",from:"Isaiah 34:14 · Alphabet of Ben Sira",tag:"The Night Hag · she comes for the new",
+  lore:"Named once in Isaiah, among the creatures of the ruins. In the Alphabet of Ben Sira she's Adam's first wife, who refused to be ruled and flew away, and who preys on newborns. Families hung an amulet over the cradle with the names of three angels, Senoy, Sansenoy and Semangelof, and she had sworn not to harm any child where she saw them.",
+  them:"She goes after things that are brand new and haven't been protected yet.",
+  real:"New devices that are already compromised: default passwords, old firmware, or malware pre-installed on cheap no-name gadgets before they're ever set up.",
+  seal:["Three Names","Change default passwords before anything else, update before first use, and buy from sellers you trust."],q:"Senoy, Sansenoy, Semangelof. Also: change the default password."},
+ {w:1,sp:"dumah",name:"Dumah",from:"Talmud · Psalm 115:17",tag:"Harmless spirit · the angel of silence",cls:"harmless",
+  lore:"His name means silence. In the Talmud, Dumah is the angel in charge of the souls of the dead, keeping them in the place of stillness that Psalm 115 calls \"the silence\". He's often taken for death itself. He isn't. He's their keeper, and he never says a word.",
+  them:"Not one of the Fallen. He takes things away quietly to keep them safe.",
+  real:"Files suddenly vanish and everyone assumes a wiper. Your own antivirus moved them into quarantine without a sound.",
+  seal:["Check the Quarantine","Look there before you panic, and restore anything that was flagged by mistake."],q:"Gone isn't the same as dead. Check the quarantine."},
+ {w:1,sp:"legion",name:"Legion",from:"Mark 5 · Luke 8",tag:"Boss · we are many",cls:"boss",
+  lore:"A man among the tombs of the Gerasenes, so strong no chain could hold him. Asked his name, the spirit answered, \"My name is Legion, for we are many.\" Cast out, the spirits begged to go into a herd of about two thousand pigs, and the herd rushed down the bank into the sea.",
+  them:"Not one spirit. Thousands, one in every device, answering to one voice.",
+  real:"A botnet. Cameras, routers and old phones quietly enrolled, waiting for orders, used to attack others or to spread further.",
+  holds:["Name it: Solomon's Ring","Into the swine: The Scapegoat","Off the cliff: Clean Slate"],q:"Ask its name. It's not shy about it."},
+ {w:2,sp:"mammon",name:"Mammon",from:"Matthew 6:24 · medieval demonology",tag:"Hex · the price",
+  lore:"\"No one can serve two masters... You cannot serve God and mammon.\" Mammon is Aramaic for wealth. Medieval writers made him a prince of hell, and Peter Binsfeld's 1589 list names him the demon of greed.",
+  them:"He takes everything you own and sells it back to you.",
+  real:"Ransomware. Every file encrypted, and a note with a price.",
+  seal:["The Ark","Backups kept offline and tested, so a flood can't reach them. Patch, and never pay."],q:"He takes payment in two currencies: money, and hope."},
+ {w:2,sp:"mastema",name:"Mastema",from:"Book of Jubilees 10",tag:"Elite · the tenth that remains",cls:"boss",
+  lore:"After the Flood, the spirits were leading Noah's grandchildren astray, and God ordered them bound. Mastema, their chief, pleaded to keep some, \"for if some of them are not left to me, I shall not be able to execute the power of my will.\" God let a tenth remain.",
+  them:"You threw them out. He made sure some stayed.",
+  real:"Persistence. Backdoor accounts, scheduled tasks and leftover keys that bring an attacker back after you thought it was cleaned up.",
+  seal:["Jubilee","The year everything resets: rebuild from clean, rotate every password and key, and remove accounts you didn't create."],q:"He only needs a tenth. He's very good with a tenth."},
+ {w:2,sp:"resheph",name:"Resheph",from:"Ugaritic texts · Habakkuk 3:5",tag:"Hex · the plague archer",
+  lore:"A Canaanite god of plague and war, older than the Torah, shown in Ugaritic texts as an archer whose arrows bring disease. In Habakkuk 3:5 he walks at God's feet: \"Before him went pestilence, and plague followed at his feet.\"",
+  them:"He doesn't pick a target. He shoots, and it spreads.",
+  real:"A worm. Malware that jumps from device to device on its own through an unpatched flaw, with nobody clicking anything.",
+  seal:["Hedge","Patch quickly, split the network into segments, and close services nobody needs."],q:"Plague doesn't knock. Patch."},
+ {w:2,sp:"asmodeus",name:"Asmodeus",from:"Book of Tobit",tag:"Elite · the jealous one",cls:"boss",
+  lore:"The demon who loved Sarah and killed each of her seven husbands on their wedding night. Tobias, guided by the angel Raphael, burned a fish's heart and liver on the coals. The smoke drove Asmodeus away to Upper Egypt, where Raphael bound him.",
+  them:"He wants what's yours, and he'll throw you out of it.",
+  real:"Account takeover. The attacker changes the password, the recovery email and the phone number, and the real owner is locked out of their own account.",
+  seal:["Tobias's Smoke","Strong sign-in protection, saved recovery codes, and alerts whenever recovery details change."],q:"Seven husbands. Get a recovery code."},
+ {w:2,sp:"leviathan",name:"Leviathan",from:"Job 41 · Isaiah 27:1",tag:"Elite · the coiled serpent",cls:"boss",
+  lore:"\"Leviathan the piercing serpent, even Leviathan that crooked serpent,\" in Isaiah. In Job, God asks: \"Canst thou draw out leviathan with an hook?\" Nobody can. It coils in the deep, and nothing on earth is its equal.",
+  them:"It coils down below everything and hides there.",
+  real:"A rootkit. Malware that buries itself under the operating system and hides its own tracks from it.",
+  seal:["The Hook","Secure boot, verified firmware, and wiping and reflashing when you can't trust the layers above."],q:"Can you draw it out with a hook? With secure boot, yes."}
+];
+for(const s of S){const d=document.createElement("article");d.className="spirit"+(s.cls?" "+s.cls:"");
+  const seal=s.seal?`<p class="seal"><b>${s.cls==="harmless"?"Fix":"Seal"}: ${s.seal[0]}.</b> ${s.seal[1]}</p>`:"";
+  const holds=s.holds?`<p class="txt"><b>Three moves, in order:</b></p><div class="holds">${s.holds.map((h,i)=>`<span>${i+1}. ${h}</span>`).join("")}</div><p class="txt">Casting out Legion clears the last district and opens the ascent.</p>`:"";
+  d.innerHTML=`<canvas class="px" width="60" height="60"></canvas><div class="body"><div><span class="tag">${s.tag}</span><h3>${s.name} <span style="color:var(--dim);font-weight:600;font-size:16px">${s.from}</span></h3></div>
+   <p class="txt">${s.lore}</p><p class="txt">${s.them}</p><p class="real"><b>Real attack:</b> ${s.real}</p>${seal}${holds}<p class="quote">"${s.q}"</p></div>`;
+  document.getElementById(s.w===1?"wave1":"wave2").appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,60,60);O.spirit(x,s.sp,0,0,s.cls==="harmless"?"#8c7dad":"#d8ccff",4)}
+const st=document.getElementById("strip");
+for(const c of O.CARDS.filter(c=>c.set==="FALLEN")){const a=document.createElement("a");a.href="cards.html#"+c.id;a.title=c.name;const cv=document.createElement("canvas");cv.className="px";cv.width=58;cv.height=104;cv.style.background="transparent";a.appendChild(cv);st.appendChild(a);O.slipS(cv.getContext("2d"),0,0,c,2,false)}
+})();
+</script>
+</body>
+</html>
