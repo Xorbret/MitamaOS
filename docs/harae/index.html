@@ -29,7 +29,7 @@
 </style>
 </head>
 <body>
-<nav><a class="home" href="../index.html"><b>Mitama</b>OS</a><span class="links"><a href="index.html" aria-current="page">Harae</a><a href="babel.html">Babel</a><a href="cards.html">Cards</a><a href="../harae.html">How to play</a></span></nav>
+<nav><a class="home" href="../index.html"><b>Mitama</b>OS</a><span class="links"><a href="index.html" aria-current="page">Harae</a><a href="babel.html">Babel</a><a href="neighbours.html">Neighbours</a><a href="cards.html">Cards</a><a href="../harae.html">How to play</a></span></nav>
 <div class="wrap">
 
 <header class="hero">
@@ -149,7 +149,7 @@ leg("kinds",O.KINDS,true);leg("suits",O.SUITS,false);
 const sh=document.getElementById("shiki");for(const c of O.CARDS.filter(c=>c.set==="SHIKI")){const a=document.createElement("a");a.className="sym";a.href="cards.html#"+c.id;a.style.color="inherit";
   a.innerHTML=`<canvas width="45" height="45"></canvas><div><b>${c.name}</b><small>${c.style}. ${c.effect}</small></div>`;sh.appendChild(a);const x=a.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,45,45);O.spirit(x,c.sp,0,0,"#efe7b5",3)}
 const F=[["babel.html","tower","Babel","Faction 1 · Many pantheons","A rabble of lesser spirits causing outages for fun.",false],
- [null,"sealed","Sealed","Faction 2","A single pantheon, and it wants something.",true],
+ ["neighbours.html","nicnevin","The Good Neighbours","Faction 2 · Celtic","The fae. They copy your network and take what you own.",false],
  [null,"sealed","Sealed","Faction 3","Opens when Faction 2 falls.",true],
  [null,"sealed","Sealed","Faction 4","Opens when Faction 3 falls.",true]];
 const fac=document.getElementById("fac");

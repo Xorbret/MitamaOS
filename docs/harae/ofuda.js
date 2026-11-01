@@ -42,6 +42,29 @@ const SP={
  kitsune(P){P.line(2,1,4,6);P.line(2,1,6,4);P.line(12,1,10,6);P.line(12,1,8,4);P.line(6,4,8,4);P.line(4,6,7,13);P.line(10,6,7,13);P.px(5,8);P.px(9,8)},
  sealed(P){P.rect(2,2,10,10);P.line(5,7,9,7);P.px(7,5);P.px(7,9)}
 };
+Object.assign(SP,{
+ changeling(P){P.arc(4,6,3,0,360);P.arc(10,6,3,0,360);P.line(7,0,7,14);P.arc(7,13,6,200,340);P.px(4,6);P.px(10,6)},
+ pixies(P){for(let i=0;i<8;i++){const a=i*Math.PI/4;P.px(7+6*Math.cos(a),7+6*Math.sin(a));P.px(7+6*Math.cos(a)+1,7+6*Math.sin(a))}P.line(7,5,7,9);P.line(5,7,9,7)},
+ puca(P){P.line(4,0,5,7);P.line(6,0,6,7);P.line(10,0,9,7);P.line(8,0,8,7);P.arc(7,10,4,0,360);P.px(5,9);P.px(9,9)},
+ leanan(P){P.arc(4,5,3,180,360);P.arc(10,5,3,180,360);P.line(1,5,7,13);P.line(13,5,7,13);P.line(7,13,7,14)},
+ brownie(P){P.line(7,0,2,12);P.line(7,0,12,12);P.line(2,12,12,12);P.px(5,8);P.px(9,8);P.line(1,14,13,14)},
+ nicnevin(P){P.line(1,4,1,10);P.line(13,4,13,10);P.line(1,4,4,8);P.line(4,8,7,2);P.line(7,2,10,8);P.line(10,8,13,4);P.line(1,10,13,10);P.arc(7,13,3,180,360)},
+ kelpie(P){P.arc(7,4,3,0,360);P.line(0,10,3,8);P.line(3,8,6,10);P.line(6,10,9,8);P.line(9,8,12,10);P.line(12,10,14,8);P.line(0,13,3,11);P.line(3,11,6,13);P.line(6,13,9,11);P.line(9,11,12,13);P.line(12,13,14,11)},
+ fetch(P){P.arc(7,6,5,0,360);P.line(7,11,7,14);P.line(4,14,10,14);P.line(7,2,7,10)},
+ feardearg(P){P.line(2,6,12,6);P.line(3,6,7,0);P.line(11,6,7,0);P.arc(7,10,3,0,360);P.px(6,10);P.px(8,10)},
+ cradle(P){P.arc(7,6,6,20,160);P.line(1,8,13,8);P.line(7,0,7,6);P.line(5,0,9,0)},
+ coat(P){P.line(4,1,10,1);P.line(4,1,1,5);P.line(10,1,13,5);P.line(3,4,3,14);P.line(11,4,11,14);P.line(3,14,11,14);P.line(7,1,7,14)},
+ road(P){P.line(5,0,1,14);P.line(9,0,13,14);P.line(7,1,7,3);P.line(7,6,7,8);P.line(7,11,7,13)},
+ nothanks(P){P.arc(7,7,6,0,360);P.line(3,3,11,11)},
+ bridle(P){P.arc(7,7,5,0,360);P.arc(7,7,3,0,360);P.line(7,0,7,2);P.line(7,12,7,14)},
+ mark(P){P.rect(1,3,12,9);P.line(1,3,7,8);P.line(13,3,7,8);P.px(7,1)},
+ door(P){P.rect(3,1,8,13);P.px(9,8);P.line(1,14,13,14)},
+ inventory(P){P.rect(1,1,12,12);P.line(3,4,11,4);P.line(3,7,11,7);P.line(3,10,8,10)},
+ clover(P){P.arc(5,5,2,0,360);P.arc(9,5,2,0,360);P.arc(5,9,2,0,360);P.arc(9,9,2,0,360);P.line(7,9,9,14)},
+ rowan(P){P.line(7,0,7,14);[[2,4],[2,8],[12,4],[12,8]].forEach(([x,y])=>P.line(7,y+2,x,y));P.px(6,2);P.px(8,2);P.px(7,1)},
+ cream(P){P.line(0,8,14,8);P.arc(7,8,6,0,180);P.line(5,14,9,14);P.px(7,1);P.line(6,2,8,2);P.line(6,3,8,3);P.px(7,4)},
+ saltline(P){P.line(0,12,14,12);for(let i=1;i<14;i+=3){P.px(i,10);P.px(i+1,11)}P.rect(4,1,6,7)}
+});
 function spirit(x,name,X,Y,col,sc){sc=sc||1;const P=grid(15);SP[name](P);x.fillStyle=col;P.g.forEach((row,j)=>row.forEach((v,i)=>{if(v)x.fillRect(X+i*sc,Y+j*sc,sc,sc)}))}
 const INK={seal:"#e71429",bless:"#00b8cc",shiki:"#e0407a",charm:"#d9a514",shio:"#ff6d00",temizu:"#8c7dad"};
 const KINDS={
@@ -87,6 +110,33 @@ const CARDS=[
  {id:"steady",no:13,set:"BABEL",name:"Steady Hand",kind:"seal",suit:"gate",cost:1,sp:"pan",centre:"Pan",pantheon:"Greek",wave:2,
   effect:"Binds Pan and the panic he spreads with fake \"you've been hacked\" calls.",real:"Check through a channel you already trust. Never call a number from a popup.",earn:"Shugyo lesson: Scareware and fake calls"}
 ];
+/* Faction 2: the Good Neighbours */
+CARDS.push(
+{id:"ironcradle",no:1,set:"GENTRY",name:"Iron in the Cradle",kind:"seal",suit:"wind",cost:1,sp:"cradle",centre:"Changeling",pantheon:"Irish and Scottish",wave:1,
+  effect:"Binds the Changeling. Iron: strips one glamour when you play it.",real:"802.1X with server certificate checks, or WPA3, so a copy can't prove it's the real network.",earn:"Shugyo lesson: Enterprise Wi-Fi and certificates"},
+{id:"turnedcoat",no:2,set:"GENTRY",name:"Turned Coat",kind:"seal",suit:"gate",cost:1,sp:"coat",centre:"Pixies",pantheon:"Cornish",wave:1,
+  effect:"Binds the Pixies and their fake sign-in pages.",real:"Never type work passwords into a Wi-Fi portal. A password manager that only fills on the real address, and a VPN on public networks.",earn:"Shugyo lesson: Captive portals and fake sign-ins"},
+{id:"signedroad",no:3,set:"GENTRY",name:"Signed Road",kind:"seal",suit:"hearth",cost:1,sp:"road",centre:"Púca",pantheon:"Irish",wave:1,
+  effect:"Binds the Púca and its false directions.",real:"DHCP snooping plus a trusted, encrypted DNS resolver, and HTTPS everywhere.",earn:"Shugyo lesson: DNS you can trust"},
+{id:"nothanks",no:4,set:"GENTRY",name:"No Thanks",kind:"seal",suit:"gate",cost:1,sp:"nothanks",centre:"Leanan Sídhe",pantheon:"Irish",wave:1,
+  effect:"Binds the Leanan Sídhe and her endless polite requests.",real:"Number-matching sign-in prompts, never approve one you didn't start, and review which apps can reach your account.",earn:"Shugyo lesson: Sign-in prompts and app consent"},
+{id:"bridle",no:5,set:"GENTRY",name:"Silver Bridle",kind:"seal",suit:"hand",cost:1,sp:"bridle",centre:"Kelpie",pantheon:"Scottish",wave:2,
+  effect:"Binds the Kelpie, which rides your signed-in session.",real:"HTTPS everywhere, secure cookies, short sessions, and signing out on shared networks.",earn:"Shugyo lesson: Sessions and cookies"},
+{id:"marktrue",no:6,set:"GENTRY",name:"Mark of the True",kind:"seal",suit:"gate",cost:1,sp:"mark",centre:"Fetch",pantheon:"Irish",wave:2,
+  effect:"Binds the Fetch, the double who writes as your boss.",real:"Check the real sender, SPF and DMARC on your own domain, and confirm money requests another way.",earn:"Shugyo lesson: Spotting lookalike senders"},
+{id:"closeddoor",no:7,set:"GENTRY",name:"Closed Door",kind:"seal",suit:"hand",cost:1,sp:"door",centre:"Fear Dearg",pantheon:"Irish",wave:2,
+  effect:"Binds Fear Dearg, the polite caller who wants your keyboard.",real:"Never give remote access to a call you didn't start. Ring IT back on a number you already know.",earn:"Shugyo lesson: Remote-access scams"},
+{id:"knowhouse",no:8,set:"GENTRY",name:"Know Your House",kind:"temizu",suit:"hearth",cost:1,sp:"inventory",centre:"",pantheon:"",wave:1,
+  effect:"Clears the Brownie's false alarm.",real:"Keep a list of your own devices, so a stranger stands out and a friend doesn't.",earn:"Shugyo lesson: Keeping a device list"},
+{id:"clover",no:9,set:"GENTRY",name:"Four-leaf Clover",kind:"charm",suit:"wind",cost:0,sp:"clover",centre:"Four-leaf clover",pantheon:"Irish",wave:1,
+  effect:"Worn. It lets you see through glamour: the first glamoured clue each drill is marked.",real:"Knowing which clue deserves a second look.",earn:"Deep Aether shrine"},
+{id:"rowan",no:10,set:"GENTRY",name:"Rowan Sprig",kind:"charm",suit:"gate",cost:0,sp:"rowan",centre:"Rowan",pantheon:"Scottish",wave:1,
+  effect:"Worn. Rowan wards off the fae: every Bargain's price is halved.",real:"Healthy suspicion of free gifts.",earn:"Break Nicnevin"},
+{id:"saltline",no:11,set:"GENTRY",name:"Salt on the Threshold",kind:"shio",suit:"hearth",cost:1,sp:"saltline",centre:"Salt",pantheon:"Celtic",wave:1,
+  effect:"A line of salt the fae can't cross: no glamour for the rest of this round.",real:"Locking things down while you work out what's real.",earn:"Deep Aether shrine"},
+{id:"cream",no:12,set:"GENTRY",name:"Cream for the Brownie",kind:"charm",suit:"hearth",cost:0,sp:"cream",centre:"Cream",pantheon:"Scottish",wave:1,
+  effect:"Worn. After a harmless round, start the next with 1 extra point.",real:"Not panicking over a friendly device.",earn:"Clear the Brownie without wasting a Seal"}
+);
 /* Shikigami: Deep Aether partners. Pick one per dive. */
 CARDS.push(
  {id:"hitogata",no:1,set:"SHIKI",name:"Hitogata",kind:"shiki",suit:"hearth",cost:0,sp:"hitogata",centre:"Paper doll",pantheon:"Japanese",wave:1,
@@ -113,7 +163,7 @@ function back(x,X,Y,sc){sc=sc||1;const w=29*sc,h=52*sc;x.fillStyle="#210052";x.f
   spirit(x,"torii",X+7*sc,Y+18*sc,"#ffee08",sc)}
 /* draw a pixel thing into a fresh canvas inside el, at scale sc */
 function canvasIn(el,w,h,sc,bg){const cv=document.createElement("canvas");cv.width=w*sc;cv.height=h*sc;el.appendChild(cv);const x=cv.getContext("2d");if(bg){x.fillStyle=bg;x.fillRect(0,0,cv.width,cv.height)}return x}
-const SETS={BABEL:"Babel",SHIKI:"Shikigami"};
+const SETS={BABEL:"Babel",GENTRY:"Good Neighbours",SHIKI:"Shikigami"};
 window.Ofuda={SETS,BM,SP,INK,KINDS,SUITS,CARDS,bm,spirit,slipS,back,canvasIn,
   card:id=>CARDS.find(c=>c.id===id)};
 })();

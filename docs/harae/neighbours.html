@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harae: The Good Neighbours</title>
+<meta name="description" content="The Good Neighbours, the second faction of Harae: the Celtic fae, who copy your network and take what you own.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="harae.css">
+<style>
+.tongues{color:#9be8a0;font-size:19px;letter-spacing:.12em;font-style:italic}
+.spirit{display:grid;grid-template-columns:72px 1fr;gap:16px;background:var(--panel);border:1px solid var(--red-dim);border-radius:4px;padding:16px}
+.spirit canvas{width:72px;height:72px}
+.spirit .body{display:flex;flex-direction:column;gap:8px;min-width:0}
+.spirit .real{border-left:3px solid var(--cyan);padding-left:10px;color:var(--text)}
+.spirit .seal{border-left:3px solid var(--red);padding-left:10px;color:var(--text)}
+.spirit.boss{border-color:var(--yellow)}
+.spirit.harmless{border-color:#4a3d63}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.rules .box h3{color:var(--yellow)}
+.fair{color:var(--green);font-size:15px}
+.draft{border:1px dashed var(--dim);color:var(--dim);padding:8px 12px;border-radius:4px;font-size:15px}
+.cardrow{display:grid;grid-template-columns:60px 1fr;gap:14px;align-items:center;border-bottom:1px solid var(--red-dim);padding:10px 0}
+.cardrow canvas{width:58px;height:104px}
+.cardrow .k{font:12px 'Share Tech Mono',monospace;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+.strip{display:flex;flex-wrap:wrap;gap:10px}.strip a{display:block;line-height:0}.strip canvas{width:58px;height:104px}
+.holds{display:flex;gap:8px;flex-wrap:wrap;counter-reset:h}
+.holds span{border:1px solid var(--yellow);color:var(--text);padding:4px 10px;border-radius:3px;font-size:15px}
+@media (max-width:520px){.spirit{grid-template-columns:1fr}.spirit canvas{width:60px;height:60px}}
+</style>
+</head>
+<body>
+<nav><a class="home" href="../index.html"><b>Mitama</b>OS</a><span class="links"><a href="index.html">Harae</a><a href="babel.html">Babel</a><a href="neighbours.html" aria-current="page">Neighbours</a><a href="cards.html">Cards</a><a href="../harae.html">How to play</a></span></nav>
+<div class="wrap">
+<header class="hero">
+  <span class="kicker">Harae · faction 2 · Celtic folklore</span>
+  <h1>THE GOOD NEIGHBOURS</h1>
+  <span class="tongues">Aos Sí · Tylwyth Teg · the Fair Folk · the Gentry</span>
+  <p>Nobody in Ireland, Scotland, Wales or Cornwall wanted to say their real name, so they called them the Good Neighbours and hoped the compliment kept them friendly. They live under the hills, wear glamours so nothing is what it seems, and they <b>take</b>: people, names, years. They have walked in through every door Babel left open.</p>
+</header>
+
+<section>
+  <h2>Who they are</h2>
+  <div class="grid">
+    <div class="box"><h3>What they attack</h3><p class="txt"><b>Integrity.</b> Nothing goes down. Everything looks fine, and that's the problem: the network, the login page and the "IT" calling you might all be copies.</p></div>
+    <div class="box"><h3>Why</h3><p class="txt">They take. A changeling left in the cradle, a traveller led off the road, a password, a session, a year of your life. Babel wanted a reaction. The Good Neighbours want something you own.</p></div>
+    <div class="box"><h3>How they act</h3><p class="txt">Courtly and patient. In the old stories they never tell a plain lie, they only let you believe one, and every gift has a price. One noble house, working together.</p></div>
+    <div class="box"><h3>Where they fit</h3><p class="txt">They follow Babel. The Kamaitachi trio's stolen handshake and the Gaki's starved address pool are exactly the openings they need. Babel breaks things. The Good Neighbours move in while they're broken.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Their rules</h2>
+  <div class="rules">
+    <div class="box"><h3>Glamour</h3><p class="txt">One clue in a round may be <b>glamoured</b>: it looks exactly like the real thing and it's false. Spend 1 more point to <b>verify</b> a clue and the glamour falls away. Learning which clues to double-check is the skill.</p><p class="fair">Fair by rule: there's never more than one glamour per round, and the honest clues alone always point to the right Seal.</p></div>
+    <div class="box"><h3>The Bargain</h3><p class="txt">Once per drill a Neighbour offers a gift: 2 extra points now, or a free clue. Take it and the price comes due two rounds later, as a card taken from your hand or a slice of Purity. Refuse and you score the <b>Unbound</b> yaku.</p><p class="fair">Never needed. The real lesson: don't accept what you didn't ask for.</p></div>
+    <div class="box"><h3>Cold iron</h3><p class="txt">In every Celtic tradition, iron burns the fae. Any card that's <b>Iron</b> (Babel's Iron Road, and this faction's Iron in the Cradle) strips the glamour off one clue when you play it. Your Babel deck still matters here.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>The first wave</h2>
+  <div id="wave1" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<section>
+  <h2>Later waves</h2>
+  <div id="wave2" style="display:flex;flex-direction:column;gap:12px"></div>
+</section>
+
+<section>
+  <h2>In the Deep Aether: Under the Hill</h2>
+  <p class="txt">Through a door in the side of a fairy mound, into the hall where the music never stops. Time runs wrong down here: <b>each floor is one round longer</b> than it looks on the map. Shrines are glamoured too, so one of the three cards on offer at each shrine is a fae trick that turns to leaves when you play it, unless you verify it first. Never eat the food: the Bargain is offered on every floor. The Kelpie and Fear Dearg wait as elites.</p>
+</section>
+
+<section>
+  <h2>Their cards</h2>
+  <p class="txt">The GENTRY set. Seals carry the spirit they bind, and every support card is a real piece of fae protection from the folklore. Tap one for details.</p>
+  <div class="strip" id="strip"></div>
+  <p><a class="btn" href="cards.html?set=GENTRY">Open the Good Neighbours set</a></p>
+</section>
+
+<footer>Spirits come from Irish, Scottish, Welsh, Cornish and English folklore and the Scottish ballad of Tam Lin. Every attack is simulated on screen and played only from the defender's side. Nothing is transmitted.</footer>
+</div>
+<script src="ofuda.js"></script>
+</body>
+</html>
+<script>
+(function(){const O=window.Ofuda;
+// new sigils, 15x15
+
+const S=[
+ {w:1,sp:"changeling",name:"Changeling",from:"Ireland and Scotland",tag:"The Swap · the copy in the cradle",
+  lore:"The fae steal a baby and leave one of their own in the cradle: it looks the same, it answers to the same name, and it's wrong. Families hung an iron nail or a pair of open scissors over the cradle to stop the swap.",
+  them:"It doesn't break your network. It replaces it.",
+  real:"Evil-twin Wi-Fi. A copy of the office network with the same name and a stronger signal, built with the handshake the Kamaitachi trio stole. Phones hop to it and everything they send goes through the copy.",
+  seal:["Iron in the Cradle","802.1X with server certificate checks, or WPA3, so a copy can't prove it's the real network."],q:"Same name, same face, wrong baby."},
+ {w:1,sp:"pixies",name:"Pixies",from:"Cornwall and Devon",tag:"The Wandering · the guides who lose you",
+  lore:"Being \"pixie-led\" meant walking a field you'd crossed a hundred times and finding yourself going round in circles until dawn. The cure was to turn your coat inside out, and the spell broke.",
+  them:"They don't block the road. They offer you a friendlier one.",
+  real:"A fake sign-in page. On café or hotel Wi-Fi, a \"sign in to continue\" portal asks for your work email and password, and looks exactly like the real one.",
+  seal:["Turned Coat","Never type work passwords into a Wi-Fi portal. A password manager that only fills on the real address, and a VPN on public networks."],q:"You've walked this field a hundred times. Turn your coat."},
+ {w:1,sp:"puca",name:"Púca",from:"Ireland",tag:"The Detour · the shapeshifter",
+  lore:"A black horse, goat or hare that appears on Samhain night. It offers a ride, throws you on its back, and gallops wherever it likes before dumping you in a ditch miles from home.",
+  them:"You ask for the way to the office. It tells you, and it's lying.",
+  real:"Rogue DHCP and DNS. A fake server hands out its own directions, so typing the bank's or the office's address quietly takes you somewhere else. It moves into the gap the Gaki left in the address pool.",
+  seal:["Signed Road","DHCP snooping plus a trusted, encrypted DNS resolver, and HTTPS everywhere so a wrong destination can't pass as the right one."],q:"Nice horse. Don't get on the horse."},
+ {w:1,sp:"leanan",name:"Leanan Sídhe",from:"Ireland and the Isle of Man",tag:"The Muse · the one who asks nicely",
+  lore:"A fairy lover who gives artists brilliant inspiration in exchange for their devotion, and slowly takes their life in return. Her gift is real. So is the price.",
+  them:"She never forces anything. She asks, and asks again, until you say yes.",
+  real:"Sign-in prompt fatigue and consent phishing. \"Approve this sign-in?\" over and over until someone taps yes, or a friendly app asking to \"connect to your account\" that keeps reading it forever.",
+  seal:["No Thanks","Number-matching sign-in prompts, never approve one you didn't start, and review which apps can reach your account."],q:"In the old stories you never thank them. Thanks means you owe."},
+ {w:1,sp:"brownie",name:"Brownie",from:"Scotland",tag:"Harmless spirit · not a thief",cls:"harmless",
+  lore:"A small household spirit that does chores at night in exchange for a bowl of cream. Give it clothes as thanks and it's offended and leaves for good.",
+  them:"Not a member of the court, and offended to be suspected.",
+  real:"A new, unknown device on the network at 3 a.m. It's the printer's night-time firmware update, or the smart TV someone plugged in. Nothing is wrong.",
+  seal:["Know Your House","Keep a list of your own devices, so a stranger stands out and a friend doesn't."],q:"Leave the cream out. Don't give him trousers."},
+ {w:1,sp:"nicnevin",name:"Nicnevin",from:"Scotland",tag:"Boss · Queen of Elphame",cls:"boss",
+  lore:"The Scottish fairy queen who rides out at Samhain. In the ballad of Tam Lin, the only way Janet could win her love back from the queen was to hold him tight while he was changed into one terrible shape after another, and never let go.",
+  them:"The whole court at once, under one face.",
+  real:"A full man-in-the-middle: the evil twin catches the phone, a fake portal catches the password, and a consent prompt catches the account. Three shapes, and you have to hold on through each one.",
+  holds:["The twin: Iron in the Cradle","The portal: Turned Coat","The prompt: No Thanks"],q:"Hold fast. Whatever she turns into, hold fast."},
+ {w:2,sp:"kelpie",name:"Kelpie",from:"Scotland",tag:"Elite · the water horse",cls:"boss",
+  lore:"A beautiful horse waiting by the loch. Climb on and you stick to its back as it runs into the water. Whoever holds a kelpie's bridle commands it.",
+  them:"Once you're on, it carries you wherever it wants.",
+  real:"Session hijacking. On an open network it grabs your signed-in session and rides it, with no password needed.",
+  seal:["Silver Bridle","HTTPS everywhere, secure cookies, short sessions, and signing out on shared networks."],q:"It's a lovely horse. That's the first warning."},
+ {w:2,sp:"fetch",name:"Fetch",from:"Ireland",tag:"Hex · The Double",
+  lore:"A perfect double of a living person, seen walking just ahead of them. To meet your own fetch was a very bad sign.",
+  them:"It doesn't copy a network. It copies a person.",
+  real:"Lookalike email and domains. A message from the boss, from a name one letter off, asking for a quick payment or a password.",
+  seal:["Mark of the True","Check the real sender, SPF and DMARC on your own domain, and confirm money requests another way."],q:"If you see yourself walking ahead of you, don't follow."},
+ {w:2,sp:"feardearg",name:"Fear Dearg",from:"Ireland",tag:"Elite · the red man at the door",cls:"boss",
+  lore:"A little man in a red coat and cap who knocks on a winter night and asks to sit by your fire. Refuse him and you'll have bad luck, the stories say. Let him in and he never quite leaves.",
+  them:"He asks to be let in, and he's very polite about it.",
+  real:"The tech-support call. \"This is IT, we've seen a problem on your computer, just install this so I can fix it.\" Remote access, freely given.",
+  seal:["Closed Door","Never give remote access to a call you didn't start. Hang up and ring IT on a number you already know."],q:"He's cold, he's polite, and he wants your keyboard."}
+];
+for(const s of S){const d=document.createElement("article");d.className="spirit"+(s.cls?" "+s.cls:"");
+  const seal=s.seal?`<p class="seal"><b>${s.cls==="harmless"?"Fix":"Seal"}: ${s.seal[0]}.</b> ${s.seal[1]}</p>`:"";
+  const holds=s.holds?`<p class="txt"><b>Three holds, in order:</b></p><div class="holds">${s.holds.map((h,i)=>`<span>${i+1}. ${h}</span>`).join("")}</div><p class="txt">Breaking her clears the district.</p>`:"";
+  d.innerHTML=`<canvas class="px" width="60" height="60"></canvas><div class="body"><div><span class="tag">${s.tag}</span><h3>${s.name} <span style="color:var(--dim);font-weight:600;font-size:16px">${s.from}</span></h3></div>
+   <p class="txt">${s.lore}</p><p class="txt">${s.them}</p><p class="real"><b>Real attack:</b> ${s.real}</p>${seal}${holds}<p class="quote">"${s.q}"</p></div>`;
+  document.getElementById(s.w===1?"wave1":"wave2").appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,60,60);O.spirit(x,s.sp,0,0,s.cls==="harmless"?"#8c7dad":"#cdf5c4",4)}
+const st=document.getElementById("strip");
+for(const c of O.CARDS.filter(c=>c.set==="GENTRY")){const a=document.createElement("a");a.href="cards.html#"+c.id;a.title=c.name;const cv=document.createElement("canvas");cv.className="px";cv.width=58;cv.height=104;cv.style.background="transparent";a.appendChild(cv);st.appendChild(a);O.slipS(cv.getContext("2d"),0,0,c,2,false)}
+})();
+</script>
+</body>
+</html>
