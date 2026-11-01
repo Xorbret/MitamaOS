@@ -87,7 +87,7 @@ function open(c){cur=c;face(true);
   document.getElementById("dno").textContent=`${c.set} ${String(c.no).padStart(2,"0")}/${c.of}`+(c.wave>1?" · later wave":"");
   document.getElementById("dname").textContent=c.name;document.getElementById("deff").textContent=c.effect;
   const k=O.KINDS[c.kind],s=O.SUITS[c.suit];
-  const facts=[["Kind",k.name+(c.kind==="charm"?" (worn)":c.kind==="norito"?" (used once)":"")],["Suit",s.name+", "+s.desc.split(":")[0].toLowerCase()],c.kind==="shiki"?["Style",c.style+", Deep Aether partner"]:["Cost",c.cost===0?"Free":c.cost+" action point"+(c.cost>1?"s":"")],
+  const facts=[["Kind",k.name+(c.kind==="charm"?" (worn)":c.kind==="shio"?" (thrown once)":"")],["Suit",s.name+", "+s.desc.split(":")[0].toLowerCase()],c.kind==="shiki"?["Style",c.style+", Deep Aether partner"]:["Cost",c.cost===0?"Free":c.cost+" action point"+(c.cost>1?"s":"")],
     c.centre?[c.kind==="seal"?"Binds":"Sigil",c.centre+(c.pantheon?" ("+c.pantheon+")":"")]:null,["Real defence",c.real],["Earned",c.earn]].filter(Boolean);
   document.getElementById("dfacts").innerHTML=facts.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join("");
   if(!dlg.open)dlg.showModal()}

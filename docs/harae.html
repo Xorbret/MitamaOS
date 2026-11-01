@@ -142,7 +142,7 @@ const BM={
  seal:["#########","#.......#","#.#####.#","#.#...#.#","#.#.#.#.#","#.#...#.#","#.#####.#","#.......#","#########"],
  bless:["..#####..",".#.....#.","#.......#","#...#...#","#..###..#","#...#...#","#.......#",".#.....#.","..#####.."],
  charm:["....#....","...#.#...","..#...#..",".#..#..#.","#..###..#",".#..#..#.","..#...#..","...#.#...","....#...."],
- norito:["....#....","....#....","...#.#...","...#.#...","..#...#..",".#.....#.",".#.....#.","..#...#..","...###..."],
+ shio:["....#....","..##.##..","##.....##","#.##.##.#","#...#...#","#...#...#","##..#..##","..##.##..","....#...."],
  shiki:["...###...","...###...","....#....","#########","...###...","...###...","...#.#...","..#...#..","..#...#.."],
  plain:["#.#.#.#.#",".........","#.......#",".........","#.......#",".........","#.......#",".........","#.#.#.#.#"]
 };
@@ -173,7 +173,7 @@ const SP={
  band(P){P.arc(7,13,4,200,340);P.arc(7,13,8,205,335);P.arc(7,13,12,210,330)}
 };
 function spirit(x,name,X,Y,col,sc){sc=sc||1;const P=grid(15);SP[name](P);x.fillStyle=col;P.g.forEach((row,j)=>row.forEach((v,i)=>{if(v)x.fillRect(X+i*sc,Y+j*sc,sc,sc)}))}
-const INK={seal:"#e71429",bless:"#00b8cc",charm:"#d9a514",shiki:"#e0407a",norito:"#ff6d00",plain:"#8c7dad"};
+const INK={seal:"#e71429",bless:"#00b8cc",charm:"#d9a514",shiki:"#e0407a",shio:"#ff6d00",plain:"#8c7dad"};
 const DECK={
  frames:{suit:"wind",kind:"seal",cost:1,sp:"kamaitachi",name:"Sealed Frames"},
  truename:{suit:"gate",kind:"seal",cost:1,sp:"wisps",name:"True Name"},
@@ -183,7 +183,7 @@ const DECK={
  honey:{suit:"hearth",kind:"charm",cost:0,sp:"honey",name:"Honey for the Stove"},
  stick:{suit:"hearth",kind:"charm",cost:0,sp:"stick",name:"Stick at the Base"},
  lantern:{suit:"gate",kind:"charm",cost:0,sp:"lantern",name:"Foolish Fire Lantern"},
- misogi:{suit:"hearth",kind:"norito",cost:1,sp:"misogi",name:"Misogi"},
+ misogi:{suit:"hearth",kind:"shio",cost:1,sp:"misogi",name:"Misogi"},
  pool:{suit:"hearth",kind:"seal",cost:1,sp:"gaki",name:"Pool Guard"},
  quiet:{suit:"hand",kind:"seal",cost:1,sp:"poltergeist",name:"Quiet Pockets"},
  steady:{suit:"gate",kind:"seal",cost:1,sp:"pan",name:"Steady Hand"}
@@ -228,7 +228,7 @@ function legend(id,items,kind){const el=document.getElementById(id);for(const [k
   d.innerHTML=`<canvas width="${n*3}" height="${n*3}"></canvas><div><b>${name}</b><small>${desc}</small></div>`;el.appendChild(d);const x=d.querySelector("canvas").getContext("2d");x.fillStyle="#000";x.fillRect(0,0,n*3,n*3);
   if(kind==="sp")spirit(x,k,0,0,"#efe7b5",3);else bm(x,k,0,0,kind==="kind"?INK[k]:"#efe7b5",3)}}
 function all(){anat();loadout();round();strike()}
-legend("kinds",[["seal","Seal","Binds one spirit. How you win."],["bless","Blessing","A kami's help investigating."],["shiki","Shikigami","Your paper partner in the Deep Aether."],["charm","Charm","Worn. Bends a rule while it's on."],["norito","Norito","A prayer. One big effect, used once."],["plain","Temizu","Everyday fixes. Cyber hygiene."]],"kind");
+legend("kinds",[["seal","Seal","Binds one spirit. How you win."],["bless","Blessing","A kami's help investigating."],["shiki","Shikigami","Your paper partner in the Deep Aether."],["charm","Charm","Worn. Bends a rule while it's on."],["shio","Shio","Purifying salt. One big effect, thrown once."],["plain","Temizu","Everyday fixes. Cyber hygiene."]],"kind");
 legend("suits",[["wind","Wind","Radio and Wi-Fi"],["hearth","Hearth","Your network's plumbing"],["gate","Gate","Logins and trust"],["hand","Hand","Things you plug in or carry"]],"suit");
 legend("spirits",[["kamaitachi","Kamaitachi","Japan. Cuts you off the Wi-Fi."],["wisps","Will-o'-wisps","Britain. Fake networks everywhere."],["nurikabe","Nurikabe","Japan. A wall of radio noise."],["zaojun","Zao Jun","China. Harmless. It's the microwave."],["tower","The Tower","Boss. All of Babel at once."]],"sp");
 all();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(all);
