@@ -1,6 +1,6 @@
 return {
   id = "t1-03-gpio-blink",
-  track = 1,
+  track = 0,
   title = "Driving a pin",
   permissions = { "gpio", "sys" },
   pages = {

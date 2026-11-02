@@ -39,6 +39,7 @@ bool loadScenario(Hal* hal, const std::string& source, Scenario& out, std::strin
   out.faction = fieldString(L, -1, "faction");
   out.demon = fieldString(L, -1, "demon");
   out.pointsPerRound = static_cast<int>(fieldInt(L, -1, "points", 3));
+  out.surge = static_cast<int>(fieldInt(L, -1, "surge", 0));
 
   forEachItem(L, -1, "rounds", [&](size_t i) {
     Round r;
@@ -53,6 +54,7 @@ bool loadScenario(Hal* hal, const std::string& source, Scenario& out, std::strin
       e.name = fieldString(L, -1, "name");
       e.cost = static_cast<int>(fieldInt(L, -1, "cost", 1));
       e.text = fieldString(L, -1, "text");
+      e.freeWith = fieldString(L, -1, "free_with");
       r.evidence.push_back(e);
     });
     forEachItem(L, -1, "defenses", [&](size_t j) {
@@ -84,6 +86,16 @@ bool loadScenario(Hal* hal, const std::string& source, Scenario& out, std::strin
 
   if (err.empty() && out.id.empty()) err = "scenario needs an id";
   if (err.empty() && out.rounds.empty()) err = "scenario needs at least one round";
+  if (err.empty() && out.surge > 0) {
+    // Worst case for a careful player: every clue read at full price.
+    int worst = 0;
+    for (const Round& r : out.rounds) {
+      int spent = 0;
+      for (const Evidence& e : r.evidence) spent += e.cost;
+      worst += out.surge * std::min(spent, out.pointsPerRound);
+    }
+    if (worst >= 100) err = "surge could run uptime to zero even with every right answer (unfair)";
+  }
   return err.empty();
 }
 
@@ -96,12 +108,22 @@ void Game::startRound() {
 
 bool Game::seen(size_t evidenceIndex) const { return evidenceIndex < seen_.size() && seen_[evidenceIndex]; }
 
+int Game::evidenceCost(size_t evidenceIndex) const {
+  if (finished() || evidenceIndex >= round().evidence.size()) return 0;
+  const Evidence& e = round().evidence[evidenceIndex];
+  if (!e.freeWith.empty() && has_ && has_(e.freeWith)) return 0;
+  return e.cost;
+}
+
 bool Game::investigate(size_t evidenceIndex) {
   if (finished() || evidenceIndex >= round().evidence.size()) return false;
   if (seen_[evidenceIndex]) return true;
-  int cost = round().evidence[evidenceIndex].cost;
+  int cost = evidenceCost(evidenceIndex);
   if (cost > points_) return false;
   points_ -= cost;
+  // Surge drains uptime but never empties it on its own.
+  int u = uptime_ - scenario_.surge * cost;
+  uptime_ = u < 1 ? std::min(uptime_, 1) : u;
   seen_[evidenceIndex] = true;
   return true;
 }

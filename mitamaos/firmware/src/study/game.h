@@ -7,6 +7,7 @@
 // the player holds is sealed, never offered as an unwinnable board.
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,7 @@ struct Evidence {
   std::string name;
   int cost = 1;
   std::string text;
+  std::string freeWith;  // lesson id whose card (a Blessing) makes this free
 };
 
 struct Defense {
@@ -53,6 +55,10 @@ struct Scenario {
   std::string faction;  // Harae faction, e.g. "Static"
   std::string demon;    // the demon behind the drill
   int pointsPerRound = 3;
+  // Babel's Surge: each action point spent on evidence also costs this much
+  // uptime. Files where reading everything could take uptime to zero are
+  // refused, so a careful player can never lose to Surge alone.
+  int surge = 0;
   std::vector<Round> rounds;
 };
 
@@ -74,6 +80,10 @@ class Game {
   int score() const { return score_; }
 
   bool seen(size_t evidenceIndex) const;
+
+  // Which cards the player holds, for evidence a Blessing makes free.
+  void setWards(std::function<bool(const std::string&)> has) { has_ = std::move(has); }
+  int evidenceCost(size_t evidenceIndex) const;
 
   // Spends action points to look at a piece of evidence. Re-reading is
   // free. Returns false if the index is bad or points run out.
@@ -97,6 +107,7 @@ class Game {
   std::vector<bool> seen_;
   const Round* last_ = nullptr;
   const Defense* lastDefense_ = nullptr;
+  std::function<bool(const std::string&)> has_;
 };
 
 const char* outcomeName(Outcome o);

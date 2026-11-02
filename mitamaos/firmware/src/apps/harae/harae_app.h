@@ -86,13 +86,14 @@ private:
     study::Library& _lib() { return study::Library::get(); }
 
     static uint16_t _factionColor(const std::string& f) {
+        if (f == "Babel") return 0xFC80;   // ember orange
         if (f == "Static") return MUI::YELLOW;
         if (f == "Mirror Court") return MUI::CYAN;
         if (f == "Hollow Ones") return MUI::PURPLE;
         if (f == "Leeches") return MUI::MAGENTA;
         return MUI::DIM;
     }
-    static const char* _factionName(const std::string& f) { return f.empty() ? "THE BORDERLANDS" : f.c_str(); }
+    static const char* _factionName(const std::string& f) { return f.empty() ? "PRACTICE" : f.c_str(); }
 
     int _clearedCount() {
         int n = 0;
@@ -201,6 +202,7 @@ private:
             study::Scenario s; std::string err;
             if (!_lib().loadDrill(_lib().drills[_drill], s, err)) { OsUI::showToast(_c, "Drill won't load"); return; }
             _game.reset(new study::Game(std::move(s)));
+            _game->setWards([this](const std::string& w) { return _lib().progress.hasWard(w); });
             _scr = H_BRIEF;
         }
     }
@@ -247,10 +249,13 @@ private:
         int y = StudyUI::TOP + 2;
         y += 15 * StudyUI::wrap(_c, MUI::big(), "You don't have the Ward for this one yet.", 72, y, 160, 15, 2, MUI::WHITE);
         y += 4;
-        MUI::text(_c, MUI::small(), "Learn it in Shugyo:", 72, y, MUI::DIM); y += 13;
+        MUI::text(_c, MUI::small(), "Earn it in Shugyo:", 72, y, MUI::DIM); y += 13;
         for (size_t i = 0; i < _need.size() && i < 3; i++) {
             _c.setClipRect(72, y, 164, 12);
-            MUI::text(_c, MUI::small(), _lib().lessonTitle(_need[i]).c_str(), 72, y, MUI::CYAN);
+            String w = _lib().wardName(_need[i]).c_str();
+            String lt = _lib().lessonTitle(_need[i]).c_str();
+            if (w != lt) { w += "  ("; w += lt; w += ")"; }
+            MUI::text(_c, MUI::small(), w.c_str(), 72, y, MUI::CYAN);
             _c.clearClipRect();
             y += 12;
         }
@@ -274,7 +279,9 @@ private:
             y += 17;
         }
         StudyUI::wrap(_c, MUI::small(), s.briefing.c_str(), 5, y, 230, 12, (100 - y) / 12, MUI::CREAM);
-        char ap[48]; snprintf(ap, sizeof(ap), "%d action points a round. Evidence costs them.", s.pointsPerRound);
+        char ap[64];
+        if (s.surge > 0) snprintf(ap, sizeof(ap), "%d AP a round. Surge: each AP on evidence costs %d uptime.", s.pointsPerRound, s.surge);
+        else snprintf(ap, sizeof(ap), "%d action points a round. Evidence costs them.", s.pointsPerRound);
         MUI::text(_c, MUI::small(), ap, 5, 104, MUI::DIM);
         StudyUI::foot(_c, "ENT begin   ` back");
     }
@@ -326,8 +333,10 @@ private:
             _c.setClipRect(8, yy - 1, 190, 12);
             MUI::text(_c, MUI::small(), r.evidence[i].name.c_str(), 8, yy, sel ? MUI::WHITE : seen ? MUI::GREEN : MUI::LABEL);
             _c.clearClipRect();
-            char c[8]; snprintf(c, sizeof(c), "%d AP", r.evidence[i].cost);
-            StudyUI::textRight(_c, MUI::small(), seen ? "read" : c, 234, yy, MUI::DIM);
+            int cost = _game->evidenceCost(i);
+            char c[8]; snprintf(c, sizeof(c), "%d AP", cost);
+            bool blessed = cost < r.evidence[i].cost;   // a Blessing made it free
+            StudyUI::textRight(_c, MUI::small(), seen ? "read" : blessed ? "free" : c, 234, yy, blessed && !seen ? MUI::CYAN : MUI::DIM);
         }
         StudyUI::foot(_c, "; . move   ENT spend   D defend");
     }

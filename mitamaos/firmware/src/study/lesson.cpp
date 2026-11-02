@@ -1,8 +1,70 @@
 #include "lesson.h"
 
+#include <cstdio>
+
 #include "content.h"
 
 namespace study {
+
+namespace {
+
+void quote(const char* s, size_t len, std::string& out) {
+  out += '"';
+  for (size_t i = 0; i < len; ++i) {
+    unsigned char c = static_cast<unsigned char>(s[i]);
+    if (c == '"' || c == '\\') { out += '\\'; out += static_cast<char>(c); }
+    else if (c == '\n') out += "\\n";
+    else if (c < 0x20) { char b[6]; snprintf(b, sizeof(b), "\\%03u", c); out += b; }
+    else out += static_cast<char>(c);
+  }
+  out += '"';
+}
+
+// Writes the table at the top of the stack as a Lua constructor. Only
+// strings, numbers, booleans and nested tables are kept.
+bool serialize(lua_State* L, int depth, std::string& out) {
+  if (depth > 6) return false;
+  out += '{';
+  int t = lua_absindex(L, -1);
+  lua_pushnil(L);
+  while (lua_next(L, t) != 0) {
+    int kt = lua_type(L, -2), vt = lua_type(L, -1);
+    bool keyOk = kt == LUA_TSTRING || kt == LUA_TNUMBER;
+    bool valOk = vt == LUA_TSTRING || vt == LUA_TNUMBER || vt == LUA_TBOOLEAN || vt == LUA_TTABLE;
+    if (keyOk && valOk) {
+      out += '[';
+      if (kt == LUA_TSTRING) {
+        size_t n = 0;
+        const char* k = lua_tolstring(L, -2, &n);
+        quote(k, n, out);
+      } else {
+        lua_pushvalue(L, -2);
+        out += lua_tostring(L, -1);
+        lua_pop(L, 1);
+      }
+      out += "]=";
+      if (vt == LUA_TTABLE) {
+        if (!serialize(L, depth + 1, out)) { lua_pop(L, 2); return false; }
+      } else if (vt == LUA_TBOOLEAN) {
+        out += lua_toboolean(L, -1) ? "true" : "false";
+      } else if (vt == LUA_TSTRING) {
+        size_t n = 0;
+        const char* v = lua_tolstring(L, -1, &n);
+        quote(v, n, out);
+      } else {
+        lua_pushvalue(L, -1);
+        out += lua_tostring(L, -1);
+        lua_pop(L, 1);
+      }
+      out += ',';
+    }
+    lua_pop(L, 1);
+  }
+  out += '}';
+  return true;
+}
+
+}  // namespace
 
 bool Lesson::load(const std::string& source, std::string& err) {
   content_.reset(new Sandbox(hal_, kPermReadOnly));
@@ -22,6 +84,24 @@ bool Lesson::load(const std::string& source, std::string& err) {
   reflect_ = fieldString(L, -1, "reflect");
   hint_ = fieldString(L, -1, "hint");
   pages_ = fieldStringList(L, -1, "pages");
+  prereqs_ = fieldStringList(L, -1, "requires");
+  spirit_ = fieldString(L, -1, "spirit");
+  taunt_ = fieldString(L, -1, "taunt");
+  card_ = fieldString(L, -1, "card");
+  field_ = fieldString(L, -1, "field");
+  tag_ = fieldString(L, -1, "tag");
+
+  lab_.clear();
+  if (lua_getfield(L, -1, "lab") == LUA_TTABLE) {
+    std::string src = "lab=";
+    if (!serialize(L, 0, src)) {
+      lua_pop(L, 2);
+      err = "lab table is nested too deeply";
+      return false;
+    }
+    lab_ = src;
+  }
+  lua_pop(L, 1);
 
   permissions_ = kPermNone;
   for (const std::string& name : fieldStringList(L, -1, "permissions")) {
@@ -61,6 +141,14 @@ GradeResult Lesson::grade(const std::string& learnerCode) {
   GradeResult g;
   {
     Sandbox learner(hal_, permissions_);
+    if (!lab_.empty()) {
+      RunResult setup = learner.run(lab_, "=lab");
+      if (!setup.ok) {
+        g.run = setup;
+        g.feedback = "Lesson sample data failed to load: " + setup.error;
+        return g;
+      }
+    }
     g.run = learner.run(learnerCode);
   }
   if (checkRef_ == LUA_NOREF || !content_) {

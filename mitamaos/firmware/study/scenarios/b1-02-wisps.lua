@@ -1,0 +1,40 @@
+return {
+  id = "b1-02-wisps",
+  title = "The Thousand Masks",
+  faction = "Babel",
+  demon = "Will-o'-the-wisps",
+  briefing = "The office Wi-Fi list has gone strange. The wisps want an audience, and the more lights, the better the show.",
+  points = 3,
+  surge = 5,
+  rounds = {
+    {
+      symptom = "The network list shows hundreds of names. Two staff tapped \"Office\", got no password prompt, and now nothing loads properly.",
+      damage = { uptime = 35, data = 15 },
+      evidence = {
+        { name = "Nearby networks", cost = 1,
+          text = "340 networks. Twelve are called \"Office\". Eleven of those are open, each from a random hardware address. Only one is WPA2." },
+        { name = "Staff interview", cost = 1,
+          text = "Both picked \"Office\" from the list because it had the strongest signal. Neither noticed there was no lock icon." },
+        { name = "Spectrum read", cost = 2, free_with = "b1-03-interference-or-jamming",
+          text = "Busy, but not buried. The air is full of beacon frames, not noise." },
+      },
+      defenses = {
+        { name = "True Name: join only the saved profile that checks the security type, and forget open networks", result = "stop", ward = "b1-02-pick-a-network",
+          text = "A copy can borrow the name but not the security type. Devices skip the open fakes, and the lights go out one by one." },
+        { name = "Change band", result = "fail",
+          text = "Wisps follow you. A beacon flood works on 5 GHz too." },
+        { name = "Change the Wi-Fi password", result = "fail",
+          text = "The fakes don't use your password at all. They're open." },
+        { name = "Hide the network name", result = "fail",
+          text = "Hidden networks still show up to scanners, and devices that look for them can be fooled even more easily." },
+      },
+      reveal = {
+        attack = "Beacon flood with open lookalike networks",
+        target = "How devices and people pick a network by name",
+        cia = "Availability",
+        technique = "MITRE ATT&CK: Network Denial of Service (T1498)",
+        lesson = "b1-02-pick-a-network",
+      },
+    },
+  },
+}

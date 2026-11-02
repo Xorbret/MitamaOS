@@ -2,6 +2,7 @@ return {
   id = "t0-01-hello-lua",
   track = 0,
   title = "Hello, Lua",
+  tag = "Foundations",
   permissions = {},
   pages = {
     "Shugyo lessons follow one loop: Learn, Build, Test, Break, Defend. You read a little, write a little code, and the device checks your work.",

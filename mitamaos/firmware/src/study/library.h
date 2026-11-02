@@ -26,6 +26,9 @@ struct LessonInfo {
     int track = 0;
     bool hasTask = false;
     const char* builtin = nullptr;   // source in flash, or null for an SD file
+    std::vector<std::string> prereqs;  // lessons to pass first
+    std::string card, tag;             // Harae card earned, cert-domain label
+    bool hasField = false;             // has an optional field task
 };
 
 struct DrillInfo {
@@ -72,6 +75,16 @@ public:
         for (auto& l : lessons) if (l.id == id) return &l;
         return nullptr;
     }
+    // The first prerequisite not yet passed, or null if the lesson is open.
+    const std::string* lockedBy(const LessonInfo& l) const {
+        for (auto& p : l.prereqs) if (!progress.hasWard(p)) return &p;
+        return nullptr;
+    }
+    // Card name for a Ward (falls back to the lesson title).
+    std::string wardName(const std::string& id) const {
+        const LessonInfo* l = lessonById(id);
+        return !l ? id : l->card.empty() ? l->title : l->card;
+    }
     std::string lessonTitle(const std::string& id) const {
         const LessonInfo* l = lessonById(id);
         return l ? l->title : id;
@@ -104,10 +117,34 @@ public:
         if (s.size() > 3800) s.resize(s.rfind(';', 3800) + 1);   // NVS string limit
         Preferences p; p.begin("study", false); p.putString("p", s.c_str()); p.end();
         SdSettings::changed();
+        _writeFieldLog();
+    }
+
+    // A plain Markdown record of what the learner has done, for a
+    // portfolio: /MitamaOS/user/Study/field-log.md.
+    std::string fieldLog() const {
+        std::string md = "# Shugyo field log\n\nTrials passed on MitamaOS. Every attack was simulated; nothing was transmitted.\n\n";
+        md += "| Trial | Card earned | Quiz | Field task | Domain |\n| --- | --- | --- | --- | --- |\n";
+        int n = 0;
+        for (auto& l : lessons) {
+            const LessonRecord* r = progress.lesson(l.id);
+            if (!r || !r->taskPassed) continue;
+            n++;
+            std::string quiz = r->quizTotal ? std::to_string(r->quizScore) + "/" + std::to_string(r->quizTotal) : "-";
+            md += "| " + l.title + " | " + (l.card.empty() ? "-" : l.card) + " | " + quiz + " | " +
+                  (r->fieldDone ? "done" : l.hasField ? "not yet" : "-") + " | " + (l.tag.empty() ? "-" : l.tag) + " |\n";
+        }
+        if (!n) md += "| (none yet) | | | | |\n";
+        return md;
     }
 
 private:
     bool _built = false;
+
+    void _writeFieldLog() {
+        if (SD.cardType() == CARD_NONE) return;
+        hal.fileWrite("field-log.md", fieldLog());
+    }
 
     void _loadProgress() {
         Preferences p; p.begin("study", true);
@@ -136,7 +173,8 @@ private:
         Lesson l(&hal);
         std::string err;
         if (!l.load(builtin ? std::string(builtin) : sdSrc, err)) { skipped++; return; }
-        LessonInfo info{ l.id(), l.title(), file, l.track(), l.hasTask(), builtin };
+        LessonInfo info{ l.id(), l.title(), file, l.track(), l.hasTask(), builtin,
+                         l.prereqs(), l.card(), l.tag(), !l.field().empty() };
         for (auto& e : lessons) if (e.id == info.id) { e = info; return; }
         lessons.push_back(info);
     }

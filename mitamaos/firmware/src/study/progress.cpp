@@ -51,6 +51,8 @@ void Progress::recordQuiz(const std::string& lessonId, int score, int total) {
   }
 }
 
+void Progress::recordField(const std::string& lessonId) { lessons_[lessonId].fieldDone = true; }
+
 void Progress::recordScenario(const std::string& scenarioId, int score) {
   auto it = scenarios_.find(scenarioId);
   if (it == scenarios_.end() || score > it->second) scenarios_[scenarioId] = score;
@@ -76,7 +78,7 @@ std::string Progress::serialize() const {
   std::string out;
   for (const auto& kv : lessons_) {
     out += "L|" + kv.first + '|' + (kv.second.taskPassed ? "1" : "0") + '|' + std::to_string(kv.second.quizScore) +
-           '|' + std::to_string(kv.second.quizTotal) + '\n';
+           '|' + std::to_string(kv.second.quizTotal) + '|' + (kv.second.fieldDone ? "1" : "0") + '\n';
   }
   for (const auto& kv : scenarios_) out += "S|" + kv.first + '|' + std::to_string(kv.second) + '\n';
   return out;
@@ -91,11 +93,12 @@ void Progress::parse(const std::string& text) {
     if (nl == std::string::npos) nl = text.size();
     std::vector<std::string> p = split(text.substr(from, nl - from), '|');
     from = nl + 1;
-    if (p.size() == 5 && p[0] == "L" && !p[1].empty()) {
+    if ((p.size() == 5 || p.size() == 6) && p[0] == "L" && !p[1].empty()) {
       LessonRecord& r = lessons_[p[1]];
       r.taskPassed = p[2] == "1";
       r.quizScore = std::atoi(p[3].c_str());
       r.quizTotal = std::atoi(p[4].c_str());
+      r.fieldDone = p.size() == 6 && p[5] == "1";
     } else if (p.size() == 3 && p[0] == "S" && !p[1].empty()) {
       scenarios_[p[1]] = std::atoi(p[2].c_str());
     }
@@ -108,7 +111,8 @@ std::string Progress::toJson() const {
   for (const auto& kv : lessons_) {
     out += std::string(first ? "" : ",") + '"' + jsonEscape(kv.first) + "\":{\"taskPassed\":" +
            (kv.second.taskPassed ? "true" : "false") + ",\"quizScore\":" + std::to_string(kv.second.quizScore) +
-           ",\"quizTotal\":" + std::to_string(kv.second.quizTotal) + '}';
+           ",\"quizTotal\":" + std::to_string(kv.second.quizTotal) +
+           ",\"fieldDone\":" + (kv.second.fieldDone ? "true" : "false") + '}';
     first = false;
   }
   out += "},\"scenarios\":{";

@@ -1,8 +1,6 @@
 return {
   id = "s01-office-wifi",
   title = "Trouble on the office Wi-Fi",
-  faction = "Static",
-  demon = "The Severance",
   briefing = "You are Blue Team for a 12-person office: one access point, a guest SSID, cameras and smart plugs. Red Team is somewhere nearby.",
   points = 3,
   rounds = {

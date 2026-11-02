@@ -58,7 +58,8 @@ public:
             case S_READ:    _keysRead(back, up, down, left, right, k, st.enter); break;
             case S_RESULT:  _keysResult(back, k, st.enter); break;
             case S_QUIZ:    _keysQuiz(back, up, down, k, st.enter); break;
-            case S_REFLECT: if (back || st.enter) _toList(); break;
+            case S_REFLECT: if (back || st.enter) _afterReflect(); break;
+            case S_FIELD:   _keysField(back, k, st.enter); break;
             case S_RECORDS: if (back || st.enter) { _scr = S_HOME; } break;
             default: break;
         }
@@ -67,9 +68,10 @@ public:
     }
 
 private:
-    enum Screen : uint8_t { S_HOME, S_LIST, S_READ, S_TASK, S_RESULT, S_QUIZ, S_REFLECT, S_RECORDS };
+    enum Screen : uint8_t { S_HOME, S_LIST, S_READ, S_TASK, S_RESULT, S_QUIZ, S_REFLECT, S_FIELD, S_RECORDS };
     static constexpr int QUIPS = 6;
-    static constexpr int KI_PASS = 30, KI_REPASS = 10, KI_QUIZ = 5;
+    static constexpr int KI_PASS = 30, KI_REPASS = 10, KI_QUIZ = 5, KI_FIELD = 15;
+    static constexpr uint16_t EMBER = 0xFC80;   // Babel's colour
 
     LGFX_Sprite& _c;
     Screen  _scr = S_HOME;
@@ -96,6 +98,7 @@ private:
     // quiz
     int _q = 0, _qSel = 0, _qRight = 0;
     bool _qAnswered = false, _qWasRight = false;
+    bool _fieldDone = false;
 
     study::Library& _lib() { return study::Library::get(); }
 
@@ -168,14 +171,30 @@ private:
         }
         return r;
     }
+    // Track numbers are arcs: Foundations, then one per Harae faction.
     static const char* _trackName(int t) {
-        static const char* const N[] = { "FOUNDATIONS", "HARDWARE", "CONNECT", "TESTING", "RECON" };
+        static const char* const N[] = { "FOUNDATIONS", "BABEL", "GOOD NEIGHBOURS", "NIGHT-ROAMERS", "FALLEN" };
         return t >= 0 && t < 5 ? N[t] : "MORE";
+    }
+    static uint16_t _trackColor(int t) {
+        static const uint16_t C[] = { MUI::CYAN, EMBER, MUI::GREEN, MUI::PURPLE, MUI::BONES };
+        return t >= 0 && t < 5 ? C[t] : MUI::DIM;
     }
     int _nextLesson() {
         auto& L = _lib().lessons;
-        for (int i = 0; i < (int)L.size(); i++) if (!_lib().progress.hasWard(L[i].id)) return i;
+        for (int i = 0; i < (int)L.size(); i++)
+            if (!_lib().progress.hasWard(L[i].id) && !_lib().lockedBy(L[i])) return i;
         return -1;
+    }
+    // Three marks: task, perfect quiz, field task.
+    void _drawMarks(int x, int y, const study::LessonRecord* r) {
+        bool m[3] = { r && r->taskPassed, r && r->quizPerfect(), r && r->fieldDone };
+        uint16_t col[3] = { MUI::GREEN, MUI::YELLOW, MUI::CYAN };
+        for (int i = 0; i < 3; i++) {
+            int xx = x + i * 8;
+            if (m[i]) _c.fillRect(xx, y + 3, 5, 5, col[i]);
+            else _c.drawRect(xx, y + 3, 5, 5, MUI::BONES_DIM);
+        }
     }
     void _pickNext() {
         int n = _nextLesson();
@@ -218,20 +237,20 @@ private:
             int y = StudyUI::TOP + (i - _listTop) * 12 + 1;
             const Row& row = rows[i];
             if (row.lesson < 0) {
-                char tn[4]; snprintf(tn, sizeof(tn), "T%d", row.track);
-                MUI::text(_c, MUI::small(), tn, 5, y, MUI::CYAN);
-                MUI::text(_c, MUI::small(), _trackName(row.track), 24, y, MUI::CYAN);
+                MUI::text(_c, MUI::small(), _trackName(row.track), 5, y, _trackColor(row.track));
                 continue;
             }
             auto& L = lib.lessons[row.lesson];
             bool sel = i == _listSel, done = lib.progress.hasWard(L.id), isNext = row.lesson == next;
+            bool locked = !done && lib.lockedBy(L);
             if (sel) StudyUI::bar(_c, 2, y - 1, 236, 12);
-            uint16_t col = sel ? MUI::WHITE : done ? MUI::GREEN : MUI::LABEL;
-            _c.setClipRect(24, y - 1, 160, 12);
-            MUI::text(_c, MUI::small(), L.title.c_str(), 24, y, col);
+            uint16_t col = sel ? MUI::WHITE : locked ? MUI::DIM : done ? MUI::GREEN : MUI::LABEL;
+            _c.setClipRect(12, y - 1, 180, 12);
+            MUI::text(_c, MUI::small(), L.title.c_str(), 12, y, col);
             _c.clearClipRect();
-            const char* tag = done ? "PASSED" : isNext ? "NEXT" : "";
-            if (*tag) StudyUI::textRight(_c, MUI::small(), tag, 234, y, done ? MUI::GREEN : MUI::YELLOW);
+            if (done) _drawMarks(212, y, lib.progress.lesson(L.id));
+            else if (locked) StudyUI::textRight(_c, MUI::small(), "LOCKED", 234, y, MUI::BONES);
+            else if (isNext) StudyUI::textRight(_c, MUI::small(), "NEXT", 234, y, MUI::YELLOW);
         }
         if (lib.skipped) {
             char s[40]; snprintf(s, sizeof(s), "%d file%s skipped (errors)", lib.skipped, lib.skipped == 1 ? "" : "s");
@@ -245,6 +264,13 @@ private:
     void _open(int idx) {
         auto& lib = _lib();
         auto& info = lib.lessons[idx];
+        if (!lib.progress.hasWard(info.id)) {
+            if (const std::string* need = lib.lockedBy(info)) {
+                String m = "Pass "; m += lib.lessonTitle(*need).c_str(); m += " first";
+                OsUI::showToast(_c, m.c_str());
+                return;
+            }
+        }
         std::string src, err;
         _lesson.reset(new study::Lesson(&lib.hal));
         if (!lib.source(info, src) || !_lesson->load(src, err)) {
@@ -256,7 +282,10 @@ private:
         _lines.clear();
         _scr = S_READ;
     }
-    int _readerPages() const { return (int)_lesson->pages().size(); }
+    // The spirit's page, if the Trial has one, comes after the reading.
+    bool _hasSpirit() const { return !_lesson->taunt().empty(); }
+    int _readerPages() const { return (int)_lesson->pages().size() + (_hasSpirit() ? 1 : 0); }
+    bool _onSpiritPage() const { return _hasSpirit() && _page == (int)_lesson->pages().size(); }
 
     void _keysRead(bool back, bool up, bool down, bool left, bool right, char k, bool enter) {
         if (back) { _toList(); return; }
@@ -279,6 +308,7 @@ private:
         snprintf(r, sizeof(r), "%d/%d", _page + 1, _readerPages());
         String title = _lesson->title().c_str(); title.toUpperCase();
         StudyUI::head(_c, title.c_str(), r);
+        if (_onSpiritPage()) { _drawSpirit(); return; }
         const int lh = 12, vis = 8;
         const char* text = _readerPages() ? _lesson->pages()[_page].c_str() : "";
         int total = StudyUI::wrap(_c, MUI::small(), text, 5, 0, 228, lh, 0, 0);
@@ -291,6 +321,17 @@ private:
         bool last = _page >= _readerPages() - 1;
         StudyUI::foot(_c, last ? (_lesson->hasTask() ? ", page   ENT try it   ` back" : ", page   ENT quiz   ` back")
                                : ", / page   T try it   ` back");
+    }
+
+    void _drawSpirit() {
+        uint16_t col = _trackColor(_lesson->track());
+        MUI::text(_c, MUI::big(), _lesson->spirit().empty() ? "A voice in the static" : _lesson->spirit().c_str(), 5, StudyUI::TOP, col);
+        StudyUI::wrap(_c, MUI::small(), _lesson->taunt().c_str(), 5, StudyUI::TOP + 17, 228, 11, 6, MUI::CREAM);
+        if (!_lesson->card().empty()) {
+            String c = "Pass the task to earn "; c += _lesson->card().c_str();
+            MUI::text(_c, MUI::small(), c.c_str(), 5, 104, MUI::CYAN);
+        }
+        StudyUI::foot(_c, _lesson->hasTask() ? ", page   ENT take the Trial   ` back" : ", page   ENT quiz   ` back");
     }
 
     // ---- code task ---------------------------------------------------
@@ -485,7 +526,12 @@ private:
             snprintf(d, sizeof(d), "%u of %u today", (unsigned)Ki::get().today(Ki::S_SHUGYO), (unsigned)Ki::get().cap(Ki::S_SHUGYO));
             int x = MUI::text(_c, MUI::big(), k, 80, y, MUI::YELLOW);
             MUI::text(_c, MUI::small(), d, x + 6, y + 2, MUI::DIM);
-            if (_firstPass) MUI::text(_c, MUI::small(), "Ward earned for Harae", 80, y + 14, MUI::CYAN);
+            if (_firstPass) {
+                String c = "Card earned: ";
+                if (_lesson->card().empty()) c = "Ward earned for Harae";
+                else c += _lesson->card().c_str();
+                MUI::text(_c, MUI::small(), c.c_str(), 80, y + 14, MUI::CYAN);
+            }
         }
         StudyUI::foot(_c, _passed ? (_lesson->quiz().empty() ? "ENT reflect   R retry   ` back" : "ENT quiz   R retry   ` back")
                                   : "ENT try again   ` back");
@@ -563,6 +609,36 @@ private:
         StudyUI::foot(_c, "1-4 or ; . pick   ENT answer");
     }
 
+    // ---- field task (optional, on the learner's own gear) --------------
+    void _afterReflect() {
+        const study::LessonRecord* r = _lib().progress.lesson(_lesson->id());
+        if (!_lesson->field().empty() && !(r && r->fieldDone)) { _kiPaid = 0; _fieldDone = false; _scr = S_FIELD; }
+        else _toList();
+    }
+    void _keysField(bool back, char k, bool enter) {
+        if (_fieldDone) { if (back || enter) _toList(); return; }
+        if (back || enter) { _toList(); return; }
+        if (k == 'f' || k == 'F') {
+            auto& lib = _lib();
+            lib.progress.recordField(_lesson->id());
+            lib.save();
+            _kiPaid = Ki::get().add(Ki::S_SHUGYO, KI_FIELD);
+            _fieldDone = true;
+        }
+    }
+    void _drawField() {
+        StudyUI::head(_c, "FIELD TASK", "optional", MUI::CYAN);
+        StudyUI::wrap(_c, MUI::big(), _lesson->field().c_str(), 5, StudyUI::TOP + 2, 230, 15, 4, MUI::CREAM);
+        if (_fieldDone) {
+            char k[40]; snprintf(k, sizeof(k), "Third mark earned  +%u ki", (unsigned)_kiPaid);
+            MUI::text(_c, MUI::small(), k, 5, 92, MUI::GREEN);
+            StudyUI::foot(_c, "ENT done");
+            return;
+        }
+        MUI::text(_c, MUI::small(), "Do it on your own gear. Press F once it's done.", 5, 92, MUI::DIM);
+        StudyUI::foot(_c, "F I did it   ENT later");
+    }
+
     void _drawReflect() {
         StudyUI::head(_c, "REFLECT", "");
         const char* r = _lesson->reflect().empty() ? "Think about where you'd use this next." : _lesson->reflect().c_str();
@@ -598,7 +674,9 @@ private:
         y += 12;
         int qr = 0, qt = 0;
         for (auto& l : lib.lessons) { auto* r = lib.progress.lesson(l.id); if (r) { qr += r->quizScore; qt += r->quizTotal; } }
-        snprintf(s, sizeof(s), "%d of %d right", qr, qt);
+        int marks = 0;
+        for (auto& l : lib.lessons) { auto* r = lib.progress.lesson(l.id); if (r) marks += r->marks(); }
+        snprintf(s, sizeof(s), "%d right, %d of %d marks", qr, marks, total * 3);
         MUI::text(_c, MUI::small(), "Quizzes", 5, y, MUI::LABEL);
         StudyUI::textRight(_c, MUI::small(), s, 234, y, MUI::WHITE); y += 12;
         snprintf(s, sizeof(s), "%u today", (unsigned)Ki::get().today(Ki::S_SHUGYO));
@@ -607,7 +685,7 @@ private:
         snprintf(s, sizeof(s), "%u day%s", (unsigned)Ki::get().streak(), Ki::get().streak() == 1 ? "" : "s");
         MUI::text(_c, MUI::small(), "Practice streak", 5, y, MUI::LABEL);
         StudyUI::textRight(_c, MUI::small(), s, 234, y, MUI::WHITE);
-        StudyUI::foot(_c, "` back");
+        StudyUI::foot(_c, "` back", "field-log.md on SD");
     }
 
     void _draw() {
@@ -620,6 +698,7 @@ private:
             case S_RESULT:  _drawResult(); break;
             case S_QUIZ:    _drawQuiz(); break;
             case S_REFLECT: _drawReflect(); break;
+            case S_FIELD:   _drawField(); break;
             case S_RECORDS: _drawRecords(); break;
         }
         StudyUI::push(_c);

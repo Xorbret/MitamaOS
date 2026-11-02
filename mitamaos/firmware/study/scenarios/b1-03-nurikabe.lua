@@ -1,0 +1,60 @@
+return {
+  id = "b1-03-nurikabe",
+  title = "The Silence",
+  faction = "Babel",
+  demon = "Nurikabe",
+  briefing = "A wall has appeared on the road. Pushing does nothing, and going round takes forever. Two moves: find it, then go around it.",
+  points = 3,
+  surge = 5,
+  rounds = {
+    {
+      symptom = "The whole floor is offline. Every wireless device at once, all morning. The wired printer still works.",
+      damage = { uptime = 25, data = 0 },
+      evidence = {
+        { name = "Spectrum read", cost = 2, free_with = "b1-03-interference-or-jamming",
+          text = "Every 2.4 GHz channel is buried in noise, all at the same moment, and it hasn't let up." },
+        { name = "Access point log", cost = 1,
+          text = "No deauthentication frames. Clients just stop hearing the access point." },
+        { name = "Break-room check", cost = 1, text = "The microwave is off. Nobody has had lunch yet." },
+      },
+      defenses = {
+        { name = "Call it jamming and start an outage log", result = "stop",
+          text = "You found the wall. Writing down when it started and what stopped makes the report useful later." },
+        { name = "Change band", result = "partial",
+          text = "5 GHz holds a little longer, then the wall spreads there too." },
+        { name = "Reboot every access point", result = "fail",
+          text = "They come back up into the same noise." },
+      },
+      reveal = {
+        attack = "Radio jamming",
+        target = "The shared air every wireless device depends on",
+        cia = "Availability",
+        technique = "Jamming is illegal under radio law (FCC in the US, Ofcom in the UK)",
+        lesson = "b1-03-interference-or-jamming",
+      },
+    },
+    {
+      symptom = "The wall is still there. Cameras, the door controller and the till are all down, and customers are waiting.",
+      damage = { uptime = 40, data = 0 },
+      evidence = {
+        { name = "Device list", cost = 1,
+          text = "The camera, door controller, till and file server all sit in one place. The laptops and phones move around." },
+        { name = "Wiring closet", cost = 1, text = "The switch has spare ports, and the desks have wall sockets." },
+      },
+      defenses = {
+        { name = "Iron Road: cable the things that matter, fall back to mobile data, report the jamming", result = "stop", ward = "b1-04-wired-backups",
+          text = "You can't out-shout the wall, but it can't stand in a wire. The shop opens again, and the report goes in." },
+        { name = "Wait for it to stop", result = "partial",
+          text = "It might, eventually. The shop loses the morning." },
+        { name = "Turn on WPA3", result = "fail", text = "Encryption doesn't help when nothing can be heard at all." },
+      },
+      reveal = {
+        attack = "Radio jamming",
+        target = "Wireless links for devices that must keep working",
+        cia = "Availability",
+        technique = "Resilience: wired paths for critical devices",
+        lesson = "b1-04-wired-backups",
+      },
+    },
+  },
+}

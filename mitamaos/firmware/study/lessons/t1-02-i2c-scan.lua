@@ -1,6 +1,6 @@
 return {
   id = "t1-02-i2c-scan",
-  track = 1,
+  track = 0,
   title = "Finding devices on I2C",
   permissions = { "i2c" },
   pages = {

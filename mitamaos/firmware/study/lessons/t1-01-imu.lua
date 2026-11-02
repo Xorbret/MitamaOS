@@ -1,6 +1,6 @@
 return {
   id = "t1-01-imu",
-  track = 1,
+  track = 0,
   title = "Reading the motion sensor",
   permissions = { "imu", "display" },
   pages = {

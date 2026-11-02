@@ -6,10 +6,241 @@ namespace study {
 struct BuiltinFile { const char* name; const char* source; };
 
 static const BuiltinFile kBuiltin_lessons[] = {
+  { "b1-01-wifi-recon.lua", R"LUA(return {
+  id = "t4-01-wifi-recon",
+  track = 1,
+  title = "Wi-Fi recon",
+  tag = "Sec+ 4.0 Security operations",
+  card = "Sealed Frames",
+  requires = { "t0-05-rules-of-engagement" },
+  spirit = "Kamaitachi",
+  taunt = "Snip, snip. Rude. Weasels on a whirlwind, sickles for claws: the cut is so fast you only find the wound later. Every laptop drops at once, then rejoins. I don't even need your password. Your router believes any \"goodbye\" that claims to be from it. Seal the frames and see how far I get.",
+  permissions = { "wifi" },
+  pages = {
+    "Recon is the first step for attackers and defenders alike: what is out there and how is it protected?",
+    "A passive scan only listens for beacons that access points broadcast anyway. It is legal and is what every phone does. Connecting to or attacking networks you do not own is not.",
+    "Security types, weakest first: open, WEP (broken), WPA/WPA2-PSK (depends on the password), WPA3 (strongest). Open or WEP on a home or office network is a finding.",
+    "The attack this Trial seals: a deauthentication flood. Wi-Fi has small \"management frames\" that say hello and goodbye. On WPA2 they aren't signed, so anyone can forge a goodbye from your router and every device drops at once.",
+    "The fix is Protected Management Frames (802.11w, often called PMF). The router signs those frames and devices ignore forged ones. WPA3 requires PMF, which is one more reason to move to it.",
+  },
+  task = "Scan and print each network as: ssid, auth. Then print how many are open or WEP.",
+  starter = [[local nets = wifi.scan()
+local weak = 0
+for _, n in ipairs(nets) do
+  print(n.ssid .. ", " .. n.auth)
+  -- count weak ones here
+end
+print(weak)]],
+  check = function(r)
+    if not r.ok then return false, r.error end
+    if not r.code:find("wifi.scan", 1, true) then return false, "Use wifi.scan()." end
+    local last
+    for n in r.output:gmatch("%d+") do last = tonumber(n) end
+    if last == nil then return false, "Print the weak count on the last line." end
+    return true, "Recon done. You earned Sealed Frames: in Harae, the Kamaitachi can be bound."
+  end,
+  quiz = {
+    { q = "Every device drops off the Wi-Fi at once and rejoins seconds later, over and over. Changing the password does nothing. What fixes it?",
+      choices = { "A longer password", "Protected Management Frames (802.11w)", "Rebooting the router" }, answer = 2,
+      why = "The forged goodbye frames aren't covered by the password on WPA2. PMF signs them, so fakes are ignored." },
+    { q = "Which of these is OK without permission?", choices = { "Passively listing nearby networks", "Guessing a neighbor's Wi-Fi password", "Kicking devices off a cafe network" },
+      answer = 1, why = "Listening to public beacons is fine. Accessing or disrupting networks you do not own is illegal in most places." },
+  },
+  field = "On your own router, find the setting called PMF, 802.11w or Protected Management Frames and set it to Capable or Required. WPA3 turns it on for you.",
+  reflect = "Your office guest Wi-Fi shows as 'open'. Write the ticket you would raise and who it goes to.",
+}
+)LUA" },
+  { "b1-02-pick-a-network.lua", R"LUA(local SAVED = { ssid = "Office", auth = "wpa2" }
+local SCAN = {
+  { ssid = "Office", auth = "wpa2", channel = 6, rssi = -52 },
+  { ssid = "Office", auth = "open", channel = 1, rssi = -41 },
+  { ssid = "Office-Guest", auth = "wpa2", channel = 6, rssi = -55 },
+  { ssid = "Office", auth = "open", channel = 11, rssi = -44 },
+  { ssid = "Free Fast WiFi", auth = "open", channel = 3, rssi = -47 },
+  { ssid = "Office", auth = "wep", channel = 9, rssi = -46 },
+  { ssid = "Cafe Next Door", auth = "wpa2", channel = 1, rssi = -71 },
+  { ssid = "0ffice", auth = "open", channel = 4, rssi = -43 },
+}
+local FAKES = 3   -- exact name, wrong security type
+
+return {
+  id = "b1-02-pick-a-network",
+  track = 1,
+  title = "How devices pick a network",
+  tag = "Sec+ 2.0 Threats and vulnerabilities",
+  card = "True Name",
+  requires = { "t0-05-rules-of-engagement" },
+  spirit = "Will-o'-the-wisps",
+  taunt = "Foolish fire. It's right there in the name. Follow one light over the marsh and it drifts just out of reach until you're up to your knees in the bog. Your phone sees a hundred networks called \"Office\" and picks the loudest. Ours is open. Come closer.",
+  permissions = {},
+  pages = {
+    "A Wi-Fi network's name (its SSID) is just a label. Anyone can broadcast any name, for free, from a cheap board.",
+    "Your phone remembers networks you've joined as saved profiles. Each profile holds the name and the security type: open, WPA2 or WPA3.",
+    "A careless device joins anything with the right name. A careful one checks the security type too. An \"Office\" that suddenly has no password isn't your office.",
+    "The attack this Trial seals: a beacon flood. One device broadcasts hundreds of fake networks. The real one gets buried, and people tap a fake \"Office\" that's open and run by someone else.",
+    "The fix, True Name: devices join saved profiles that check the security type, never a name picked from a long list. Forget open networks you don't need, and use WPA3 where you can.",
+  },
+  task = "lab.saved is your saved profile and lab.scan is what's in the air. Print every network with exactly the saved name but a different security type. Then print how many you found.",
+  starter = [[local fakes = 0
+for _, n in ipairs(lab.scan) do
+  if n.ssid == lab.saved.ssid then
+    -- a fake has the right name but the wrong auth
+    print(n.ssid .. " " .. n.auth .. " ch" .. n.channel)
+  end
+end
+print(fakes)]],
+  hint = "Add a second test: and n.auth ~= lab.saved.auth. Then add 1 to fakes inside the if.",
+  lab = { saved = SAVED, scan = SCAN },
+  check = function(r)
+    if not r.ok then return false, "Your code hit an error: " .. r.error end
+    local last
+    for n in r.output:gmatch("%d+") do last = tonumber(n) end
+    if last == nil then return false, "Print the number of fakes on the last line." end
+    if r.output:find("wpa2 ch6", 1, true) then return false, "The wpa2 Office on channel 6 is the real one. Don't list it." end
+    if last ~= FAKES then return false, "The check counts " .. FAKES .. " fakes. You printed " .. last .. "." end
+    return true, "Three wisps named. You earned True Name: the Will-o'-the-wisps can be bound."
+  end,
+  quiz = {
+    { q = "The scan also shows \"0ffice\" with a zero, open. Your code didn't count it. Is it safe?",
+      choices = { "Yes, the name is different", "No. It's a lookalike, and your phone won't join it by itself, but people might tap it", "Yes, it's on another channel" },
+      answer = 2, why = "Devices won't auto-join a different name, but tired people tap lookalikes. Train staff to pick the saved network, not a name from the list." },
+    { q = "Which setting best protects a phone from fake copies of a network?",
+      choices = { "Auto-join any network with a known name", "Saved profiles that check the security type, and forgetting old open networks", "Turning the screen brightness down" },
+      answer = 2, why = "Matching name and security type, and not keeping open networks saved, removes what a fake copy relies on." },
+  },
+  field = "On your phone, open the list of saved Wi-Fi networks. Forget any open ones you don't use, so it can't auto-join a fake copy.",
+  reflect = "A user says the Wi-Fi list at work is full of hundreds of strange names and they can't find the real one. What do you tell them to do right now, and what do you report?",
+}
+)LUA" },
+  { "b1-03-interference-or-jamming.lua", R"LUA(local READINGS = {
+  { label = "12:10 break room", busy = { 9, 10, 11 } },
+  { label = "09:00 floor 2", busy = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 } },
+  { label = "14:30 lobby", busy = { 1, 2, 3, 4, 5 } },
+  { label = "16:45 car park", busy = { 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13 } },
+  { label = "18:00 office", busy = { 6 } },
+}
+local ANSWER = {
+  ["12:10 break room"] = "interference", ["09:00 floor 2"] = "jamming", ["14:30 lobby"] = "interference",
+  ["16:45 car park"] = "jamming", ["18:00 office"] = "interference",
+}
+
+return {
+  id = "b1-03-interference-or-jamming",
+  track = 1,
+  title = "Interference or jamming?",
+  tag = "Sec+ 4.0 Security operations",
+  card = "Spectrum Eye",
+  requires = { "t0-05-rules-of-engagement" },
+  spirit = "Nurikabe",
+  taunt = "An invisible wall on a night road. Pushing does nothing and going round takes forever. I don't trick anyone. I just stand here, across every channel, and I'm very good at standing here. Is it me, or is it someone's lunch? Better learn the difference.",
+  permissions = {},
+  pages = {
+    "2.4 GHz Wi-Fi has 13 channels (11 in the US). A spectrum view shows how much radio noise sits on each one.",
+    "Interference is ordinary noise. A microwave oven leaks a wide hump around channels 9 to 11 while it runs. Baby monitors, old cordless phones and Bluetooth crowd a few channels. It comes and goes, and it's local.",
+    "Jamming is deliberate. A jammer buries every channel at once, all day, and no setting turns it off. It's illegal in most countries, including for the person who \"just wanted quiet\".",
+    "A simple rule of thumb: if nearly every channel (10 or more of 13) is buried at the same moment, suspect jamming. If a few neighbouring channels are busy, look for an appliance first.",
+    "Rule out the boring cause before you call it an attack. Most \"the Wi-Fi is cursed\" tickets are a microwave, a bad spot, or a full channel.",
+  },
+  task = "lab.readings holds five spectrum reads. For each one, print its label, then jamming if 10 or more channels are busy, or interference if fewer are.",
+  starter = [[for _, r in ipairs(lab.readings) do
+  local count = #r.busy
+  local verdict = "interference"
+  -- decide when it's jamming
+  print(r.label .. " " .. verdict)
+end]],
+  hint = "Add: if count >= 10 then verdict = \"jamming\" end",
+  lab = { readings = READINGS },
+  check = function(r)
+    if not r.ok then return false, "Your code hit an error: " .. r.error end
+    for label, want in pairs(ANSWER) do
+      local line = r.output:match(label:gsub("%p", "%%%0") .. "[^\n]*")
+      if not line then return false, "No line for " .. label .. "." end
+      local got = line:match("(%a+)%s*$")
+      if got ~= want then return false, label .. " should be " .. want .. ". Count its busy channels again." end
+    end
+    return true, "Two walls, three ordinary noises. You earned Spectrum Eye: in Harae the spectrum read is free."
+  end,
+  quiz = {
+    { q = "Break-room Wi-Fi dies every day at 12:10 and nowhere else. Channels 9 to 11 light up. Most likely?",
+      choices = { "A jammer", "The microwave", "A deauth attack" }, answer = 2,
+      why = "Same time, same place, a wide hump on 9 to 11: that's a microwave oven running. Move the access point to another channel or to 5 GHz." },
+    { q = "Every channel is buried, all day, on the whole floor. What do you do?",
+      choices = { "Change the channel", "Switch critical devices to cables and report the jamming", "Change the Wi-Fi password" },
+      answer = 2, why = "No channel escapes a jammer. Keep important things running on cables, then report it, because jamming is illegal." },
+  },
+  field = "At lunchtime, stand near a microwave with Scry or a Wi-Fi analyser app open and watch channels 9 to 11 while it runs.",
+  reflect = "A user insists someone is \"hacking the Wi-Fi\" because it drops every day at lunch. How do you explain what's really happening without making them feel silly?",
+}
+)LUA" },
+  { "b1-04-wired-backups.lua", R"LUA(local DEVICES = {
+  { name = "Security camera", critical = true, moves = false },
+  { name = "Door controller", critical = true, moves = false },
+  { name = "Card reader at the till", critical = true, moves = false },
+  { name = "Staff phone", critical = true, moves = true },
+  { name = "Smart speaker", critical = false, moves = false },
+  { name = "Hot-desk laptop", critical = true, moves = true },
+  { name = "File server", critical = true, moves = false },
+  { name = "Guest tablet", critical = false, moves = true },
+}
+local WIRE = { ["Security camera"] = true, ["Door controller"] = true, ["Card reader at the till"] = true, ["File server"] = true }
+
+return {
+  id = "b1-04-wired-backups",
+  track = 1,
+  title = "Wired backups",
+  tag = "Sec+ 3.0 Security architecture",
+  card = "Iron Road",
+  requires = { "t0-05-rules-of-engagement" },
+  spirit = "Nurikabe",
+  taunt = "Tap me at the bottom with a stick. Or, you know, run a cable. You can't out-shout me on the air. But I can't stand in a wire.",
+  permissions = {},
+  pages = {
+    "Radio is shared air. Anything that must keep working through noise, interference or a jammer is safer on a cable.",
+    "The rule is simple. If a device matters and doesn't move, give it a cable: cameras, door controllers, card readers, servers, the access points' own uplinks.",
+    "Things that move, like phones and laptops, stay on Wi-Fi. The plan for them is a fallback: mobile data, a hotspot, or a wired desk to sit at.",
+    "The attack this Trial seals: jamming. Nothing you set on the router stops it. You go around it, keep the important things up, and report it. In the US that's the FCC, and in the UK it's Ofcom.",
+    "The fix, Iron Road: cables for the things that matter, a fallback for the rest, then report the jamming. Write down when it started and what stopped, so the report is useful.",
+  },
+  task = "lab.devices lists eight devices. Print the ones that should have a cable: critical and not moving. Then print how many.",
+  starter = [[local wired = 0
+for _, d in ipairs(lab.devices) do
+  -- cable it if it matters and doesn't move
+  print(d.name)
+end
+print(wired)]],
+  hint = "Use: if d.critical and not d.moves then ... end, and count inside the if.",
+  lab = { devices = DEVICES },
+  check = function(r)
+    if not r.ok then return false, "Your code hit an error: " .. r.error end
+    for _, d in ipairs(DEVICES) do
+      local printed = r.output:find(d.name, 1, true) ~= nil
+      if WIRE[d.name] and not printed then return false, d.name .. " matters and stays put. Give it a cable." end
+      if not WIRE[d.name] and printed then
+        return false, d.name .. (d.moves and " moves around. It stays on Wi-Fi." or " isn't critical. It can wait.")
+      end
+    end
+    local last
+    for n in r.output:gmatch("%d+") do last = tonumber(n) end
+    if last ~= 4 then return false, "Print the count (4) on the last line." end
+    return true, "Four on the Iron Road. You earned it: the Nurikabe can be bound."
+  end,
+  quiz = {
+    { q = "A jammer is blocking every Wi-Fi channel. Which setting on the router fixes it?",
+      choices = { "WPA3", "A different channel", "None. Use cables and report it" }, answer = 3,
+      why = "A jammer drowns every channel, whatever the settings. Cables and a report are the only answer." },
+    { q = "Who do you report radio jamming to in the US?",
+      choices = { "The FCC", "The ISP", "The router maker" }, answer = 1,
+      why = "The FCC enforces radio law in the US. In the UK it's Ofcom. Your ISP can't do anything about the air." },
+  },
+  field = "At home, list the devices that should have a cable (TV box, desktop, NAS, camera hub). Check which ones actually do.",
+  reflect = "Your manager asks why you want to spend money on cables when \"Wi-Fi works fine\". Make the case in two sentences.",
+}
+)LUA" },
   { "t0-01-hello-lua.lua", R"LUA(return {
   id = "t0-01-hello-lua",
   track = 0,
   title = "Hello, Lua",
+  tag = "Foundations",
   permissions = {},
   pages = {
     "Shugyo lessons follow one loop: Learn, Build, Test, Break, Defend. You read a little, write a little code, and the device checks your work.",
@@ -56,7 +287,7 @@ end]],
       if not at then return false, "Missing or out of order: " .. word end
       pos = at
     end
-    return true, "That order is a solid troubleshooting habit. You earned a Ward: the Smart home drill in Harae is open."
+    return true, "That order is a solid troubleshooting habit. That opens the smart-home practice drill in Harae."
   end,
   quiz = {
     { q = "Which port is plain (unencrypted) MQTT?", choices = { "443", "1883", "8883" }, answer = 2,
@@ -67,9 +298,132 @@ end]],
   reflect = "Write the first two questions you would ask a user whose smart camera went offline.",
 }
 )LUA" },
+  { "t0-04-tickets-cia.lua", R"LUA(local TICKETS = {
+  { id = 1, text = "Printer on floor 2 is offline again" },
+  { id = 2, text = "Payroll spreadsheet totals were changed overnight" },
+  { id = 3, text = "A customer list was sent to someone outside the company" },
+  { id = 4, text = "Website is down for everyone" },
+  { id = 5, text = "Someone edited the price list without permission" },
+  { id = 6, text = "A stranger took a photo of my screen on the train" },
+  { id = 7, text = "The VPN keeps timing out" },
+}
+local ANSWER = { "A", "I", "C", "A", "I", "C", "A" }
+
+return {
+  id = "t0-04-tickets-cia",
+  track = 0,
+  title = "Tickets and the CIA triad",
+  tag = "Sec+ 1.0 General concepts",
+  permissions = {},
+  pages = {
+    "Every security problem hurts one of three things. Confidentiality: the wrong person sees it. Integrity: someone changes it. Availability: nobody can use it.",
+    "That's the CIA triad. It isn't the spy agency. Security people use it to sort a problem before they fix it, because each leg has different fixes.",
+    "Confidentiality: leaks, shoulder surfing, a file shared with the wrong person. Integrity: edited records, a tampered update, a fake bank detail. Availability: outages, dropped Wi-Fi, a full disk.",
+    "Help Desk already does this. \"The website is down\" is availability. \"My password was used from another country\" starts as confidentiality. Tagging tickets this way tells the security team what to look for.",
+    "Harae's factions each attack one leg. Babel goes after availability: it breaks things for fun. The others come later.",
+  },
+  task = "Seven tickets are in lab.tickets. The starter tags them by keyword, but some come out as ?. Add the missing keywords so every ticket gets C, I or A.",
+  starter = [[local words = {
+  C = { "leak" },
+  I = { "changed" },
+  A = { "offline", "down" },
+}
+for _, t in ipairs(lab.tickets) do
+  local tag = "?"
+  local text = t.text:lower()
+  for leg, list in pairs(words) do
+    for _, w in ipairs(list) do
+      if text:find(w, 1, true) then tag = leg end
+    end
+  end
+  print(t.id .. " " .. tag)
+end]],
+  hint = "Run it (fn+R) and see which numbers show ?. Read those tickets and add one word from each to the right list.",
+  lab = { tickets = TICKETS },
+  check = function(r)
+    if not r.ok then return false, "Your code hit an error: " .. r.error end
+    local out = "\n" .. r.output
+    for i, leg in ipairs(ANSWER) do
+      local got = out:match("\n" .. i .. " (%S+)")
+      if not got then return false, "Ticket " .. i .. " wasn't printed." end
+      if got == "?" then return false, "Ticket " .. i .. " is still ?. Read it and add a keyword." end
+      if got ~= leg then return false, "Ticket " .. i .. " came out " .. got .. ". Read it again: who is hurt, and how?" end
+    end
+    return true, "All seven sorted. That's triage: name the leg, then pick the fix."
+  end,
+  quiz = {
+    { q = "A user's files are encrypted and a note demands money. Which leg is hit first?",
+      choices = { "Confidentiality", "Integrity", "Availability" }, answer = 3,
+      why = "They can't open their files, so availability goes first. Many ransomware gangs also copy the data, which hits confidentiality too." },
+    { q = "An invoice's bank details were quietly changed. Which leg?",
+      choices = { "Confidentiality", "Integrity", "Availability" }, answer = 2,
+      why = "Nothing was hidden or broken. Data was altered, which is integrity." },
+    { q = "Why tag a ticket with C, I or A at all?",
+      choices = { "It's required by law", "Each leg points to different checks and fixes", "It makes the ticket shorter" }, answer = 2,
+      why = "An outage, a leak and a tampered file are investigated differently. The tag tells the next person where to start." },
+  },
+  field = "Look at your last three tickets at work, or three tech problems at home. Tag each one C, I or A.",
+  reflect = "A user says: \"My email is sending messages I didn't write.\" Which leg would you tag it, and what's the first question you'd ask?",
+}
+)LUA" },
+  { "t0-05-rules-of-engagement.lua", R"LUA(local TARGETS = {
+  { name = "My home router", owner = "me", permission = false },
+  { name = "Cafe Wi-Fi", owner = "cafe", permission = false },
+  { name = "My spare ESP32", owner = "me", permission = false },
+  { name = "Work test lab", owner = "employer", permission = true },
+  { name = "Neighbour's camera", owner = "neighbour", permission = false },
+  { name = "Friend's laptop", owner = "friend", permission = true },
+  { name = "Office printer", owner = "employer", permission = false },
+}
+local IN_SCOPE = { ["My home router"] = true, ["My spare ESP32"] = true, ["Work test lab"] = true, ["Friend's laptop"] = true }
+
+return {
+  id = "t0-05-rules-of-engagement",
+  track = 0,
+  title = "Rules of engagement",
+  tag = "Sec+ 5.0 Program management",
+  permissions = {},
+  pages = {
+    "Before any security work, there is one question: am I allowed to touch this? Testing something you don't own, without written permission, is a crime almost everywhere.",
+    "In the US it's the Computer Fraud and Abuse Act. In the UK it's the Computer Misuse Act. Most countries have one. Jamming radio is illegal under radio law too, even for a second.",
+    "Professionals work from a scope: a written list of what may be tested, by whom, when and how. Anything not on the list is out, even if it's on the same network.",
+    "Some things are always fine. Listening is legal: a passive scan only hears what devices already broadcast. That's why MitamaOS only listens and simulates attacks on screen.",
+    "Permission must be clear. \"My friend said it was OK\" works for their own laptop if they really agreed. It doesn't cover their employer's network or the cafe they're sitting in.",
+  },
+  task = "lab.targets lists seven devices and networks. Print only the ones in scope: things you own, or things the owner gave you permission to test.",
+  starter = [[for _, t in ipairs(lab.targets) do
+  -- in scope: owner is "me", or permission is true
+  print(t.name)
+end]],
+  hint = "Wrap the print in an if: if t.owner == \"me\" or t.permission then ... end",
+  lab = { targets = TARGETS },
+  check = function(r)
+    if not r.ok then return false, "Your code hit an error: " .. r.error end
+    for _, t in ipairs(TARGETS) do
+      local printed = r.output:find(t.name, 1, true) ~= nil
+      if IN_SCOPE[t.name] and not printed then return false, t.name .. " is in scope but wasn't printed." end
+      if not IN_SCOPE[t.name] and printed then return false, t.name .. " is out of scope. Leave it alone." end
+    end
+    return true, "That's a clean scope. The faction Trials are open now."
+  end,
+  quiz = {
+    { q = "Which of these is fine without anyone's permission?",
+      choices = { "Listing the Wi-Fi networks near you", "Logging into a camera that still uses admin/admin", "Kicking a laptop off the cafe Wi-Fi to test it" },
+      answer = 1, why = "Listening to broadcasts is legal. Using someone's login, even a default one, or disrupting their network isn't." },
+    { q = "Your manager says \"test the network\" in a hallway chat. What do you do first?",
+      choices = { "Start scanning", "Get the scope in writing", "Test only at night" }, answer = 2,
+      why = "A written scope protects you and says what is in and out. Verbal permission is easy to forget or deny." },
+    { q = "You find the building next door's Wi-Fi uses WEP. What's in scope for you?",
+      choices = { "Cracking it to prove the point", "Nothing. You can tell them it's weak", "Joining it briefly to check" }, answer = 2,
+      why = "Noticing a weakness from a passive scan is fine. Touching their network isn't." },
+  },
+  field = "Write a one-line scope for your own lab: the devices and networks you own and may test.",
+  reflect = "A user asks you to \"just check\" whether their ex's Wi-Fi is still open. How do you say no, and what would you offer instead?",
+}
+)LUA" },
   { "t1-01-imu.lua", R"LUA(return {
   id = "t1-01-imu",
-  track = 1,
+  track = 0,
   title = "Reading the motion sensor",
   permissions = { "imu", "display" },
   pages = {
@@ -98,7 +452,7 @@ print(az)]],
 )LUA" },
   { "t1-02-i2c-scan.lua", R"LUA(return {
   id = "t1-02-i2c-scan",
-  track = 1,
+  track = 0,
   title = "Finding devices on I2C",
   permissions = { "i2c" },
   pages = {
@@ -130,7 +484,7 @@ end]],
 )LUA" },
   { "t1-03-gpio-blink.lua", R"LUA(return {
   id = "t1-03-gpio-blink",
-  track = 1,
+  track = 0,
   title = "Driving a pin",
   permissions = { "gpio", "sys" },
   pages = {
@@ -160,48 +514,272 @@ print("done")]],
   reflect = "Name one real device where a stuck-on GPIO output could be a safety issue.",
 }
 )LUA" },
-  { "t4-01-wifi-recon.lua", R"LUA(return {
-  id = "t4-01-wifi-recon",
-  track = 4,
-  title = "Wi-Fi recon (passive)",
-  permissions = { "wifi" },
-  pages = {
-    "Recon is the first step for attackers and defenders alike: what is out there and how is it protected?",
-    "A passive scan only listens for beacons that access points broadcast anyway. It is legal and is what every phone does. Connecting to or attacking networks you do not own is not.",
-    "Security types, weakest first: open, WEP (broken), WPA/WPA2-PSK (depends on the password), WPA3 (strongest). Open or WEP on a home or office network is a finding.",
-  },
-  task = "Scan and print each network as: ssid, auth. Then print how many are open or WEP.",
-  starter = [[local nets = wifi.scan()
-local weak = 0
-for _, n in ipairs(nets) do
-  print(n.ssid .. ", " .. n.auth)
-  -- count weak ones here
-end
-print(weak)]],
-  check = function(r)
-    if not r.ok then return false, r.error end
-    if not r.code:find("wifi.scan", 1, true) then return false, "Use wifi.scan()." end
-    local last
-    for n in r.output:gmatch("%d+") do last = tonumber(n) end
-    if last == nil then return false, "Print the weak count on the last line." end
-    return true, "Recon done. You earned a Ward: in Harae, the Office Wi-Fi drill is open."
-  end,
-  quiz = {
-    { q = "Which of these is OK without permission?", choices = { "Passively listing nearby networks", "Guessing a neighbor's Wi-Fi password", "Kicking devices off a cafe network" },
-      answer = 1, why = "Listening to public beacons is fine. Accessing or disrupting networks you do not own is illegal in most places." },
-  },
-  reflect = "Your office guest Wi-Fi shows as 'open'. Write the ticket you would raise and who it goes to.",
-}
-)LUA" },
 };
-static constexpr int kBuiltin_lessons_count = 6;
+static constexpr int kBuiltin_lessons_count = 11;
 
 static const BuiltinFile kBuiltin_scenarios[] = {
+  { "b1-01-kamaitachi.lua", R"LUA(return {
+  id = "b1-01-kamaitachi",
+  title = "The Severance",
+  faction = "Babel",
+  demon = "Kamaitachi",
+  briefing = "A small office, one access point, a dozen laptops and two cameras. Something in the air keeps cutting everyone off. It never stays to watch.",
+  points = 3,
+  surge = 5,
+  rounds = {
+    {
+      symptom = "Every laptop and camera drops off the Wi-Fi at the same moment, then rejoins a few seconds later. Again. And again.",
+      damage = { uptime = 40, data = 0 },
+      evidence = {
+        { name = "Access point log", cost = 1,
+          text = "Hundreds of 'deauthenticated, reason 7' events, all claiming to come from the access point's own address." },
+        { name = "Spectrum read", cost = 2, free_with = "b1-03-interference-or-jamming",
+          text = "The channel is clean. No noise, no wall. Something is sending valid-looking frames, not drowning the air." },
+        { name = "ISP status page", cost = 1, text = "No outages reported." },
+      },
+      defenses = {
+        { name = "Sealed Frames: turn on protected management frames (802.11w) or WPA3", result = "stop", ward = "t4-01-wifi-recon",
+          text = "The router signs its goodbyes now, so the forged ones are ignored. The Kamaitachi's sickles pass straight through." },
+        { name = "Change band", result = "partial",
+          text = "Moving to 5 GHz helps only if the attacker's gear is 2.4 GHz only. The cuts slow down, but the real fix is signed frames." },
+        { name = "Change the Wi-Fi password", result = "fail",
+          text = "On WPA2 the goodbye frames aren't covered by the password, so this changes nothing." },
+        { name = "Reboot the access point", result = "fail",
+          text = "The forged frames start again the moment everyone reconnects." },
+      },
+      reveal = {
+        attack = "Deauthentication flood",
+        target = "802.11 management frames, which WPA2 doesn't sign by default",
+        cia = "Availability",
+        technique = "MITRE ATT&CK: Network Denial of Service (T1498)",
+        lesson = "t4-01-wifi-recon",
+      },
+    },
+  },
+}
+)LUA" },
+  { "b1-02-wisps.lua", R"LUA(return {
+  id = "b1-02-wisps",
+  title = "The Thousand Masks",
+  faction = "Babel",
+  demon = "Will-o'-the-wisps",
+  briefing = "The office Wi-Fi list has gone strange. The wisps want an audience, and the more lights, the better the show.",
+  points = 3,
+  surge = 5,
+  rounds = {
+    {
+      symptom = "The network list shows hundreds of names. Two staff tapped \"Office\", got no password prompt, and now nothing loads properly.",
+      damage = { uptime = 35, data = 15 },
+      evidence = {
+        { name = "Nearby networks", cost = 1,
+          text = "340 networks. Twelve are called \"Office\". Eleven of those are open, each from a random hardware address. Only one is WPA2." },
+        { name = "Staff interview", cost = 1,
+          text = "Both picked \"Office\" from the list because it had the strongest signal. Neither noticed there was no lock icon." },
+        { name = "Spectrum read", cost = 2, free_with = "b1-03-interference-or-jamming",
+          text = "Busy, but not buried. The air is full of beacon frames, not noise." },
+      },
+      defenses = {
+        { name = "True Name: join only the saved profile that checks the security type, and forget open networks", result = "stop", ward = "b1-02-pick-a-network",
+          text = "A copy can borrow the name but not the security type. Devices skip the open fakes, and the lights go out one by one." },
+        { name = "Change band", result = "fail",
+          text = "Wisps follow you. A beacon flood works on 5 GHz too." },
+        { name = "Change the Wi-Fi password", result = "fail",
+          text = "The fakes don't use your password at all. They're open." },
+        { name = "Hide the network name", result = "fail",
+          text = "Hidden networks still show up to scanners, and devices that look for them can be fooled even more easily." },
+      },
+      reveal = {
+        attack = "Beacon flood with open lookalike networks",
+        target = "How devices and people pick a network by name",
+        cia = "Availability",
+        technique = "MITRE ATT&CK: Network Denial of Service (T1498)",
+        lesson = "b1-02-pick-a-network",
+      },
+    },
+  },
+}
+)LUA" },
+  { "b1-03-nurikabe.lua", R"LUA(return {
+  id = "b1-03-nurikabe",
+  title = "The Silence",
+  faction = "Babel",
+  demon = "Nurikabe",
+  briefing = "A wall has appeared on the road. Pushing does nothing, and going round takes forever. Two moves: find it, then go around it.",
+  points = 3,
+  surge = 5,
+  rounds = {
+    {
+      symptom = "The whole floor is offline. Every wireless device at once, all morning. The wired printer still works.",
+      damage = { uptime = 25, data = 0 },
+      evidence = {
+        { name = "Spectrum read", cost = 2, free_with = "b1-03-interference-or-jamming",
+          text = "Every 2.4 GHz channel is buried in noise, all at the same moment, and it hasn't let up." },
+        { name = "Access point log", cost = 1,
+          text = "No deauthentication frames. Clients just stop hearing the access point." },
+        { name = "Break-room check", cost = 1, text = "The microwave is off. Nobody has had lunch yet." },
+      },
+      defenses = {
+        { name = "Call it jamming and start an outage log", result = "stop",
+          text = "You found the wall. Writing down when it started and what stopped makes the report useful later." },
+        { name = "Change band", result = "partial",
+          text = "5 GHz holds a little longer, then the wall spreads there too." },
+        { name = "Reboot every access point", result = "fail",
+          text = "They come back up into the same noise." },
+      },
+      reveal = {
+        attack = "Radio jamming",
+        target = "The shared air every wireless device depends on",
+        cia = "Availability",
+        technique = "Jamming is illegal under radio law (FCC in the US, Ofcom in the UK)",
+        lesson = "b1-03-interference-or-jamming",
+      },
+    },
+    {
+      symptom = "The wall is still there. Cameras, the door controller and the till are all down, and customers are waiting.",
+      damage = { uptime = 40, data = 0 },
+      evidence = {
+        { name = "Device list", cost = 1,
+          text = "The camera, door controller, till and file server all sit in one place. The laptops and phones move around." },
+        { name = "Wiring closet", cost = 1, text = "The switch has spare ports, and the desks have wall sockets." },
+      },
+      defenses = {
+        { name = "Iron Road: cable the things that matter, fall back to mobile data, report the jamming", result = "stop", ward = "b1-04-wired-backups",
+          text = "You can't out-shout the wall, but it can't stand in a wire. The shop opens again, and the report goes in." },
+        { name = "Wait for it to stop", result = "partial",
+          text = "It might, eventually. The shop loses the morning." },
+        { name = "Turn on WPA3", result = "fail", text = "Encryption doesn't help when nothing can be heard at all." },
+      },
+      reveal = {
+        attack = "Radio jamming",
+        target = "Wireless links for devices that must keep working",
+        cia = "Availability",
+        technique = "Resilience: wired paths for critical devices",
+        lesson = "b1-04-wired-backups",
+      },
+    },
+  },
+}
+)LUA" },
+  { "b1-04-zao-jun.lua", R"LUA(return {
+  id = "b1-04-zao-jun",
+  title = "Lunch hour",
+  faction = "Babel",
+  demon = "Zao Jun",
+  briefing = "Not every outage is Babel. The Kitchen God keeps getting blamed for Babel's noise, and he's tired of it. Rule out the boring cause before you call it an attack.",
+  points = 3,
+  surge = 5,
+  rounds = {
+    {
+      symptom = "Break-room Wi-Fi dies every day at about 12:10, and only in the break room. By one o'clock it's fine again.",
+      damage = { uptime = 20, data = 0 },
+      evidence = {
+        { name = "Spectrum read", cost = 2, free_with = "b1-03-interference-or-jamming",
+          text = "A wide hump across channels 9 to 11 from 12:08 to 12:50. Every other channel is quiet." },
+        { name = "Access point log", cost = 1, text = "No deauthentication frames. Just a lot of retries on channel 10." },
+        { name = "Ask the staff", cost = 1, text = "\"It's worst when someone's heating soup.\"" },
+      },
+      defenses = {
+        { name = "Change band: move the break-room access point to 5 GHz or a clear channel", result = "stop",
+          text = "The microwave only leaks around 2.4 GHz channels 9 to 11. Move away from it and everyone eats in peace. Maybe give Zao Jun some honey." },
+        { name = "Sealed Frames", result = "fail", ward = "t4-01-wifi-recon",
+          text = "Nothing was forged. You burned a Seal on a microwave." },
+        { name = "Iron Road", result = "partial", ward = "b1-04-wired-backups",
+          text = "A cable works for a desk, but nobody wants a cable to their sandwich. A Seal spent on a harmless spirit." },
+        { name = "Report the jamming", result = "fail",
+          text = "It isn't jamming. It's lunch. The regulator won't thank you." },
+      },
+      reveal = {
+        attack = "Not an attack: microwave interference",
+        target = "2.4 GHz channels near a microwave oven",
+        cia = "Availability",
+        technique = "Troubleshooting: rule out the ordinary cause first",
+        lesson = "b1-03-interference-or-jamming",
+      },
+    },
+  },
+}
+)LUA" },
+  { "b1-05-the-tower.lua", R"LUA(return {
+  id = "b1-05-the-tower",
+  title = "The Tower",
+  faction = "Babel",
+  demon = "The Tower",
+  briefing = "Everyone's shouting and nobody's saying anything. Classic Babel. The Nurikabe walls off 2.4 GHz, and as everyone flees to 5 GHz, the wisps are waiting with fake copies of the office network. Three moves: find the wall, name the true network, go around.",
+  points = 3,
+  surge = 5,
+  rounds = {
+    {
+      symptom = "Everything on 2.4 GHz is dead. Phones that can are hopping to 5 GHz on their own. The rest just spin.",
+      damage = { uptime = 25, data = 0 },
+      evidence = {
+        { name = "Spectrum read", cost = 2, free_with = "b1-03-interference-or-jamming",
+          text = "2.4 GHz is buried on every channel. 5 GHz is clear of noise but crowded with beacons." },
+        { name = "Access point log", cost = 1, text = "No deauthentication frames. Clients can't hear the 2.4 GHz radio at all." },
+      },
+      defenses = {
+        { name = "Find the wall: log the jamming and move everyone who can to 5 GHz", result = "stop",
+          text = "You've found the wall and stepped around it for now. The noise underneath is easier to hear." },
+        { name = "Reboot the 2.4 GHz radios", result = "partial", text = "They come back into the same noise. You lose time." },
+        { name = "Change the Wi-Fi password", result = "fail", text = "A wall doesn't care about passwords." },
+      },
+      reveal = {
+        attack = "Radio jamming on 2.4 GHz",
+        target = "The shared air",
+        cia = "Availability",
+        technique = "Jamming is illegal under radio law",
+        lesson = "b1-03-interference-or-jamming",
+      },
+    },
+    {
+      symptom = "On 5 GHz there are forty networks called \"Office\". Staff are tapping the strongest one and getting a sign-in page.",
+      damage = { uptime = 30, data = 20 },
+      evidence = {
+        { name = "Nearby networks", cost = 1,
+          text = "Forty \"Office\" networks on 5 GHz. Thirty-nine are open. One is WPA3, the real one." },
+        { name = "Staff interview", cost = 1, text = "\"It said Office. Of course I tapped it.\"" },
+      },
+      defenses = {
+        { name = "True Name: join only the saved profile that checks the security type", result = "stop", ward = "b1-02-pick-a-network",
+          text = "Thirty-nine lights and one true name. Devices go to the real one and the wisps lose their audience." },
+        { name = "Pick the strongest \"Office\"", result = "fail", text = "The strongest is always the closest fake." },
+        { name = "Hide the network name", result = "fail", text = "Hiding the name doesn't stop anyone copying it." },
+      },
+      reveal = {
+        attack = "Beacon flood on the fallback band",
+        target = "People and devices picking a network by name",
+        cia = "Availability",
+        technique = "MITRE ATT&CK: Network Denial of Service (T1498)",
+        lesson = "b1-02-pick-a-network",
+      },
+    },
+    {
+      symptom = "The wall spreads to 5 GHz. Now nothing wireless works anywhere in the building.",
+      damage = { uptime = 35, data = 0 },
+      evidence = {
+        { name = "Spectrum read", cost = 2, free_with = "b1-03-interference-or-jamming",
+          text = "Both bands buried, every channel, wall to wall." },
+        { name = "Device list", cost = 1, text = "The till, cameras, door controller and server never move." },
+      },
+      defenses = {
+        { name = "Iron Road: cable what matters, fall back to mobile data, report the jamming", result = "stop", ward = "b1-04-wired-backups",
+          text = "The Tower can drown the air, but it can't stand in a wire. The building runs, the report goes in, and the rabble scatters." },
+        { name = "Change band", result = "fail", text = "There's no band left to change to." },
+        { name = "Wait it out", result = "partial", text = "Babel gets bored eventually. You lose the day." },
+      },
+      reveal = {
+        attack = "Wide-band jamming",
+        target = "Every wireless link in the building",
+        cia = "Availability",
+        technique = "Resilience: wired paths and reporting",
+        lesson = "b1-04-wired-backups",
+      },
+    },
+  },
+}
+)LUA" },
   { "s01-office-wifi.lua", R"LUA(return {
   id = "s01-office-wifi",
   title = "Trouble on the office Wi-Fi",
-  faction = "Static",
-  demon = "The Severance",
   briefing = "You are Blue Team for a 12-person office: one access point, a guest SSID, cameras and smart plugs. Red Team is somewhere nearby.",
   points = 3,
   rounds = {
@@ -323,6 +901,6 @@ static const BuiltinFile kBuiltin_scenarios[] = {
 }
 )LUA" },
 };
-static constexpr int kBuiltin_scenarios_count = 2;
+static constexpr int kBuiltin_scenarios_count = 7;
 
 }  // namespace study

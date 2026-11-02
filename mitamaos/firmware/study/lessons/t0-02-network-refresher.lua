@@ -22,7 +22,7 @@ end]],
       if not at then return false, "Missing or out of order: " .. word end
       pos = at
     end
-    return true, "That order is a solid troubleshooting habit. You earned a Ward: the Smart home drill in Harae is open."
+    return true, "That order is a solid troubleshooting habit. That opens the smart-home practice drill in Harae."
   end,
   quiz = {
     { q = "Which port is plain (unencrypted) MQTT?", choices = { "443", "1883", "8883" }, answer = 2,
