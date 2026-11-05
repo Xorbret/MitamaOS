@@ -44,6 +44,9 @@ struct RunResult {
 struct SandboxLimits {
   size_t memoryBytes = 48 * 1024;
   uint32_t instructionBudget = 2000000;
+  // sys.sleep() time allowed per run. Sleeping costs almost no
+  // instructions, so without this a loop of sleeps would freeze the device.
+  uint32_t sleepBudgetMs = 15000;
 };
 
 class Sandbox {
@@ -61,6 +64,8 @@ class Sandbox {
   RunResult eval(const std::string& line);
 
   lua_State* state() { return L_; }
+  // Takes ms from this run's sleep budget; false once it is used up.
+  bool spendSleep(uint32_t ms);
   Hal* hal() { return hal_; }
   uint32_t permissions() const { return permissions_; }
 
@@ -81,6 +86,7 @@ class Sandbox {
   SandboxLimits limits_;
   size_t used_ = 0;
   uint32_t executed_ = 0;
+  uint32_t slept_ = 0;
   std::string output_;
 };
 

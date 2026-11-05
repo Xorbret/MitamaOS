@@ -54,7 +54,7 @@ public:
             case H_BRIEF:    if (back) _scr = H_DRILLS; else if (st.enter) _beginRounds(); break;
             case H_ROUND:    _keysRound(back, up, down, k, st.enter); break;
             case H_EVIDENCE: if (back || st.enter) _scr = H_ROUND; break;
-            case H_DEFEND:   _keysDefend(back, up, down, st.enter); break;
+            case H_DEFEND:   _keysDefend(back, up, down, k, st.enter); break;
             case H_REVEAL:   if (st.enter) _afterReveal(); break;
             case H_DONE:     if (back || st.enter) { _game.reset(); _scr = H_DRILLS; _sealedCache.clear(); } break;
             case H_DEEP:     if (back || st.enter) _scr = H_HOME; break;
@@ -76,21 +76,21 @@ private:
     int _drill = -1;
     std::unique_ptr<study::Game> _game;
     std::vector<std::string> _need;       // Wards a sealed drill needs
-    int _evSel = 0, _evOpen = 0, _defSel = 0;
+    int _evSel = 0, _evOpen = 0, _defSel = 0, _defTop = 0;
     std::vector<int> _defs;               // response indices open to the player
     int _roundScore = 0, _scoreBefore = 0;
-    bool _cleared = false, _newBest = false;
+    bool _cleared = false, _newBest = false, _broken = false;
     uint32_t _kiPaid = 0;
     std::vector<int8_t> _sealedCache;     // per drill: -1 unknown, 0 open, 1 sealed
 
     study::Library& _lib() { return study::Library::get(); }
 
     static uint16_t _factionColor(const std::string& f) {
+        // the same colours as the matching arcs in Shugyo's lesson list
         if (f == "Babel") return 0xFC80;   // ember orange
-        if (f == "Static") return MUI::YELLOW;
-        if (f == "Mirror Court") return MUI::CYAN;
-        if (f == "Hollow Ones") return MUI::PURPLE;
-        if (f == "Leeches") return MUI::MAGENTA;
+        if (f == "Good Neighbours") return MUI::GREEN;
+        if (f == "Night-Roamers") return MUI::PURPLE;
+        if (f == "Fallen") return MUI::BONES;
         return MUI::DIM;
     }
     static const char* _factionName(const std::string& f) { return f.empty() ? "PRACTICE" : f.c_str(); }
@@ -356,13 +356,14 @@ private:
         auto& r = _game->round();
         for (int i = 0; i < (int)r.defenses.size(); i++)
             if (r.defenses[i].ward.empty() || _lib().progress.hasWard(r.defenses[i].ward)) _defs.push_back(i);
-        _defSel = 0;
+        _defSel = 0; _defTop = 0;
         _scr = H_DEFEND;
     }
-    void _keysDefend(bool back, bool up, bool down, bool enter) {
+    void _keysDefend(bool back, bool up, bool down, char k, bool enter) {
         if (back) { _scr = H_ROUND; return; }
         if (up) _defSel = max(0, _defSel - 1);
         if (down) _defSel = min((int)_defs.size() - 1, _defSel + 1);
+        if (k >= '1' && k <= '9' && k - '1' < (int)_defs.size()) { _defSel = k - '1'; enter = true; }
         if (enter && !_defs.empty()) {
             _scoreBefore = _game->score();
             _game->defend(_defs[_defSel]);
@@ -370,17 +371,29 @@ private:
             _scr = H_REVEAL;
         }
     }
+    // Height of one response in the list (one or two lines of text).
+    int _defHeight(int i) {
+        auto& d = _game->round().defenses[_defs[i]];
+        int lines = min(StudyUI::wrap(_c, MUI::small(), d.name.c_str(), 0, 0, 218, 11, 0, 0), 2);
+        return lines * 11 + 3;
+    }
     void _drawDefend() {
         auto& r = _game->round();
         char ap[12]; snprintf(ap, sizeof(ap), "%d AP left", _game->pointsLeft());
         StudyUI::head(_c, "CHOOSE A DEFENCE", ap);
+        // scroll so the selected response is on screen
+        if (_defSel < _defTop) _defTop = _defSel;
+        for (;;) {
+            int y = StudyUI::TOP;
+            for (int i = _defTop; i <= _defSel; i++) y += _defHeight(i) + 2;
+            if (y - 2 <= StudyUI::BOTTOM || _defTop >= _defSel) break;
+            _defTop++;
+        }
         int y = StudyUI::TOP;
-        for (int i = 0; i < (int)_defs.size(); i++) {
+        for (int i = _defTop; i < (int)_defs.size(); i++) {
             auto& d = r.defenses[_defs[i]];
             bool sel = i == _defSel;
-            int lines = StudyUI::wrap(_c, MUI::small(), d.name.c_str(), 0, 0, 218, 11, 0, 0);
-            lines = min(lines, 2);
-            int h = lines * 11 + 3;
+            int h = _defHeight(i), lines = (h - 3) / 11;
             if (y + h > StudyUI::BOTTOM) break;
             if (sel) StudyUI::bar(_c, 3, y - 1, 234, h);
             char n[3]; snprintf(n, sizeof(n), "%d", i + 1);
@@ -428,10 +441,13 @@ private:
         auto& lib = _lib();
         auto& s = _game->scenario();
         int best = lib.progress.bestScenarioScore(s.id);
-        _cleared = best < 0;
-        _newBest = _game->score() > best;
-        lib.progress.recordScenario(s.id, _game->score());
-        lib.save();
+        // Only a broken hex is recorded: a run where an attack got through
+        // doesn't count as cleared, doesn't pay the first-clear bonus and
+        // doesn't bring the Deep Aether closer.
+        _broken = _game->broken();
+        _cleared = _broken && best < 0;
+        _newBest = _broken && _game->score() > best;
+        if (_broken) { lib.progress.recordScenario(s.id, _game->score()); lib.save(); }
         uint32_t ki = (uint32_t)_game->score() / 10 + (_cleared ? KI_FIRST_CLEAR : 0);
         _kiPaid = Ki::get().add(Ki::S_HARAE, ki);
         _scr = H_DONE;
@@ -449,10 +465,11 @@ private:
     void _drawDone() {
         auto& s = _game->scenario();
         String t = s.title.c_str(); t.toUpperCase();
-        StudyUI::head(_c, t.c_str(), _newBest ? "NEW BEST" : "", MUI::GREEN);
-        char g[2] = { _grade(_game->score(), _maxScore()), 0 };
-        MUI::enso(_c, 40, 62, 24, MUI::GREEN);
-        MUI::textCentered(_c, MUI::display(), g, 40, 52, MUI::YELLOW);
+        uint16_t col = _broken ? MUI::GREEN : MUI::RED;
+        StudyUI::head(_c, t.c_str(), _newBest ? "NEW BEST" : _broken ? "" : "THE HEX HELD", col);
+        char g[2] = { _broken ? _grade(_game->score(), _maxScore()) : '-', 0 };
+        MUI::enso(_c, 40, 62, 24, col);
+        MUI::textCentered(_c, MUI::display(), g, 40, 52, _broken ? MUI::YELLOW : MUI::RED);
         char sc[24]; snprintf(sc, sizeof(sc), "%d", _game->score());
         MUI::text(_c, MUI::display(), sc, 82, StudyUI::TOP + 2, MUI::WHITE);
         char of[24]; snprintf(of, sizeof(of), "of %d", _maxScore());
@@ -465,6 +482,7 @@ private:
         char k[16]; snprintf(k, sizeof(k), "+%u ki", (unsigned)_kiPaid);
         int x = MUI::text(_c, MUI::big(), k, 82, y, MUI::YELLOW);
         if (_cleared) MUI::text(_c, MUI::small(), "first clear", x + 6, y + 2, MUI::GREEN);
+        else if (!_broken) MUI::text(_c, MUI::small(), "not broken yet", x + 6, y + 2, MUI::RED);
         StudyUI::foot(_c, "ENT back to the Domain");
     }
 

@@ -25,10 +25,20 @@ end
 print(weak)]],
   check = function(r)
     if not r.ok then return false, r.error end
-    if not r.code:find("wifi.scan", 1, true) then return false, "Use wifi.scan()." end
-    local last
-    for n in r.output:gmatch("%d+") do last = tonumber(n) end
+    local code = r.code:gsub("%-%-[^\n]*", "")
+    if not code:find("wifi.scan", 1, true) then return false, "Use wifi.scan()." end
+    if not (code:find("open", 1, true) and code:find("wep", 1, true)) then
+      return false, "Count the weak ones: check n.auth for \"open\" and \"wep\"."
+    end
+    -- the weak networks in the list the learner printed
+    local weak = 0
+    for line in r.output:gmatch("[^\n]+") do
+      if line:match(", open%s*$") or line:match(", wep%s*$") then weak = weak + 1 end
+    end
+    local tail = r.output:match("([^\n]*)\n*$") or ""
+    local last = tonumber(tail:match("^%s*(%d+)%s*$"))
     if last == nil then return false, "Print the weak count on the last line." end
+    if last ~= weak then return false, "Your list shows " .. weak .. " open or WEP, but you printed " .. last .. "." end
     return true, "Recon done. You earned Sealed Frames: in Harae, the Kamaitachi can be bound."
   end,
   quiz = {

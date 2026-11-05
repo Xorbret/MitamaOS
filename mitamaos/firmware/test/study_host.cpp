@@ -44,7 +44,9 @@ static const std::map<std::string, std::string> kSolutions = {
   {"t0-01-hello-lua", "print('hello, shugyo')"},
   {"t0-02-network-refresher", "for _, c in ipairs({'wifi','ip','gateway','dns'}) do print(c) end"},
   {"t4-01-wifi-recon",
-   "local w=0 for _,n in ipairs(wifi.scan()) do print(n.ssid..', '..n.auth) if n.auth=='open' then w=w+1 end end print(w)"},
+   "local w=0 for _,n in ipairs(wifi.scan()) do print(n.ssid..', '..n.auth) if n.auth=='open' or n.auth=='wep' then w=w+1 end end print(w)"},
+  {"t1-01-imu",
+   "local ax,ay,az=imu.read() print(math.max(math.abs(ax),math.abs(ay),math.abs(az)))"},
   {"t0-04-tickets-cia",
    "local words={C={'leak','outside','photo'},I={'changed','edited'},A={'offline','down','timing out'}}\n"
    "for _,t in ipairs(lab.tickets) do local tag='?' local text=t.text:lower()\n"
@@ -64,7 +66,7 @@ static const std::map<std::string, std::string> kSolutions = {
 // Lessons whose starter code must not pass as it stands (the learner has
 // something to do).
 static const char* const kStarterMustFail[] = {
-  "t0-04-tickets-cia", "t0-05-rules-of-engagement", "b1-02-pick-a-network",
+  "t4-01-wifi-recon", "t1-01-imu", "t0-04-tickets-cia", "t0-05-rules-of-engagement", "b1-02-pick-a-network",
   "b1-03-interference-or-jamming", "b1-04-wired-backups",
 };
 
@@ -176,6 +178,27 @@ int main() {
     CHECK(!g.run.ok, "memory cap not enforced");
     g = l.grade("os.execute('x')");
     CHECK(!g.run.ok, "os library reachable");
+    // A loop of sleeps would freeze the device: the sleep budget stops it.
+    Sandbox box(&hal, kPermSys);
+    RunResult rr = box.run("for i = 1, 100 do sys.sleep(5000) end");
+    CHECK(!rr.ok && rr.error.find("sleep limit") != std::string::npos, "sleep loop not stopped: %s", rr.error.c_str());
+    rr = box.run("sys.sleep(5000) sys.sleep(5000)");
+    CHECK(rr.ok, "sleep budget not reset between runs: %s", rr.error.c_str());
+  }
+
+  // A drill where an attack got through is not broken (cleared).
+  {
+    Scenario s;
+    std::string err;
+    loadScenario(&hal, "return { id='z', rounds={ { symptom='s', damage={uptime=10}, defenses={ {name='a',result='stop'}, "
+                       "{name='b',result='partial'}, {name='c',result='fail'} } }, { symptom='t', defenses={ "
+                       "{name='a',result='stop'}, {name='c',result='fail'} } } } }", s, err);
+    Game won(s);
+    won.defend(1); won.defend(0);
+    CHECK(won.finished() && won.broken(), "stop/partial run should break the hex");
+    Game lost(s);
+    lost.defend(0); lost.defend(1);
+    CHECK(lost.finished() && !lost.broken() && lost.held() == 1, "a failed round should leave the hex standing");
   }
 
   std::printf(fails ? "\n%d check(s) failed\n" : "\nall content checks passed\n", fails);

@@ -12,7 +12,9 @@
 // check result, quiz, records. Harae has its own tile; Shugyo only shows the
 // Wards a lesson earned for it.
 #include <M5Cardputer.h>
+#include <map>
 #include <memory>
+#include <time.h>
 #include "../../os/app.h"
 #include "../../os/app_manager.h"
 #include "../../os/os_ui.h"
@@ -413,6 +415,19 @@ private:
         _drawTask();
     }
 
+    // A re-pass of a lesson already passed pays once a day per lesson, so
+    // pressing fn+C over and over on a solved task can't fill the daily
+    // limit. Without the clock set, once per lesson until the next reboot.
+    static bool _repassPays(const std::string& id) {
+        static std::map<std::string, uint32_t> paid;
+        time_t now = time(nullptr);
+        uint32_t day = now >= 1600000000 ? (uint32_t)(now / 86400) + 1 : 0;
+        auto it = paid.find(id);
+        if (it != paid.end() && it->second == day) return false;
+        paid[id] = day;
+        return true;
+    }
+
     void _hint() {
         const std::string& h = _lesson->hint();
         _con1 = h.empty() ? "No hint for this one. Re-read the last page." : h.c_str();
@@ -460,7 +475,7 @@ private:
             _firstPass = !lib.progress.hasWard(_lesson->id());
             lib.progress.recordTask(_lesson->id(), true);
             lib.save();
-            _kiPaid = Ki::get().add(Ki::S_SHUGYO, _firstPass ? KI_PASS : KI_REPASS);
+            if (_firstPass || _repassPays(_lesson->id())) _kiPaid = Ki::get().add(Ki::S_SHUGYO, _firstPass ? KI_PASS : KI_REPASS);
         } else {
             lib.progress.recordTask(_lesson->id(), false);
         }

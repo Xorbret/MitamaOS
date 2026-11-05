@@ -148,6 +148,9 @@ int sysMillis(lua_State* L) {
 int sysSleep(lua_State* L) {
   lua_Integer ms = luaL_checkinteger(L, 1);
   if (ms < 0 || ms > 5000) return luaL_error(L, "sleep must be 0..5000 ms");
+  if (!sandboxOf(L)->spendSleep(static_cast<uint32_t>(ms))) {
+    return luaL_error(L, "sleep limit reached (15 s per run)");
+  }
   halOf(L)->delayMs(static_cast<uint32_t>(ms));
   return 0;
 }
@@ -262,6 +265,13 @@ void Sandbox::registerModules() {
 void Sandbox::beginCall() {
   output_.clear();
   executed_ = 0;
+  slept_ = 0;
+}
+
+bool Sandbox::spendSleep(uint32_t ms) {
+  if (slept_ + ms > limits_.sleepBudgetMs) return false;
+  slept_ += ms;
+  return true;
 }
 
 RunResult Sandbox::endCall(int status) {

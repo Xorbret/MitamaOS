@@ -18,7 +18,8 @@ end
 print("done")]],
   check = function(r)
     if not r.ok then return false, r.error end
-    local offs = select(2, r.code:gsub("gpio%.write%(%s*2%s*,%s*0", ""))
+    local code = r.code:gsub("%-%-[^\n]*", "")
+    local offs = select(2, code:gsub("gpio%.write%(%s*2%s*,%s*0", ""))
     if offs == 0 then return false, "Your loop never turns the pin off (gpio.write(2, 0))." end
     if not r.output:find("done", 1, true) then return false, "Print 'done' at the end." end
     return true, "Blinking. Same idea drives relays, buzzers and door strikes."

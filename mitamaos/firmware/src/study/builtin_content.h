@@ -33,10 +33,20 @@ end
 print(weak)]],
   check = function(r)
     if not r.ok then return false, r.error end
-    if not r.code:find("wifi.scan", 1, true) then return false, "Use wifi.scan()." end
-    local last
-    for n in r.output:gmatch("%d+") do last = tonumber(n) end
+    local code = r.code:gsub("%-%-[^\n]*", "")
+    if not code:find("wifi.scan", 1, true) then return false, "Use wifi.scan()." end
+    if not (code:find("open", 1, true) and code:find("wep", 1, true)) then
+      return false, "Count the weak ones: check n.auth for \"open\" and \"wep\"."
+    end
+    -- the weak networks in the list the learner printed
+    local weak = 0
+    for line in r.output:gmatch("[^\n]+") do
+      if line:match(", open%s*$") or line:match(", wep%s*$") then weak = weak + 1 end
+    end
+    local tail = r.output:match("([^\n]*)\n*$") or ""
+    local last = tonumber(tail:match("^%s*(%d+)%s*$"))
     if last == nil then return false, "Print the weak count on the last line." end
+    if last ~= weak then return false, "Your list shows " .. weak .. " open or WEP, but you printed " .. last .. "." end
     return true, "Recon done. You earned Sealed Frames: in Harae, the Kamaitachi can be bound."
   end,
   quiz = {
@@ -437,7 +447,12 @@ end]],
 print(az)]],
   check = function(r)
     if not r.ok then return false, r.error end
-    local v = tonumber(r.output:match("[-%d%.]+"))
+    local code = r.code:gsub("%-%-[^\n]*", "")
+    if not code:find("math.abs", 1, true) then return false, "Take the absolute value of each axis with math.abs." end
+    if not (code:find("ax", 1, true) and code:find("ay", 1, true) and code:find("az", 1, true)) then
+      return false, "Compare all three axes: ax, ay and az."
+    end
+    local v = tonumber(r.output:match("%-?%d+%.?%d*"))
     if not v then return false, "Print a number." end
     if v > 0.8 and v < 1.2 then return true, "About 1 g: gravity. Your sensor reading checks out." end
     return false, "Expected about 1.0 when flat. Got " .. v .. ". Did you take the largest absolute value?"
@@ -502,7 +517,8 @@ end
 print("done")]],
   check = function(r)
     if not r.ok then return false, r.error end
-    local offs = select(2, r.code:gsub("gpio%.write%(%s*2%s*,%s*0", ""))
+    local code = r.code:gsub("%-%-[^\n]*", "")
+    local offs = select(2, code:gsub("gpio%.write%(%s*2%s*,%s*0", ""))
     if offs == 0 then return false, "Your loop never turns the pin off (gpio.write(2, 0))." end
     if not r.output:find("done", 1, true) then return false, "Print 'done' at the end." end
     return true, "Blinking. Same idea drives relays, buzzers and door strikes."

@@ -14,7 +14,12 @@ return {
 print(az)]],
   check = function(r)
     if not r.ok then return false, r.error end
-    local v = tonumber(r.output:match("[-%d%.]+"))
+    local code = r.code:gsub("%-%-[^\n]*", "")
+    if not code:find("math.abs", 1, true) then return false, "Take the absolute value of each axis with math.abs." end
+    if not (code:find("ax", 1, true) and code:find("ay", 1, true) and code:find("az", 1, true)) then
+      return false, "Compare all three axes: ax, ay and az."
+    end
+    local v = tonumber(r.output:match("%-?%d+%.?%d*"))
     if not v then return false, "Print a number." end
     if v > 0.8 and v < 1.2 then return true, "About 1 g: gravity. Your sensor reading checks out." end
     return false, "Expected about 1.0 when flat. Got " .. v .. ". Did you take the largest absolute value?"

@@ -78,6 +78,11 @@ class Game {
   int data() const { return data_; }
   int pointsLeft() const { return points_; }
   int score() const { return score_; }
+  // Rounds where the attack got through (the hex held). A drill only counts
+  // as broken when none did (every round stopped or at least contained)
+  // and the domain is still standing.
+  int held() const { return held_; }
+  bool broken() const { return finished() && held_ == 0 && uptime_ > 0 && data_ > 0; }
 
   bool seen(size_t evidenceIndex) const;
 
@@ -104,6 +109,7 @@ class Game {
   int data_ = 100;
   int points_ = 0;
   int score_ = 0;
+  int held_ = 0;
   std::vector<bool> seen_;
   const Round* last_ = nullptr;
   const Defense* lastDefense_ = nullptr;

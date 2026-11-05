@@ -146,6 +146,7 @@ Outcome Game::defend(size_t defenseIndex) {
     case Outcome::Failed:
       uptime_ -= r.uptimeDamage;
       data_ -= r.dataDamage;
+      ++held_;
       break;
   }
   uptime_ = std::max(uptime_, 0);
