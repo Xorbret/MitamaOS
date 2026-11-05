@@ -1,6 +1,6 @@
 {
   "name": "MitamaOS (M5Cardputer ADV)",
-  "version": "0.1-m0",
+  "version": "main",
   "new_install_prompt_erase": true,
   "builds": [
     {

@@ -55,12 +55,14 @@
 <body>
 <main>
   <h1>Mitama<span class="os">OS</span></h1>
-  <p class="tag">Flash &middot; M5Cardputer ADV &middot; M0 test build</p>
+  <p class="tag">Flash &middot; M5Stack Cardputer ADV &middot; build <span id="build">main</span></p>
 
   <div class="card">
     <h2><span class="n">1</span>Plug in &amp; flash</h2>
     <p>Connect the Cardputer ADV to your computer by USB-C, then click Install
-      and pick its serial port. The installer erases and writes the firmware.</p>
+      and pick its serial port.</p>
+    <p class="warn">This erases the whole flash, including Launcher and any other
+      firmware. To keep them, use the SD card route below instead.</p>
     <esp-web-install-button manifest="./manifest-mitamaos-adv.json">
       <button class="btn" slot="activate">Install MitamaOS</button>
       <span slot="unsupported" class="warn">This browser can't flash over USB —
@@ -72,7 +74,7 @@
       <b>Desktop Chrome or Edge only.</b> One-click web flashing uses the Web
       Serial API, which exists only in desktop Chromium browsers — <b>not</b> on
       Firefox, Safari, or any phone (Android/iOS included). On a phone, use the
-      Launcher route below instead.
+      SD card route below instead.
     </div>
     <p class="dim" style="margin-top:12px">If the button errors with a missing
       file, the firmware hasn't been built yet — the GitHub Actions
@@ -80,22 +82,25 @@
   </div>
 
   <div class="card">
-    <h2><span class="n">2</span>No computer? Flash on-device with Launcher</h2>
-    <p>If you already run <a href="https://github.com/bmorcelli/Launcher">Launcher</a>
-      on the Cardputer (it supports the ADV), you can install MitamaOS from the
-      device itself — no PC, works from a phone-charged setup:</p>
+    <h2><span class="n">2</span>Keep Launcher: install from the SD card</h2>
+    <p>If you run <a href="https://github.com/bmorcelli/Launcher">Launcher</a>
+      on the Cardputer, install MitamaOS next to your other firmware:</p>
     <ol>
-      <li>Grab the merged image URL from the
-        <a href="https://github.com/Xorbret/MitamaOS/releases/tag/m0-test">m0-test release</a>
-        (<code>mitamaos-cardputer-adv-merged.bin</code>).</li>
-      <li>In Launcher, add it as a <b>Favorite</b> link, then install it.</li>
+      <li>Download <a href="./firmware/mitamaos-cardputer-adv-merged.bin">mitamaos-cardputer-adv-merged.bin</a>
+        and copy it to the SD card.</li>
+      <li>In Launcher choose <b>SD</b>, pick the file and install.</li>
+      <li>If flash still has free space, Launcher adds a new slot instead of
+        replacing the old one, so delete the old MitamaOS first.</li>
     </ol>
+    <p class="dim">Already running MitamaOS? Open <b>Molt</b> on the device: it
+      downloads the newest build to <code>/MitamaOS/update/</code> on the SD card,
+      then you install it from Launcher &gt; SD. Settings and progress stay.</p>
   </div>
 
   <div class="card">
     <h2><span class="n">3</span>Manual flash (esptool / ESPHome-Web)</h2>
-    <p>Download the merged image from the
-      <a href="https://github.com/Xorbret/MitamaOS/releases/tag/m0-test">m0-test release</a>
+    <p>Download the <a href="./firmware/mitamaos-cardputer-adv-merged.bin">merged image</a>
+      (also on the <a href="https://github.com/Xorbret/MitamaOS/releases/tag/m0-test">m0-test release</a>)
       and flash it at offset <code>0x0</code>:</p>
     <p><code>esptool.py --chip esp32s3 write_flash 0x0 mitamaos-cardputer-adv-merged.bin</code></p>
     <p class="dim">Or drop that file into <a href="https://web.esphome.io/">web.esphome.io</a>.
@@ -103,11 +108,16 @@
   </div>
 
   <footer>
-    MitamaOS is free &amp; open source (GPLv2). This is an early
-    <b>M0 test</b> build — expect rough edges.<br>
-    <a href="./index.html">&larr; Back to the design site</a>
+    MitamaOS is free &amp; open source (GPLv2). Each push to <code>main</code>
+    builds the firmware and publishes it here.<br>
+    <a href="./index.html">&larr; Back to MitamaOS</a>
   </footer>
 </main>
 <script type="module" src="https://unpkg.com/esp-web-tools@10.0.3/dist/web/install-button.js?module"></script>
+<script>
+fetch('firmware/version.txt',{cache:'no-store'}).then(r=>r.ok?r.text():null).then(v=>{
+  v=(v||'').trim();if(/^[0-9a-f]{7,40}$/.test(v))document.getElementById('build').textContent=v;
+}).catch(()=>{});
+</script>
 </body>
 </html>

@@ -2,186 +2,292 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MitamaOS</title>
-<meta name="description" content="A defensive, receive-only companion OS for the M5Cardputer ADV — with a gentle spirit that watches your network.">
+<meta name="description" content="A defensive, listen-only companion OS for the M5Stack Cardputer ADV. A sassy spirit called the Mitama watches the airwaves, logs what it meets, teaches real defences and plays them back as a card game.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Noto+Serif+JP:wght@900&display=swap" rel="stylesheet">
 <style>
+/* Layout: one column over the red "bones" grid; sections are bands split by bones-red rules.
+   Single dark look on purpose (it is the device's own palette). */
 :root{
-  --red:#E5162B; --red-dim:#7A0A18; --red-glitch:#FF1133;
-  --yellow:#FCEE0A; --magenta:#FF2A6D; --purple:#B026FF; --cyan:#05D9E8; --green:#39FF14;
-  --bg:#0A0118; --panel:#1A0B2E; --dim:#8A7CA8;
+  color-scheme:dark;
+  --red:#E5162B; --red-dim:#7A0A18;
+  --yellow:#FCEE0A; --magenta:#FF2A6D; --purple:#B026FF; --cyan:#05D9E8; --green:#39FF14; --cream:#F3E6C4;
+  --bg:#0A0118; --panel:#1A0B2E; --panel2:#120720; --text:#FFFFFF; --soft:#d8cfe8; --dim:#8A7CA8;
+  --display:'Rajdhani',system-ui,sans-serif; --mono:'Share Tech Mono',ui-monospace,Menlo,Consolas,monospace;
+  --jp:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:#fff;font-family:'Rajdhani',system-ui,sans-serif;overflow-x:hidden;
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{background:var(--bg);color:var(--text);font-family:var(--display);font-size:16px;line-height:1.5;overflow-x:hidden;
   background-image:repeating-linear-gradient(0deg,rgba(229,22,43,.045) 0 1px,transparent 1px 8px),
    repeating-linear-gradient(90deg,rgba(122,10,24,.07) 0 1px,transparent 1px 48px),
    repeating-linear-gradient(0deg,rgba(122,10,24,.07) 0 1px,transparent 1px 48px);}
-.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+.wrap{max-width:1020px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 a{color:var(--cyan);text-decoration:none}
+a:hover{color:var(--yellow)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+h1,h2,h3{text-wrap:balance}
 /* nav */
-nav{position:sticky;top:0;z-index:20;background:rgba(10,1,24,.86);backdrop-filter:blur(6px);
-  border-bottom:1px solid var(--red);display:flex;align-items:center;justify-content:space-between;padding:10px 18px}
-nav .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:17px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(10,1,24,.9);backdrop-filter:blur(6px);border-bottom:1px solid var(--red)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
+nav .brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:17px;color:var(--text)}
 nav .brand b{color:var(--yellow)}
-nav .links{display:flex;gap:18px;font-size:13.5px;letter-spacing:.08em;text-transform:uppercase}
-nav .links a{color:var(--dim)}nav .links a:hover{color:var(--yellow)}
-@media(max-width:520px){nav .links a:not(.gh){display:none}}
+nav .links{display:flex;gap:16px;font-size:13.5px;letter-spacing:.08em;text-transform:uppercase;flex-wrap:wrap;justify-content:flex-end}
+nav .links a{color:var(--dim)} nav .links a:hover{color:var(--yellow)}
+@media(max-width:640px){nav .links a.opt{display:none}}
 /* hero */
-.hero{display:flex;gap:30px;align-items:center;padding:52px 0 36px;flex-wrap:wrap}
-.hero .art{flex:none;width:210px;height:210px;display:flex;align-items:center;justify-content:center;position:relative}
-.hero .art svg{width:170px;height:170px;overflow:visible}
-.hero .txt{flex:1;min-width:260px}
-.hero h1{font-weight:700;letter-spacing:.1em;margin:0;font-size:52px;line-height:.98;text-transform:uppercase}
+.hero{display:flex;gap:34px;align-items:center;padding-block:48px 34px;flex-wrap:wrap}
+.hero .art{flex:none;width:200px;height:200px;display:flex;align-items:center;justify-content:center}
+.hero .txt{flex:1;min-width:0;flex-basis:300px}
+.hero h1{font-weight:700;letter-spacing:.1em;margin:0;font-size:clamp(42px,9vw,60px);line-height:.95;text-transform:uppercase}
 .hero h1 b{color:var(--yellow)}
 .hero .tag{color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;font-size:14px;margin:10px 0 0;font-weight:600}
-.hero p{color:#cfc3e6;font-size:16px;line-height:1.55;margin:14px 0 0;max-width:54ch}
-.hero .pitch b{color:#efe7b0}
+.hero p{color:#cfc3e6;font-size:17px;line-height:1.55;margin:14px 0 0;max-width:58ch}
+.hero p b{color:#efe7b0;font-weight:600}
 .btns{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
-.btn{font-weight:600;letter-spacing:.09em;text-transform:uppercase;font-size:13px;padding:10px 18px;border:1px solid var(--red-dim);position:relative}
+.btn{font-weight:600;letter-spacing:.09em;text-transform:uppercase;font-size:13px;padding:10px 18px;border:1px solid var(--red-dim);color:var(--cyan)}
 .btn.prime{background:var(--yellow);color:#120720;border-color:var(--yellow)}
-.btn.ghost{color:var(--cyan)}
-.btn.ghost:hover{border-color:var(--cyan)}
-.btn.prime:hover{background:#fff}
+.btn.prime:hover{background:#fff;color:#120720}
+.btn:not(.prime):hover{border-color:var(--cyan);color:var(--cyan)}
 .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}
-.chip{font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--red-dim);padding:3px 9px;color:var(--dim)}
+.chip{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--red-dim);padding:3px 9px;color:var(--dim)}
 .chip b{color:var(--yellow);font-weight:600}
+.chip code{font-family:var(--mono);color:var(--green);text-transform:none;letter-spacing:0}
 /* sections */
-section{padding:26px 0;border-top:1px solid var(--red-dim)}
-h2{font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:18px;margin:0 0 4px;color:var(--cyan);display:flex;gap:11px;align-items:center}
-h2::before{content:"";width:11px;height:11px;background:var(--magenta);transform:rotate(45deg);box-shadow:0 0 8px var(--magenta)}
-.lead{color:var(--dim);font-size:14.5px;margin:0 0 16px;letter-spacing:.02em;line-height:1.5;max-width:76ch}
-.lead b{color:#efe7b0}
-/* showcase rows */
-.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
-.gcard{background:linear-gradient(180deg,var(--panel),#120720);border:1px solid var(--red-dim);padding:10px;display:flex;flex-direction:column;align-items:center;gap:6px;width:86px;position:relative}
-.gcard svg{width:40px;height:40px;overflow:visible}
-.gcard .l{font-size:11px;letter-spacing:.04em;color:#cfc3e6;text-align:center}
-.gcard .tier{font-size:9px;letter-spacing:.08em;text-transform:uppercase}
-.pal{display:flex;flex-wrap:wrap;gap:8px}
-.sw{display:flex;align-items:center;gap:8px;border:1px solid var(--red-dim);padding:6px 10px;font-size:12.5px;letter-spacing:.03em}
-.sw .c{width:16px;height:16px;border:1px solid rgba(255,255,255,.2)}
-.sw small{color:var(--dim)}
-/* type specimen */
-.type{display:grid;gap:3px;background:linear-gradient(180deg,var(--panel),#120720);border:1px solid var(--red-dim);padding:14px 16px}
-.type div{display:flex;align-items:baseline;gap:10px}
-.type span.n{color:var(--red);font-size:10px;font-weight:600;width:22px;text-align:right;flex:none}
-/* mockup cards */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:460px){.cards{grid-template-columns:1fr}}
-a.card{display:block;background:linear-gradient(180deg,var(--panel),#120720);border:1px solid var(--red-dim);
-  position:relative;padding:15px 16px;color:inherit;transition:border-color .12s,transform .12s}
-a.card::before{content:"";position:absolute;top:-1px;left:-1px;width:11px;height:11px;border-top:2px solid var(--red);border-left:2px solid var(--red)}
-a.card:hover{border-color:var(--yellow);transform:translateY(-2px)}
-a.card .t{font-weight:700;letter-spacing:.05em;font-size:16px;color:var(--yellow)}
-a.card .d{color:var(--dim);font-size:12.5px;margin-top:4px;line-height:1.35}
-/* status */
-ul.dec{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 22px}
-@media(max-width:600px){ul.dec{grid-template-columns:1fr}}
-ul.dec li{font-size:14px;color:#d8cfe8;padding:5px 0;border-bottom:1px solid rgba(122,10,24,.4);display:flex;gap:9px}
-ul.dec li b{color:var(--yellow);font-weight:600;min-width:98px}
-/* footer */
-footer{border-top:1px solid var(--red);margin-top:10px;padding:22px 0 50px;color:var(--dim);font-size:13px;line-height:1.6;letter-spacing:.02em}
-footer b{color:#efe7b0}
+section{padding-block:30px;border-top:1px solid var(--red-dim);scroll-margin-top:60px}
+h2{font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:19px;margin:0 0 6px;color:var(--cyan);display:flex;gap:11px;align-items:center}
+h2::before{content:"";flex:none;width:11px;height:11px;background:var(--magenta);transform:rotate(45deg);box-shadow:0 0 8px var(--magenta)}
+h2 .jp{font-family:var(--jp);color:var(--dim);font-size:15px;letter-spacing:0}
+h3{font-weight:700;letter-spacing:.05em;font-size:17px;margin:0;color:var(--yellow)}
+.lead{color:var(--soft);font-size:16px;margin:0 0 18px;line-height:1.55;max-width:70ch}
+.lead b{color:#efe7b0;font-weight:600}
+.sub{margin:22px 0 10px;color:var(--dim);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--red-dim);position:relative}
+.panel::before{content:"";position:absolute;top:-1px;left:-1px;width:11px;height:11px;border-top:2px solid var(--red);border-left:2px solid var(--red)}
+/* Mitama */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.two{grid-template-columns:1fr}}
+.two .panel{padding:16px 18px;min-width:0}
+.two .panel p{margin:8px 0 0;color:var(--soft);font-size:15px;line-height:1.5}
+.ranks{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ranks span{font-family:var(--mono);font-size:12px;padding:2px 7px;border:1px solid var(--red-dim);color:var(--soft)}
+.ranks span i{font-style:normal;color:var(--dim);margin-right:5px}
+.ranks span:last-child{color:var(--yellow);border-color:var(--yellow)}
+.quote{font-family:var(--mono);color:var(--green);font-size:14px;margin-top:12px;padding-left:10px;border-left:2px solid var(--green)}
+/* app grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.app{display:flex;gap:12px;padding:12px 14px;align-items:flex-start;min-width:0}
+.app .sg{flex:none;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--red-dim);background:#0d0420}
+.app .sg svg{width:34px;height:34px;overflow:visible}
+.app .t{font-weight:700;font-size:16px;letter-spacing:.04em}
+.app .d{color:var(--soft);font-size:14px;line-height:1.4;margin-top:2px}
+.app .need{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);border:1px solid var(--red-dim);padding:0 6px;margin-top:6px}
+.note{color:var(--dim);font-size:14px;margin-top:12px;max-width:76ch}
+.note b{color:var(--soft);font-weight:600}
+/* compendium races */
+.races{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.race{padding:10px 12px}
+.race .rn{font-weight:700;letter-spacing:.06em;font-size:15px}
+.race .rt{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+.race ul{list-style:none;margin:6px 0 0;padding:0;font-family:var(--mono);font-size:12.5px;color:var(--soft)}
+/* harae */
+.factions{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+a.fac{display:block;padding:14px 16px;color:inherit}
+a.fac:hover{border-color:var(--yellow)}
+a.fac .n{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+a.fac p{margin:6px 0 0;color:var(--soft);font-size:14px;line-height:1.45}
+.loop{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 18px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.loop span{border:1px solid var(--red-dim);padding:5px 11px;color:var(--yellow)}
+.loop i{color:var(--red);font-style:normal}
+/* install */
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.steps{grid-template-columns:1fr}}
+.step{padding:16px 18px;min-width:0}
+.step .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.step.best{border-color:var(--yellow)}
+.step.best .k{color:var(--yellow)}
+.step ol{margin:10px 0 0;padding-left:20px;color:var(--soft);font-size:15px;line-height:1.5}
+.step li{margin:3px 0}
+.step p{margin:10px 0 0;color:var(--soft);font-size:15px;line-height:1.5}
+.step .warn{color:var(--magenta)}
+code,kbd{font-family:var(--mono);font-size:.92em;background:#00000055;border:1px solid rgba(255,255,255,.12);padding:0 5px;overflow-wrap:anywhere}
+.paths{font-family:var(--mono);font-size:13px;color:var(--soft);display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin-top:6px;padding:14px 16px;overflow-x:auto}
+.paths span:nth-child(odd){color:var(--cyan)}
+/* promises */
+ul.vow{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}
+@media(max-width:640px){ul.vow{grid-template-columns:1fr}}
+ul.vow li{font-size:15px;color:var(--soft);padding:7px 0;border-bottom:1px solid rgba(122,10,24,.45);display:flex;gap:10px}
+ul.vow li::before{content:"";flex:none;width:7px;height:7px;margin-top:8px;background:var(--green);box-shadow:0 0 6px var(--green)}
+/* archive */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+a.card{display:block;padding:12px 14px;color:inherit;transition:border-color .12s}
+a.card:hover{border-color:var(--yellow)}
+a.card .t{font-weight:700;letter-spacing:.05em;font-size:15px;color:var(--yellow)}
+a.card .d{color:var(--dim);font-size:13px;margin-top:3px;line-height:1.35}
+footer{border-top:1px solid var(--red);margin-top:10px;padding-block:22px 50px;color:var(--dim);font-size:14px;line-height:1.6}
+footer b{color:#efe7b0;font-weight:600}
 .def{color:var(--green);font-weight:600}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
 .float{animation:float 4.5s ease-in-out infinite}
 .sig{animation:pulse 3.2s ease-in-out infinite}
+.spin{transform-origin:100px 100px;animation:spin 24s linear infinite}
 </style>
 </head>
 <body>
 <nav>
-  <div class="brand"><svg width="22" height="22" viewBox="0 0 200 200" style="overflow:visible" id="navmg"></svg>Mitama<b>OS</b></div>
-  <div class="links"><a href="#system">Design</a><a href="#mockups">Mockups</a><a href="#status">Status</a><a class="gh" href="https://github.com/Xorbret/MitamaOS">GitHub</a></div>
+  <div class="wrap">
+    <a class="brand" href="#top"><svg width="22" height="22" viewBox="0 0 200 200" style="overflow:visible" id="navmg" aria-hidden="true"></svg>Mitama<b>OS</b></a>
+    <div class="links"><a class="opt" href="#mitama">Mitama</a><a href="#apps">Apps</a><a class="opt" href="#harae">Harae</a><a href="#install">Install</a><a href="https://github.com/Xorbret/MitamaOS">GitHub</a></div>
+  </div>
 </nav>
 
-<div class="wrap">
+<div class="wrap" id="top">
   <header class="hero">
     <div class="art"><div class="float" id="hero"></div></div>
     <div class="txt">
       <h1>Mitama<b>OS</b></h1>
-      <div class="tag">A companion that watches your network</div>
-      <p class="pitch">A <b>defensive, receive-only</b> handheld OS for the M5&nbsp;Cardputer ADV. A gentle spirit — the <b>Mitama</b> — rides along, reading the radio world around you and flagging what's watching back. It <b>detects and informs; it never attacks</b>.</p>
+      <div class="tag">A spirit that watches the airwaves</div>
+      <p>A <b>defensive, listen-only</b> companion OS for the M5Stack Cardputer ADV. A sassy little demon called the <b>Mitama</b> rides along, names every tracker, camera and attack tool it hears, logs the networks you pass, and teaches you real defences you then play as a card game. <b>It detects and informs. It never attacks.</b></p>
       <div class="btns">
-        <a class="btn prime" href="./flash.html">Flash the M0 build</a>
-        <a class="btn ghost" href="#mockups">Explore the mockups</a>
-        <a class="btn ghost" href="https://github.com/Xorbret/MitamaOS/blob/main/mitamaos/outline.md">Read the design doc</a>
+        <a class="btn prime" href="#install">Install MitamaOS</a>
+        <a class="btn" href="#apps">See the apps</a>
+        <a class="btn" href="harae/index.html">Harae, the game</a>
       </div>
       <div class="chips">
-        <span class="chip"><b>Base</b> PaperOS · GPLv2</span>
-        <span class="chip"><b>Board</b> ESP32-S3 · 8MB</span>
-        <span class="chip"><b>Vibe</b> Navi × Pokémon × SMT × CP2077</span>
+        <span class="chip"><b>Latest build</b> <code id="build">main</code></span>
+        <span class="chip"><b>Board</b> Cardputer ADV · ESP32-S3 · 8MB</span>
+        <span class="chip"><b>License</b> GPLv2 · open source</span>
       </div>
     </div>
   </header>
 
   <section id="mitama">
-    <h2>Meet the Mitama</h2>
-    <p class="lead">A faceless companion spirit — no eyes, no mouth, ever. It emotes through tilt, aura, a single magatama sigil and motion (the GLaDOS trick). Its voice is <b>Clippy × GLaDOS</b>: snarky, dry, and quietly, competently right. It drifts with the clock and your session — <b>sleepy after 9pm, weary after four hours</b> — and only the alarm is ever harsh.</p>
-  </section>
-
-  <section id="system">
-    <h2>Design system</h2>
-    <p class="lead">Rajdhani over a <b>Night City palette painted on a structural red "bones" grid</b>. App icons are esoteric sigils; the Compendium's demons are sorted into SMT races.</p>
-
-    <div style="margin:4px 0 10px;color:var(--dim);font-size:12px;letter-spacing:.1em;text-transform:uppercase">App sigils</div>
-    <div class="row" id="apps"></div>
-
-    <div style="margin:20px 0 10px;color:var(--dim);font-size:12px;letter-spacing:.1em;text-transform:uppercase">Compendium races</div>
-    <div class="row" id="races"></div>
-
-    <div style="margin:20px 0 10px;color:var(--dim);font-size:12px;letter-spacing:.1em;text-transform:uppercase">Palette — surface over bones</div>
-    <div class="pal" id="pal"></div>
-
-    <div style="margin:20px 0 10px;color:var(--dim);font-size:12px;letter-spacing:.1em;text-transform:uppercase">Type — Rajdhani</div>
-    <div class="type">
-      <div><span class="n">20</span><span style="font-size:20px;font-weight:700;letter-spacing:.12em">MITAMA<span style="color:var(--yellow)">OS</span></span></div>
-      <div><span class="n">14</span><span style="font-size:14px;font-weight:700;letter-spacing:.05em">COMPENDIUM</span></div>
-      <div><span class="n">10</span><span style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--cyan)">Proxima — the near field</span></div>
-      <div><span class="n">9</span><span style="font-size:9px">12 devices · ch 36 · −48dBm connected</span></div>
+    <h2>Meet the Mitama <span class="jp">御霊</span></h2>
+    <p class="lead">The Mitama is a faceless spirit that lives on the home screen, <b>Proxima</b>. It shows the network you're on, what the watcher is hearing and the latest sightings, and it talks. Its mood rides the status bar, its aura shows how it feels, and it has opinions about everything you do.</p>
+    <div class="two">
+      <div class="panel">
+        <h3>A demon with a mouth on it</h3>
+        <p>Sarcastic, a little theatrical, and annoyingly right. It drops lines from myth, old RPGs and tabletop games, peeks through the fourth wall now and then, gets sleepy late at night and tired after long sessions. Only real threats make it serious.</p>
+        <div class="quote" id="line" aria-live="off">"Drone overhead. Huginn and Muninn, reporting to some Odin."</div>
+      </div>
+      <div class="panel">
+        <h3>Forms and ki</h3>
+        <p><b>23 forms</b> unlock as you explore: spirit flames, fox ears, oni horns, a dragon coiled round the ring. Press <kbd>F</kbd> on Proxima to change. Everything you hear, log and learn earns <b>ki</b>: 50 levels across 10 ranks, and each rank changes the pattern of the Mitama's ring.</p>
+        <div class="ranks" id="ranks"></div>
+      </div>
     </div>
   </section>
 
-  <section id="mockups">
-    <h2>Explore the mockups</h2>
-    <p class="lead">Interactive concept mockups — rendered at the real 240×135.</p>
-    <div class="cards">
-      <a class="card" href="./mitama.html"><div class="t">Mitama</div><div class="d">Base form, magatama sigil, faceless expression states, outfit skins.</div></a>
-      <a class="card" href="./ui.html"><div class="t">UI screens</div><div class="d">Boot, launcher, Proxima, Compendium, fiend alert, toast.</div></a>
-      <a class="card" href="./icons.html"><div class="t">Icons &amp; glyphs</div><div class="d">The esoteric app sigils and the eight race glyphs.</div></a>
-      <a class="card" href="./type-scale.html"><div class="t">Type scale</div><div class="d">Every Rajdhani text role at device size.</div></a>
-      <a class="card" href="./sound.html"><div class="t">Sound set <span style="color:var(--green)">♪</span></div><div class="d">Tap to hear the Mitama's sung UI cues.</div></a>
-      <a class="card" href="./logo.html"><div class="t">Logo</div><div class="d">Wordmark lockups and the app/flash icon.</div></a>
+  <section id="apps">
+    <h2>The apps</h2>
+    <p class="lead">Fifteen tiles on a grid you drive from the keyboard: highlight with the arrows, Enter to open, <kbd>`</kbd> to go back. No pointer, no desktop.</p>
+    <div class="grid" id="appgrid"></div>
+    <p class="note"><b>Hidden away on purpose:</b> Proxima is home, not a tile. System info, Clock and <b>Tsukumo</b> live inside Settings. Tsukumo scans the Grove port for M5Stack modules read-only, names about 130 of them, and shows live readings from common sensors (temperature, CO₂, light, distance, RFID card IDs and more). Settings are backed up to the SD card so updates never wipe them.</p>
+  </section>
+
+  <section id="compendium">
+    <h2>The Compendium</h2>
+    <p class="lead">Every device the watcher recognises is a demon, sorted into races. The Compendium is the bestiary: a page per species, filled in the first time you meet one. Unmet species show as <b>???</b>. Fiends, the attack tools, are drawn wrong on purpose and never hold still.</p>
+    <div class="races" id="races"></div>
+  </section>
+
+  <section id="harae">
+    <h2>Shugyo and Harae <span class="jp">修行 · 祓</span></h2>
+    <p class="lead"><b>Shugyo</b> is the study app: short lessons you read, a Lua task the device grades, a quiz, and an optional field task. Pass a lesson and you earn its defence as an <b>ofuda</b>, a paper talisman card. <b>Harae</b> is where you use them: spirits from four pantheons hex your Domain, and you read the symptom, gather clues and play the Seal that binds them. Every board can be won if you hold the right cards. Everything is simulated on screen and nothing is transmitted.</p>
+    <div class="loop" aria-label="The loop"><span>Learn</span><i>→</i><span>Earn the ofuda</span><i>→</i><span>Defend the Domain</span><i>→</i><span>Descend</span></div>
+    <div class="factions">
+      <a class="fac panel" href="harae/babel.html"><div class="n">Faction 1 · availability</div><h3>Babel</h3><p>A rabble of lesser spirits from every pantheon, all noise: jamming, rogue access points, interference.</p></a>
+      <a class="fac panel" href="harae/neighbours.html"><div class="n">Faction 2 · integrity</div><h3>The Good Neighbours</h3><p>The Celtic fae. They take: changelings, false portals, bargains that come due later.</p></a>
+      <a class="fac panel" href="harae/roamers.html"><div class="n">Faction 3 · confidentiality</div><h3>The Night-Roamers</h3><p>Ravana's rakshasa court. They watch and they leak: sniffers, stalkerware, golden bait.</p></a>
+      <a class="fac panel" href="harae/fallen.html"><div class="n">Faction 4 · control</div><h3>The Fallen</h3><p>Watchers, Solomon's bound spirits and Legion. They want your devices working for them: botnets, account takeover, ransom.</p></a>
+    </div>
+    <div class="btns"><a class="btn" href="harae/index.html">Harae design</a><a class="btn" href="harae/cards.html">Card gallery</a><a class="btn" href="harae.html">How to play</a></div>
+  </section>
+
+  <section id="install">
+    <h2>Install</h2>
+    <p class="lead">Every push to <code>main</code> builds the firmware and publishes it here. The current build is <code id="build2">main</code>. You need a <b>Cardputer ADV</b>. Scry's GPS and Kotodama's chat also need the <b>Cap LoRa-1262</b>.</p>
+    <div class="steps">
+      <div class="step panel best">
+        <div class="k">Recommended · keeps your other firmware</div>
+        <h3>From the SD card with Launcher</h3>
+        <ol>
+          <li>Run <a href="https://github.com/bmorcelli/Launcher">Launcher</a> on the Cardputer.</li>
+          <li>Download <a href="firmware/mitamaos-cardputer-adv-merged.bin">mitamaos-cardputer-adv-merged.bin</a> and copy it to the SD card.</li>
+          <li>In Launcher choose <b>SD</b>, pick the file and install.</li>
+        </ol>
+        <p>If flash still has free space, Launcher adds a new slot instead of replacing the old one. Delete the old MitamaOS first.</p>
+      </div>
+      <div class="step panel">
+        <div class="k">Updating</div>
+        <h3>Molt, on the device</h3>
+        <p>Open <b>Molt</b>, press Enter. It checks this site, downloads the newest build to <code>/MitamaOS/update/</code> on the SD card and restarts. Install it from Launcher &gt; SD as above. Your settings and progress stay.</p>
+      </div>
+      <div class="step panel">
+        <div class="k">Fresh install · desktop Chrome or Edge</div>
+        <h3>Web flasher</h3>
+        <p>Plug in by USB-C and install from the browser in one click.</p>
+        <p class="warn">This erases the whole flash, Launcher and anything else on it.</p>
+        <p><a class="btn" href="flash.html">Open the flasher</a></p>
+      </div>
+      <div class="step panel">
+        <div class="k">Manual</div>
+        <h3>esptool</h3>
+        <p>Flash the merged image at <code>0x0</code>:</p>
+        <p><code>esptool.py --chip esp32s3 write_flash 0x0 mitamaos-cardputer-adv-merged.bin</code></p>
+        <p>Also on the <a href="https://github.com/Xorbret/MitamaOS/releases/tag/m0-test">m0-test release</a>.</p>
+      </div>
+    </div>
+    <div class="sub">Where things live on the SD card</div>
+    <div class="paths panel">
+      <span>/MitamaOS/settings.conf</span><span>settings backup, restored after updates</span>
+      <span>/MitamaOS/state/</span><span>Compendium and progress</span>
+      <span>/MitamaOS/logs/scry/</span><span>WiGLE CSV logs from Scry</span>
+      <span>/MitamaOS/wigle.txt</span><span>optional WiGLE login as name:token</span>
+      <span>/MitamaOS/kotodama/</span><span>chat log</span>
+      <span>/MitamaOS/user/Study/</span><span>Shugyo work and field log</span>
+      <span>/MitamaOS/update/</span><span>builds Molt downloaded</span>
     </div>
   </section>
 
-  <section id="status">
-    <h2>Decided so far</h2>
-    <ul class="dec">
-      <li><b>Name</b> MitamaOS</li>
-      <li><b>License</b> GPLv2 · open source</li>
-      <li><b>Base</b> PaperOS core · SquachWatch detection · AdvanceOS themes</li>
-      <li><b>Hardware</b> Cardputer ADV · ESP32-S3 · 8MB · no PSRAM</li>
-      <li><b>Home</b> Proxima (companion layer)</li>
-      <li><b>Dex</b> the Compendium · demon races · Fiends</li>
-      <li><b>Mascot</b> faceless Soul · magatama crest</li>
-      <li><b>Voice</b> Clippy × GLaDOS · authored lines + LLM flavor</li>
-      <li><b>Mood</b> time + fatigue temperament · sass dial</li>
-      <li><b>A11y</b> Calm Mode · flash-safe · facts never hidden</li>
+  <section id="rules">
+    <h2>House rules</h2>
+    <p class="lead">MitamaOS is built for people who want to know what's around them, not to mess with anyone else.</p>
+    <ul class="vow">
+      <li>Never sends deauths, beacons, jamming or any other attack.</li>
+      <li>Wi-Fi and Bluetooth detection only listens.</li>
+      <li>Kotodama is a quiet LoRa node: it never relays and can't read private messages.</li>
+      <li>Module scanning only reads; it never writes to a relay, motor or bootloader.</li>
+      <li>Shugyo lessons run in a sandbox that can't transmit.</li>
+      <li>Ki is only earned by listening, logging and learning.</li>
     </ul>
-    <p class="lead" style="margin-top:14px">Design is being locked aspect by aspect before any firmware is written. Full running record in the <a href="https://github.com/Xorbret/MitamaOS/blob/main/mitamaos/outline.md">design doc</a>.</p>
+  </section>
+
+  <section id="archive">
+    <h2>Early design pages</h2>
+    <p class="lead">The concept mockups drawn before the firmware existed. Kept for the record. Some apps in them have since been dropped or renamed.</p>
+    <div class="cards">
+      <a class="card panel" href="mitama.html"><div class="t">Mitama</div><div class="d">Base form, magatama sigil, expression states.</div></a>
+      <a class="card panel" href="ui.html"><div class="t">UI screens</div><div class="d">Boot, launcher, Proxima, Compendium, alerts.</div></a>
+      <a class="card panel" href="icons.html"><div class="t">Icons and glyphs</div><div class="d">First app sigils and the race glyphs.</div></a>
+      <a class="card panel" href="type-scale.html"><div class="t">Type scale</div><div class="d">Rajdhani at device size.</div></a>
+      <a class="card panel" href="sound.html"><div class="t">Sound set</div><div class="d">Click to hear the sung UI cues.</div></a>
+      <a class="card panel" href="logo.html"><div class="t">Logo</div><div class="d">Wordmark lockups and the app icon.</div></a>
+    </div>
   </section>
 
   <footer>
-    <span class="def">Receive-only / defensive by design</span> — MitamaOS detects and informs, and never transmits attacks.<br>
-    Credits: <b>PaperOS</b> (GPLv2, © Artem76228) · <b>SquachWatch-CYD</b> &amp; <b>AdvanceOS-for-cardputer</b> (MIT).<br>
-    Concept mockups for review — not final art or shipping firmware. · <a href="https://github.com/Xorbret/MitamaOS">Source on GitHub</a>
+    <span class="def">Listen-only by design.</span> MitamaOS detects and informs, and never transmits attacks.<br>
+    Built on <b>PaperOS</b> (GPLv2, © Artem76228), with ideas from SquachWatch, Porkchop, Marauder, Bruce and everyone before them.<br>
+    MitamaOS is GPLv2. <a href="https://github.com/Xorbret/MitamaOS">Source on GitHub</a> · <a href="https://github.com/Xorbret/MitamaOS/blob/main/mitamaos/outline.md">Design doc</a>
   </footer>
 </div>
 
@@ -191,63 +297,132 @@ function magatama(cx,cy,Rm,tH,a0,a1,tp,col){
   const n=48,o=[],inn=[];
   for(let i=0;i<=n;i++){const u=i/n,th=(a0+(a1-a0)*u)*d2r,t=tH*Math.pow(1-u,tp);
     o.push([cx+(Rm+t)*Math.cos(th),cy+(Rm+t)*Math.sin(th)]);inn.push([cx+(Rm-t)*Math.cos(th),cy+(Rm-t)*Math.sin(th)]);}
-  const f=p=>p[0].toFixed(1)+' '+p[1].toFixed(1);
+  const f=p=>p[0].toFixed(2)+' '+p[1].toFixed(2);
   let d='M '+f(o[0]);for(let i=1;i<o.length;i++)d+=' L '+f(o[i]);
   for(let i=inn.length-1;i>=0;i--)d+=' L '+f(inn[i]);d+=' Z';
   const hx=cx+Rm*Math.cos(a0*d2r),hy=cy+Rm*Math.sin(a0*d2r);
-  return `<path d="${d}" fill="${col}"/><circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="${tH}" fill="${col}"/>`;
+  return `<path d="${d}" fill="${col}"/><circle cx="${hx.toFixed(2)}" cy="${hy.toFixed(2)}" r="${tH}" fill="${col}"/>`;
 }
-function star(cx,cy,r,n,step){const p=[];for(let i=0;i<n;i++){const a=(-90+i*360/n)*d2r;p.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);}
-  let d='M '+p[0].map(v=>v.toFixed(2)).join(' ');for(let i=1;i<n;i++)d+=' L '+p[(i*step)%n].map(v=>v.toFixed(2)).join(' ');return d+' Z';}
-function svg(i){return `<svg viewBox="0 0 24 24">${i}</svg>`;}
-function appIcon(name,c){const w=`stroke="${c}" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"`;switch(name){
-  case 'dex':return svg(`<circle cx="12" cy="12" r="9.2" ${w} stroke-dasharray="2.4 4" opacity=".6"/><g transform="translate(12 12) scale(.09) translate(-100 -106)">${magatama(100,106,19,14,-60,185,.82,c)}</g>`);
-  case 'env':return svg(`<circle cx="12" cy="12" r="3" fill="${c}"/><path ${w} d="M12 4v2M12 18v2M4 12h2M18 12h2"/><circle cx="12" cy="12" r="8" ${w} stroke-dasharray="3 4"/>`);
-  case 'files':return svg(`<g ${w}><rect x="6" y="6" width="12" height="12" rx="1" transform="rotate(45 12 12)"/></g><path ${w} d="M9.3 11h5.4M9.7 12.7h4.6"/><circle cx="12" cy="3.6" r=".9" fill="${c}"/><circle cx="20.4" cy="12" r=".9" fill="${c}"/><circle cx="12" cy="20.4" r=".9" fill="${c}"/><circle cx="3.6" cy="12" r=".9" fill="${c}"/>`);
-  case 'paint':return svg(`<rect x="4.5" y="4.5" width="15" height="15" ${w}/><circle cx="12" cy="12" r="6.6" ${w}/><path ${w} d="M12 7.2 L16.7 15.8 H7.3 Z"/><circle cx="12" cy="13.2" r="1.3" fill="${c}"/>`);
-  case 'music':return svg(`<circle cx="12" cy="12" r="1.8" fill="${c}"/><path ${w} d="M8.4 8.6a5 5 0 000 6.8M5.9 6a9 9 0 000 12"/><path ${w} d="M15.6 8.6a5 5 0 010 6.8M18.1 6a9 9 0 010 12"/>`);
-  case 'games':return svg(`<path ${w} d="${star(12,12,9,5,2)}"/><circle cx="12" cy="12" r="1.5" fill="${c}"/>`);
-  case 'lua':return svg(`<path ${w} d="M12 2.8 L20 7.4 V16.6 L12 21.2 L4 16.6 V7.4 Z"/><path ${w} d="M9.2 9.8l2.4 2.2-2.4 2.2M12.6 14.4h3.4"/>`);
-  case 'notes':return svg(`<rect x="6.3" y="3.6" width="11.4" height="16.8" rx="1.6" ${w}/><path ${w} d="M9.2 3.6V20.4"/><circle cx="13.1" cy="11.3" r="2.7" ${w}/><path ${w} d="M13.1 9.2 L15 12.6 H11.2 Z"/><path ${w} d="M17.7 9.5h2.3a1 1 0 011 1v1.8a1 1 0 01-1 1h-2.3"/>`);
-  case 'browser':return svg(`<circle cx="12" cy="12" r="8.4" ${w}/><ellipse cx="12" cy="12" rx="3.4" ry="8.4" ${w}/><path ${w} d="M3.6 12h16.8"/><path ${w} d="M12 1v2.4M12 20.6V23M1 12h2.4M20.6 12H23"/><circle cx="12" cy="3.6" r="1.2" fill="${c}"/>`);
-  case 'gear':return svg(`<circle cx="12" cy="12" r="8" ${w}/><circle cx="12" cy="12" r="3.3" ${w}/><circle cx="12" cy="4" r="1.3" fill="${c}"/><circle cx="19" cy="15" r="1.3" fill="${c}"/><circle cx="6" cy="16.5" r="1.3" fill="${c}"/>`);
-}}
-function raceGlyph(name,c){const w=`stroke="${c}" stroke-width="2" fill="none" stroke-linejoin="round" stroke-linecap="round"`;switch(name){
-  case 'vile':return svg(`<path ${w} d="M12 3l8 3v7c0 .5-4 5-8 8-4-3-8-7.5-8-8V6z"/><ellipse cx="12" cy="11" rx="4.5" ry="3" ${w}/><circle cx="12" cy="11" r="1.5" fill="${c}"/>`);
-  case 'night':return svg(`<circle cx="12" cy="12" r="8" ${w}/><path ${w} d="M12 4l4 7M20 12l-8 0M16 19l-4-7M8 19l4-7M4 12l8 0M8 5l4 7"/>`);
-  case 'fairy':return svg(`<path ${w} d="M12 21c-4-5-6-8-6-11a6 6 0 0112 0c0 3-2 6-6 11z"/><circle cx="12" cy="10" r="1.6" fill="${c}"/><path ${w} d="M19 6l2-2M20 9l2 0M5 6L3 4M4 9l-2 0"/>`);
-  case 'avian':return svg(`<rect x="9" y="9" width="6" height="6" rx="1" ${w}/><circle cx="5" cy="5" r="2.5" ${w}/><circle cx="19" cy="5" r="2.5" ${w}/><circle cx="5" cy="19" r="2.5" ${w}/><circle cx="19" cy="19" r="2.5" ${w}/><path ${w} d="M7 7l2 2M17 7l-2 2M7 17l2-2M17 17l-2-2"/>`);
-  case 'herald':return svg(`<circle cx="12" cy="12" r="2.4" fill="${c}"/><path ${w} d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21"/><path ${w} d="M7 7a7 7 0 000 10M17 7a7 7 0 010 10" opacity=".9"/>`);
-  case 'foul':return svg(`<rect x="3" y="7" width="18" height="11" rx="1.5" ${w}/><path ${w} d="M3 11h18"/><path ${w} d="M15 15l3 3 3-2"/>`);
-  case 'jaki':return svg(`<circle cx="12" cy="12" r="9" ${w}/><path ${w} d="M5 12h2l2-5 2.5 10 2.5-7 1.5 4H19"/>`);
-  case 'fiend':{const cx=12,cy=11.5,Rm=6,tH=4.3,a0=-60,a1=182,tp=.82,cs=2.15,x0=1.6,y0=1.4;
-    const hcx=cx+Rm*Math.cos(a0*d2r),hcy=cy+Rm*Math.sin(a0*d2r);let back='',front='';
-    for(let col=0;col<11;col++)for(let row=0;row<11;row++){const x=x0+col*cs,y=y0+row*cs,mx=x+cs/2,my=y+cs/2,dx=mx-cx,dy=my-cy,d=Math.hypot(dx,dy);
-      let th=Math.atan2(dy,dx)/d2r;if(th<a0)th+=360;let inside=Math.hypot(mx-hcx,my-hcy)<=tH;
-      if(!inside&&th>=a0&&th<=a1){const u=(th-a0)/(a1-a0),t=tH*Math.pow(1-u,tp);if(Math.abs(d-Rm)<=t)inside=true;}
-      if(!inside)continue;const s=(cs-0.35).toFixed(2),h=(col*7+row*13+(col*row)%5)%10;
-      back+=`<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${s}" height="${s}" fill="#B00E22"/>`;
-      if(h<2)continue;const fx=(x+0.35).toFixed(2),fy=(y+0.35).toFixed(2),fs=(cs-1.05).toFixed(2);
-      front+=`<rect x="${fx}" y="${fy}" width="${fs}" height="${fs}" fill="${h===4?'#FF2A6D':'#05D9E8'}"/>`;}
-    return `<svg viewBox="0 0 24 24">${back}${front}</svg>`;}
-}}
+
+/* The app sigils, ported from the firmware (src/ui/mitama_ui.h, MUI::sigil) onto a 24-unit grid. */
+function pen(col){
+  const s=`stroke="${col}" stroke-width="1.5" fill="none" stroke-linejoin="round" stroke-linecap="round"`;
+  const P=v=>v.toFixed(2);
+  const pt=(x,y,r,a)=>[x+r*Math.cos(a*d2r),y+r*Math.sin(a*d2r)];
+  return {
+    out:'',
+    line(x0,y0,x1,y1){this.out+=`<path ${s} d="M${P(x0)} ${P(y0)}L${P(x1)} ${P(y1)}"/>`;},
+    poly(a,closed=true){let d='M'+P(a[0])+' '+P(a[1]);for(let i=2;i<a.length;i+=2)d+='L'+P(a[i])+' '+P(a[i+1]);if(closed)d+='Z';this.out+=`<path ${s} d="${d}"/>`;},
+    ring(x,y,r){this.out+=`<circle ${s} cx="${P(x)}" cy="${P(y)}" r="${P(r)}"/>`;},
+    arc(x,y,r,a0,a1){const [x0,y0]=pt(x,y,r,a0),[x1,y1]=pt(x,y,r,a1);this.out+=`<path ${s} d="M${P(x0)} ${P(y0)}A${P(r)} ${P(r)} 0 ${a1-a0>180?1:0} 1 ${P(x1)} ${P(y1)}"/>`;},
+    dashed(x,y,r,on,off){this.out+=`<circle ${s} cx="${x}" cy="${y}" r="${r}" stroke-dasharray="${on} ${off}"/>`;},
+    dot(x,y,r){this.out+=`<circle cx="${P(x)}" cy="${P(y)}" r="${P(r)}" fill="${col}"/>`;},
+    rect(x,y,w,h){this.poly([x,y,x+w,y,x+w,y+h,x,y+h]);},
+    mag(x,y,R,t,a0,a1){this.out+=magatama(x,y,R,t,a0,a1,.82,col);},
+    enso(r){const w0=Math.max(1.6,r/3.6)*.8,w1=Math.max(1,r/11)*.8,N=30;
+      for(let i=0;i<N;i++){const t=i/N,a=-50+300*t,w=w0+(w1-w0)*t,[x0,y0]=pt(12,12,r,a),[x1,y1]=pt(12,12,r,a+300/N+1);
+        this.out+=`<path d="M${P(x0)} ${P(y0)}A${r} ${r} 0 0 1 ${P(x1)} ${P(y1)}" stroke="${col}" stroke-width="${P(w)}" fill="none"/>`;}
+      const [bx,by]=pt(12,12,r,-50);this.dot(bx,by,w0*.62);}
+  };
+}
+const SIGILS={
+  compendium(p){p.ring(12,12,9.2);for(let k=0;k<7;k++){const a=(-90+k*360/7)*d2r;p.dot(12+9.2*Math.cos(a),12+9.2*Math.sin(a),1.1);}
+    p.poly([12,17.2,16.85,8.8,7.15,8.8]);p.line(9.2,11.6,14.8,11.6);},
+  proxima(p){p.dot(12,12,3);p.line(12,4,12,6);p.line(12,18,12,20);p.line(4,12,6,12);p.line(18,12,20,12);p.dashed(12,12,8,3,4);},
+  files(p){p.poly([12,4.5,19.5,12,12,19.5,4.5,12]);p.line(9.3,11,14.7,11);p.line(9.7,13.2,14.3,13.2);p.dot(12,2.4,.9);p.dot(21.6,12,.9);p.dot(12,21.6,.9);p.dot(2.4,12,.9);},
+  lua(p){p.poly([12,2.8,20,7.4,20,16.6,12,21.2,4,16.6,4,7.4]);p.line(9.2,9.8,11.6,12);p.line(11.6,12,9.2,14.2);p.line(12.6,14.4,16,14.4);},
+  grimoire(p){p.rect(6.3,3.6,11.4,16.8);p.line(9.2,3.6,9.2,20.4);p.ring(13.4,11.3,2.9);p.poly([17.7,9.5,20.3,9.5,20.3,13.3,17.7,13.3],false);},
+  settings(p){p.ring(12,12,8);p.ring(12,12,3.3);p.dot(12,4,1.4);p.dot(19,15.6,1.4);p.dot(5.4,16.6,1.4);},
+  calc(p){p.ring(12,12,9);p.line(12,6,12,18);p.line(6,12,18,12);p.line(8,8,16,16);p.line(16,8,8,16);},
+  oracle(p){p.ring(12,9,4);p.ring(8.8,14.6,4);p.ring(15.2,14.6,4);},
+  scry(p){p.poly([4.6,12.6,6.2,13.5,17.8,13.5,19.4,12.6],false);p.line(7,15.6,17,15.6);p.line(8.4,13.5,8.4,21);p.line(15.6,13.5,15.6,21);
+    p.poly([12,3.6,14.6,6.6,12,9.6,9.4,6.6]);p.dot(12,6.6,.9);p.dot(7.6,4.4,.8);p.dot(16.6,3.4,.6);p.dot(17.6,7.4,.9);p.dot(6.6,8.4,.5);},
+  molt(p){const hx=12,hy=19.1,hR=4,hT=1.55;
+    const husk=(u0,u1,head)=>{const N=16,pts=[];const put=(x,y)=>pts.push(x,y);
+      const edge=(u,side)=>{const th=(180+180*u)*d2r,t=hT*Math.pow(1-u,.82);put(hx+(hR+side*t)*Math.cos(th),hy+(hR+side*t)*Math.sin(th));};
+      const jag=(u,dir)=>{const th=(180+180*u+dir*6.3)*d2r;put(hx+hR*Math.cos(th),hy+hR*Math.sin(th));};
+      for(let i=0;i<=N;i++)edge(u0+(u1-u0)*i/N,1);if(u1<1)jag(u1,1);
+      for(let i=N;i>=0;i--)edge(u0+(u1-u0)*i/N,-1);if(u0>0)jag(u0,-1);
+      if(head){const hcx=hx-hR,hcy=hy;for(let i=1;i<16;i++){const ph=Math.PI*(1-i/16);put(hcx-hT*Math.cos(ph),hcy+hT*Math.sin(ph));}}
+      p.poly(pts);};
+    husk(0,.36,true);husk(.64,1,false);
+    const shard=(x,y,r,a)=>{const rr=[1,.6,.9],da=[0,130,230],t=[];for(let k=0;k<3;k++){const th=(a+da[k])*d2r;t.push(x+r*rr[k]*Math.cos(th),y+r*rr[k]*Math.sin(th));}p.poly(t);};
+    shard(6.4,15.3,.56,200);shard(17.6,14.7,.53,-20);shard(7.8,12.9,.42,60);
+    p.mag(12.8,7.85,2.6,1.9,-60,185);},
+  kizuna(p){p.ring(12,12,10.2);p.mag(7.4,12.8,2.5,1.8,-60,185);p.mag(16.6,11.2,2.5,1.8,120,365);},
+  kotodama(p){for(let k=0;k<4;k++){const phi=-45+90*k,r=phi*d2r;p.mag(12+6*Math.cos(r),12+6*Math.sin(r),2.4,1.6,phi+180,phi+415);}p.dot(12,12,1.4);},
+  omikuji(p){p.rect(6,4,12,16);p.line(4.6,4,19.4,4);p.line(4.6,20,19.4,20);p.line(8.6,4,8.6,20);p.line(15.4,4,15.4,20);p.line(10.6,8,13.4,8);p.line(10.6,10.6,13.4,10.6);p.ring(12,15,1.8);},
+  aether(p){p.ring(12,12,9.8);p.arc(22,12,14.5,150,210);p.arc(2,12,14.5,-30,30);p.ring(12,12,3.4);},
+  shugyo(p){p.enso(8.4);},
+  harae(p){p.arc(12,-14,22,62,118);p.arc(12,-14,23.6,64,116);
+    for(const x of [5.8,11.2,16.6]){const y=x===11.2?10:9.4;p.poly([x,y,x+2.6,y+3.2,x+.6,y+3.6,x+3.4,y+7.2,x+1.4,y+7.6,x+4.2,y+11.6],false);}},
+};
+function sigil(name,col){const p=pen(col);SIGILS[name](p);return `<svg viewBox="0 0 24 24" aria-hidden="true">${p.out}</svg>`;}
+
 function soul(size,accent,aura){
-  return `<svg viewBox="0 0 200 200" width="${size}" height="${size}" style="overflow:visible">
-    <defs><radialGradient id="auH" cx="50%" cy="46%" r="60%"><stop offset="0%" stop-color="${aura}" stop-opacity=".8"/><stop offset="55%" stop-color="${aura}" stop-opacity=".16"/><stop offset="100%" stop-color="${aura}" stop-opacity="0"/></radialGradient></defs>
+  return `<svg viewBox="0 0 200 200" width="${size}" height="${size}" style="overflow:visible" aria-label="The Mitama" role="img">
+    <defs><radialGradient id="auH" cx="50%" cy="46%" r="60%"><stop offset="0%" stop-color="${aura}" stop-opacity=".75"/><stop offset="55%" stop-color="${aura}" stop-opacity=".14"/><stop offset="100%" stop-color="${aura}" stop-opacity="0"/></radialGradient></defs>
     <ellipse cx="100" cy="104" rx="90" ry="90" fill="url(#auH)"/>
     <circle cx="100" cy="100" r="58" fill="#140826" stroke="${accent}" stroke-width="3.5"/>
-    <circle cx="100" cy="100" r="58" fill="none" stroke="#E5162B" stroke-width="1.4" stroke-dasharray="3 6" opacity=".7"/>
+    <g class="spin"><circle cx="100" cy="100" r="66" fill="none" stroke="#E5162B" stroke-width="1.6" stroke-dasharray="3 7" opacity=".8"/></g>
     <g class="sig" filter="drop-shadow(0 0 6px ${accent})">${magatama(100,106,19,14,-60,185,.82,accent)}</g></svg>`;
 }
 document.getElementById('navmg').innerHTML=magatama(100,106,34,24,-60,185,.82,'#FCEE0A');
-document.getElementById('hero').innerHTML=soul(170,'#FCEE0A','#FCEE0A');
+document.getElementById('hero').innerHTML=soul(180,'#FCEE0A','#FCEE0A');
 
-const apps=[['dex','Compendium','#FCEE0A'],['files','Files','#05D9E8'],['paint','Paint','#FF2A6D'],['music','Music','#B026FF'],['games','Games','#39FF14'],['lua','Lua','#05D9E8'],['notes','Grimoire','#FCEE0A'],['browser','Browser','#05D9E8'],['gear','Settings','#8A7CA8']];
-document.getElementById('apps').innerHTML=apps.map(a=>`<div class="gcard"><div style="color:${a[2]}">${appIcon(a[0],a[2])}</div><div class="l">${a[1]}</div></div>`).join('');
-const races=[['vile','Vile','#FCEE0A','Official'],['night','Night','#B026FF','Surveil'],['fairy','Fairy','#FF2A6D','Tracker'],['avian','Avian','#05D9E8','Legend'],['herald','Herald','#39FF14','Legend'],['foul','Foul','#FF2A6D','Legend'],['jaki','Jaki','#B026FF','Legend'],['fiend','Fiend','#FF1133','Corrupt']];
-document.getElementById('races').innerHTML=races.map(r=>`<div class="gcard"><div style="color:${r[2]}">${raceGlyph(r[0],r[2])}</div><div class="l">${r[1]}</div><div class="tier" style="color:${r[2]}">${r[3]}</div></div>`).join('');
-const pal=[['Bones Red','#E5162B'],['Yellow','#FCEE0A'],['Magenta','#FF2A6D'],['Purple','#B026FF'],['Cyan','#05D9E8'],['Green','#39FF14'],['BG','#0A0118']];
-document.getElementById('pal').innerHTML=pal.map(([n,h])=>`<div class="sw"><span class="c" style="background:${h}"></span>${n} <small>${h}</small></div>`).join('');
+const C={y:'#FCEE0A',c:'#05D9E8',m:'#FF2A6D',g:'#39FF14',d:'#8A7CA8',cr:'#F3E6C4'};
+const APPS=[
+  ['compendium','Compendium',C.y,'The bestiary of every device the Mitama has met, a page per species.'],
+  ['shugyo','Shugyo',C.g,'Lessons on the device: read, write a Lua task it grades, take the quiz, earn ofuda.'],
+  ['scry','Scry',C.c,'War driving. Logs Wi-Fi and Bluetooth with GPS position as WiGLE CSV, and uploads to WiGLE.','Cap LoRa-1262 for GPS'],
+  ['kotodama','Kotodama',C.m,'LoRa chat with other Mitama and the public Meshtastic LongFast channel.','Cap LoRa-1262'],
+  ['kizuna','Kizuna',C.m,'Your crew: other Mitama heard in range and your friends, with their form, level and Compendium.','Cap LoRa-1262'],
+  ['aether','Aether',C.c,'How crowded each 2.4 GHz channel is, and which of 1, 6 and 11 is quietest.'],
+  ['files','Files',C.c,'Browse the SD card.'],
+  ['grimoire','Grimoire',C.y,'Notes.'],
+  ['harae','Harae',C.cr,'The card game. Bind the spirits hexing your Domain with the ofuda you earned.'],
+  ['lua','Lua',C.c,'Write and run Lua scripts on the device.'],
+  ['calc','Calc',C.m,'A calculator.'],
+  ['oracle','MiTalk',C.g,'Chat with the Mitama through a small language model on the device. No cloud.'],
+  ['omikuji','Omikuji',C.y,'Draw the day\'s shrine fortune or cast an I Ching hexagram, and let the Mitama read it.'],
+  ['molt','Molt',C.g,'Updates MitamaOS over Wi-Fi, straight to the SD card.'],
+  ['settings','Settings',C.d,'Wi-Fi, sound, Clock, System info and the Tsukumo module scanner.'],
+];
+document.getElementById('appgrid').innerHTML=APPS.map(([k,n,col,d,need])=>
+  `<div class="app panel"><div class="sg">${sigil(k,col)}</div><div style="min-width:0"><div class="t" style="color:${col}">${n}</div><div class="d">${d}</div>${need?`<span class="need">Needs ${need}</span>`:''}</div></div>`).join('');
+
+const RANKS=['Kodama','Kakure','Hitodama','Tsukumo','Shikigami','Onmyoji','Kannushi','Tengu','Ryujin','Kami'];
+document.getElementById('ranks').innerHTML=RANKS.map((r,i)=>`<span><i>${i*5+1}</i>${r}</span>`).join('');
+
+const RACES=[
+  ['Vile',C.y,'Official',['Flock','Axon','ALPR']],
+  ['Night','#B026FF','Surveil',['Camera','Ring','Meta']],
+  ['Fairy',C.m,'Tracker',['AirTag','Tile','SmartTag','Google tag']],
+  ['Avian',C.c,'Legend',['Drone']],
+  ['Foul',C.m,'Threat',['Skimmer']],
+  ['Jaki','#B026FF','Legend',['Raven']],
+  ['Fiend','#FF1133','Threat',['Deauth','Evil twin','Hacker']],
+];
+document.getElementById('races').innerHTML=RACES.map(([n,col,t,sp])=>
+  `<div class="race panel"><div class="rn" style="color:${col}">${n}</div><div class="rt" style="color:${col}">${t}</div><ul>${sp.map(s=>`<li>${s}</li>`).join('')}</ul></div>`).join('');
+
+const LINES=[
+  '"Drone overhead. Huginn and Muninn, reporting to some Odin."',
+  '"Something official is watching. I\'m watching it back."',
+  '"A doppelganger Wi-Fi. If it asks for your password, it\'s lying."',
+  '"Tile tracker. It finds keys. It can also find you."',
+  '"Pandora\'s box was a jar. Pithos. Look it up. I\'ll wait."',
+  '"It is the hour of the ox. Curses are cast now. Go to bed."',
+  '"Up up down down left right left right B A. No, it does nothing here."',
+];
+(function(){const el=document.getElementById('line');let i=0;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  setInterval(()=>{i=(i+1)%LINES.length;el.textContent=LINES[i];},6500);})();
+
+fetch('firmware/version.txt',{cache:'no-store'}).then(r=>r.ok?r.text():null).then(v=>{
+  v=(v||'').trim();if(!/^[0-9a-f]{7,40}$/.test(v))return;
+  for(const id of ['build','build2']){const el=document.getElementById(id);el.textContent=v;}
+}).catch(()=>{});
 </script>
 </body>
 </html>
