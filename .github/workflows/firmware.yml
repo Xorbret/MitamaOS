@@ -95,6 +95,9 @@ jobs:
             0xe000  "$OUT/boot_app0.bin" \
             0x10000 "$OUT/firmware.bin"
           echo "${GITHUB_SHA::7}" > "$OUT/version.txt"
+          # Lesson pack (every Shugyo Trial and Harae drill): Molt downloads
+          # study.pack and unpacks it into /MitamaOS/study/ on the SD card.
+          python3 mitamaos/firmware/tools/mkstudy.py --check --pack "$OUT"
           ls -la "$OUT"
 
       - name: Keep firmware.elf (decodes crash-screen addresses)

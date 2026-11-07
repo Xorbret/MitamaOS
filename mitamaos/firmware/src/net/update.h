@@ -1,7 +1,8 @@
 #pragma once
 // Update fetcher: asks the MitamaOS Pages site which build is newest and
 // downloads that build's merged image to the SD card, where Launcher can
-// install it (Launcher > SD). MitamaOS can't overwrite itself while it
+// install it (Launcher > SD). It also fetches the lesson pack (Shugyo
+// Trials and Harae drills) and unpacks it into /MitamaOS/study/. MitamaOS can't overwrite itself while it
 // runs, and Launcher keeps its own flash layout, so the last step stays
 // in Launcher.
 //
@@ -12,6 +13,7 @@
 #include <WiFiClientSecure.h>
 #include <SD.h>
 #include "ca_bundle.h"
+#include "../study/lesson.h"   // study::kEngine
 
 #ifndef MITAMA_BUILD
 #define MITAMA_BUILD "dev"
@@ -88,24 +90,22 @@ inline String latest(String& msg) {
     return v;
 }
 
-// Downloads the newest image to /MitamaOS/update/mitamaos-<build>.bin.
-// progress(done, total) is called as it goes. Returns the path, or ""
-// with `msg` set; a part-finished download is deleted.
-inline String download(const String& build, void (*progress)(size_t, size_t), String& msg) {
+// Streams `file` from the site to `path` on the SD card (via a .part file,
+// renamed only when complete). Returns false with `msg` set.
+inline bool _fetch(const String& file, const String& path, void (*progress)(size_t, size_t), String& msg) {
     if (!SD.exists("/MitamaOS")) SD.mkdir("/MitamaOS");
     if (!SD.exists(DIR)) SD.mkdir(DIR);
-    String path = String(DIR) + "/mitamaos-" + build + ".bin";
     WiFiClientSecure c;
-    long len = _get(c, String(BASE) + IMAGE + "?t=" + millis(), msg);
-    if (len == -2) return "";
-    if (len <= 0) { c.stop(); msg = "Update size unknown"; return ""; }
-    if (SD.totalBytes() - SD.usedBytes() < (uint64_t)len + 65536) { c.stop(); msg = "SD card is full"; return ""; }
+    long len = _get(c, String(BASE) + file + "?t=" + millis(), msg);
+    if (len == -2) return false;
+    if (len <= 0) { c.stop(); msg = "Update size unknown"; return false; }
+    if (SD.totalBytes() - SD.usedBytes() < (uint64_t)len + 65536) { c.stop(); msg = "SD card is full"; return false; }
     String tmp = path + ".part";
     SD.remove(tmp.c_str());
     File f = SD.open(tmp.c_str(), FILE_WRITE);
-    if (!f) { c.stop(); msg = "Can't write to the SD card"; return ""; }
+    if (!f) { c.stop(); msg = "Can't write to the SD card"; return false; }
     uint8_t* buf = (uint8_t*)malloc(4096);
-    if (!buf) { f.close(); c.stop(); msg = "Not enough memory"; return ""; }
+    if (!buf) { f.close(); c.stop(); msg = "Not enough memory"; return false; }
     size_t done = 0;
     uint32_t last = millis();
     while (done < (size_t)len) {
@@ -124,10 +124,156 @@ inline String download(const String& build, void (*progress)(size_t, size_t), St
     free(buf);
     f.close();
     c.stop();
-    if (done != (size_t)len) { SD.remove(tmp.c_str()); return ""; }
+    if (done != (size_t)len) { SD.remove(tmp.c_str()); return false; }
     SD.remove(path.c_str());
     SD.rename(tmp.c_str(), path.c_str());
-    return path;
+    return true;
+}
+
+// Downloads the newest image to /MitamaOS/update/mitamaos-<build>.bin.
+// progress(done, total) is called as it goes. Returns the path, or ""
+// with `msg` set; a part-finished download is deleted.
+inline String download(const String& build, void (*progress)(size_t, size_t), String& msg) {
+    String path = String(DIR) + "/mitamaos-" + build + ".bin";
+    return _fetch(IMAGE, path, progress, msg) ? path : String();
+}
+
+// ---- lesson pack ---------------------------------------------------------
+// study.txt on the site: "<version> <engine> <bytes>". study.pack: a header
+// line "MITAMA-STUDY 1 <version> <engine>", then per file
+// "F <lessons|scenarios>/<name>.lua <bytes>\n" + the bytes + "\n", then "E".
+// It unpacks into /MitamaOS/study/; pack.txt there lists the files the
+// last pack wrote, so files a newer pack drops are removed and files the
+// player added by hand are never touched.
+static constexpr const char* STUDY_DIR  = "/MitamaOS/study";
+static constexpr const char* STUDY_PACK = "/MitamaOS/update/study.pack";
+
+// The installed pack's version, or "".
+inline String studyInstalled() {
+    File f = SD.open((String(STUDY_DIR) + "/version.txt").c_str(), FILE_READ);
+    if (!f) return "";
+    String v = f.readStringUntil('\n');
+    f.close();
+    v.trim();
+    int sp = v.indexOf(' ');
+    return sp > 0 ? v.substring(0, sp) : v;
+}
+
+// The site's pack version, or "" with `msg` set. `engine` gets the lesson
+// engine it needs.
+inline String studyLatest(int& engine, String& msg) {
+    WiFiClientSecure c;
+    long len = _get(c, String(BASE) + "study.txt?t=" + millis(), msg);
+    if (len == -2) return "";
+    String v = c.readString();
+    c.stop();
+    v.trim();
+    int sp = v.indexOf(' ');
+    if (sp <= 0) { msg = "No lesson pack on the update site"; return ""; }
+    engine = v.substring(sp + 1).toInt();
+    return v.substring(0, sp);
+}
+
+inline bool _safeName(const String& n) {
+    if (n.length() < 5 || n.length() > 64 || !n.endsWith(".lua")) return false;
+    for (unsigned i = 0; i < n.length(); i++) {
+        char ch = n[i];
+        if (!(isalnum((unsigned char)ch) || ch == '-' || ch == '_' || ch == '.')) return false;
+    }
+    return n.indexOf("..") < 0;
+}
+
+// Unpacks a downloaded pack. Returns the number of files written, or -1
+// with `msg` set (a bad pack writes nothing it hasn't fully checked).
+inline int studyInstall(const char* packPath, String& msg) {
+    File in = SD.open(packPath, FILE_READ);
+    if (!in) { msg = "Lesson pack missing"; return -1; }
+    String head = in.readStringUntil('\n');
+    head.trim();
+    // "MITAMA-STUDY 1 <version> <engine>"
+    if (!head.startsWith("MITAMA-STUDY 1 ")) { in.close(); msg = "Lesson pack is damaged"; return -1; }
+    String rest = head.substring(15);
+    int sp = rest.indexOf(' ');
+    String version = sp > 0 ? rest.substring(0, sp) : rest;
+    int engine = sp > 0 ? rest.substring(sp + 1).toInt() : 1;
+    if (engine > study::kEngine) { in.close(); msg = "These lessons need a newer MitamaOS"; return -1; }
+
+    if (!SD.exists("/MitamaOS")) SD.mkdir("/MitamaOS");
+    if (!SD.exists(STUDY_DIR)) SD.mkdir(STUDY_DIR);
+    const String dirs[2] = { String(STUDY_DIR) + "/lessons", String(STUDY_DIR) + "/scenarios" };
+    for (auto& d : dirs) if (!SD.exists(d.c_str())) SD.mkdir(d.c_str());
+
+    uint8_t* buf = (uint8_t*)malloc(2048);
+    if (!buf) { in.close(); msg = "Not enough memory"; return -1; }
+    String written;          // one path per line, for pack.txt
+    int count = 0;
+    bool ok = false;
+    for (;;) {
+        String line = in.readStringUntil('\n');
+        if (line == "E") { ok = true; break; }
+        // "F <kind>/<name> <bytes>"
+        int s1 = line.indexOf(' '), s2 = line.lastIndexOf(' ');
+        if (!line.startsWith("F ") || s2 <= s1) { msg = "Lesson pack is damaged"; break; }
+        String rel = line.substring(s1 + 1, s2);
+        long len = line.substring(s2 + 1).toInt();
+        int slash = rel.indexOf('/');
+        String kind = slash > 0 ? rel.substring(0, slash) : "";
+        String name = slash > 0 ? rel.substring(slash + 1) : "";
+        if ((kind != "lessons" && kind != "scenarios") || !_safeName(name) || len <= 0 || len > 32768) {
+            msg = "Lesson pack has a bad entry"; break;
+        }
+        String path = String(STUDY_DIR) + "/" + kind + "/" + name, tmp = path + ".part";
+        SD.remove(tmp.c_str());
+        File out = SD.open(tmp.c_str(), FILE_WRITE);
+        if (!out) { msg = "Can't write to the SD card"; break; }
+        long left = len;
+        while (left > 0) {
+            int n = in.read(buf, left < 2048 ? left : 2048);
+            if (n <= 0 || out.write(buf, n) != (size_t)n) break;
+            left -= n;
+        }
+        out.close();
+        if (left > 0 || in.read() != '\n') { SD.remove(tmp.c_str()); msg = "Lesson pack is cut short"; break; }
+        SD.remove(path.c_str());   // FAT can't rename over a file
+        SD.rename(tmp.c_str(), path.c_str());
+        written += kind + "/" + name + "\n";
+        count++;
+    }
+    free(buf);
+    in.close();
+    if (!ok) return -1;
+
+    // Remove what the previous pack wrote and this one doesn't have.
+    String listPath = String(STUDY_DIR) + "/pack.txt";
+    File old = SD.open(listPath.c_str(), FILE_READ);
+    if (old) {
+        while (old.available()) {
+            String rel = old.readStringUntil('\n');
+            rel.trim();
+            if (!rel.length() || written.indexOf(rel + "\n") >= 0) continue;
+            int slash = rel.indexOf('/');
+            String kind = slash > 0 ? rel.substring(0, slash) : "", name = slash > 0 ? rel.substring(slash + 1) : "";
+            if ((kind == "lessons" || kind == "scenarios") && _safeName(name))
+                SD.remove((String(STUDY_DIR) + "/" + rel).c_str());
+        }
+        old.close();
+    }
+    SD.remove(listPath.c_str());
+    File list = SD.open(listPath.c_str(), FILE_WRITE);
+    if (list) { list.print(written); list.close(); }
+    String verPath = String(STUDY_DIR) + "/version.txt";
+    SD.remove(verPath.c_str());
+    File ver = SD.open(verPath.c_str(), FILE_WRITE);
+    if (ver) { ver.printf("%s %d\n", version.c_str(), engine); ver.close(); }
+    SD.remove(packPath);
+    return count;
+}
+
+// Downloads the site's lesson pack and unpacks it. Returns the number of
+// files, or -1 with `msg` set.
+inline int studyUpdate(void (*progress)(size_t, size_t), String& msg) {
+    if (!_fetch("study.pack", STUDY_PACK, progress, msg)) return -1;
+    return studyInstall(STUDY_PACK, msg);
 }
 
 } // namespace OsUpdate

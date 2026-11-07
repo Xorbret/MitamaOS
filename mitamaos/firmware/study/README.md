@@ -1,6 +1,16 @@
 # Writing Shugyo lessons and Harae drills
 
-Content files are Lua files that `return` a table. The files here are built into the firmware (`tools/mkstudy.py` turns them into `src/study/builtin_content.h`). Extra lessons and drills can go on the SD card in `/MitamaOS/study/lessons/` and `/MitamaOS/study/scenarios/`; a file with the same id as a built-in one replaces it. Files are listed by track, then filename, so prefix them (`t0-04-...` for Foundations, `b1-02-...` for Babel's first wave). CI loads every file here and refuses a broken or unfair one.
+Content files are Lua files that `return` a table. Files are listed by track, then filename, so prefix them (`t0-04-...` for Foundations, `b1-02-...` for Babel's first wave). CI loads every file here and refuses a broken or unfair one.
+
+## Where the files live on the device
+
+- **Built in (the fallback):** lessons whose file starts with `t` (Foundations) and the `s02` practice drill. `tools/mkstudy.py` turns them into `src/study/builtin_content.h`, so Shugyo works with no SD card. Their Wards must all be built-in lessons too (the host test checks this).
+- **On the SD card (everything else):** each CI build also writes `study.pack` and `study.txt` next to the firmware on the site. Molt downloads the pack and unpacks it into `/MitamaOS/study/lessons/` and `/MitamaOS/study/scenarios/`, with no restart needed. `pack.txt` there lists the files the pack wrote (files you add by hand are never removed), and `version.txt` holds the pack version and the lesson engine it needs.
+- An SD file with the same id as a built-in one replaces it.
+- `index.txt` caches what each SD file holds, so start-up only reads new or changed files. Delete it to force a full re-read.
+- When the content format gains something older firmware can't run, bump `kEngine` in `src/study/lesson.h`. Older builds then leave a newer pack alone and tell the player to run Molt.
+
+Run `python3 tools/mkstudy.py` after changing any file here (`--pack DIR` also writes the pack).
 
 ## Lesson (`lessons/*.lua`)
 

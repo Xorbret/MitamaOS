@@ -10,6 +10,12 @@
 
 namespace study {
 
+// Lesson engine version. Content packs on the SD card say which engine they
+// need; a pack newer than this firmware is ignored until Molt updates it.
+// tools/mkstudy.py reads this line, so bump it here when the content format
+// gains something older firmware can't run.
+constexpr int kEngine = 1;
+
 struct QuizItem {
   std::string question;
   std::vector<std::string> choices;

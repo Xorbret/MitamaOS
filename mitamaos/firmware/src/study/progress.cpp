@@ -105,6 +105,29 @@ void Progress::parse(const std::string& text) {
   }
 }
 
+std::vector<std::string> Progress::chunks(size_t max) const {
+  std::vector<std::string> out(1);
+  std::string s = serialize();
+  size_t from = 0;
+  while (from < s.size()) {
+    size_t nl = s.find('\n', from);
+    if (nl == std::string::npos) nl = s.size() - 1;
+    std::string rec = s.substr(from, nl - from) + ';';
+    from = nl + 1;
+    if (rec.size() > max) continue;  // a record that can never fit (absurd id)
+    if (out.back().size() + rec.size() > max) out.emplace_back();
+    out.back() += rec;
+  }
+  return out;
+}
+
+void Progress::parseChunks(const std::vector<std::string>& parts) {
+  std::string t;
+  for (const auto& p : parts) t += p;
+  for (char& c : t) if (c == ';') c = '\n';
+  parse(t);
+}
+
 std::string Progress::toJson() const {
   std::string out = "{\"lessons\":{";
   bool first = true;

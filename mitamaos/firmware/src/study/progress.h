@@ -5,6 +5,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace study {
 
@@ -38,6 +39,10 @@ class Progress {
   // Older lines without the field flag still parse.
   std::string serialize() const;
   void parse(const std::string& text);
+  // The serialized records with ';' for newlines, cut into pieces of at
+  // most `max` bytes at record boundaries (one NVS string each), and back.
+  std::vector<std::string> chunks(size_t max) const;
+  void parseChunks(const std::vector<std::string>& parts);
   std::string toJson() const;
 
  private:

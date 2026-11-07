@@ -11,10 +11,13 @@
 #include "../../detect/detection.h"
 #include "../../net/update.h"
 #include "../../system/crash_log.h"
+#include "../../study/library.h"
 
 // Molt - updates MitamaOS. Checks the MitamaOS site for a newer build and
 // downloads it to the SD card (/MitamaOS/update/), then restarts so it can
 // be installed from Launcher > SD. Nothing on the computer needed.
+// It also brings the lesson pack (Shugyo Trials, Harae drills) onto the
+// card in /MitamaOS/study/; new lessons alone need no restart.
 //
 // Keys: Enter check / download, R restart, ` back.
 class MoltApp : public App {
@@ -28,6 +31,7 @@ public:
     void onStart() override {
         OsUI::waitRelease();
         _state = S_IDLE; _latest = ""; _path = ""; _pct = -1;
+        _lessons = OsUpdate::studyInstalled(); _lessonsNew = "";
         _say("Press Enter to look for an update.", MUI::DIM);
         _draw();
     }
@@ -42,15 +46,17 @@ public:
             OsUI::waitRelease();
             if (_state == S_IDLE || _state == S_CURRENT) _check();
             else if (_state == S_NEWER) _download();
+            else if (_state == S_LESSONS) _getLessons(false);
             _draw();
         }
     }
 
 private:
-    enum State : uint8_t { S_IDLE, S_CURRENT, S_NEWER, S_READY };
+    enum State : uint8_t { S_IDLE, S_CURRENT, S_NEWER, S_LESSONS, S_READY };
     LGFX_Sprite& _canvas;
     State    _state = S_IDLE;
     String   _latest, _path, _msg;
+    String   _lessons, _lessonsNew;   // installed / newer lesson pack ("" = none)
     uint16_t _msgCol = MUI::DIM;
     int      _pct = -1;
     static inline MoltApp* _self = nullptr;
@@ -74,16 +80,57 @@ private:
         _say("Looking...", MUI::CYAN); _draw();
         String msg;
         CrashLog::crumb("molt check");
-        { Hold h; _latest = OsUpdate::latest(msg); }
+        String smsg;
+        int engine = 0;
+        String pack;
+        {
+            Hold h;
+            _latest = OsUpdate::latest(msg);
+            if (_latest.length()) pack = OsUpdate::studyLatest(engine, smsg);
+        }
         CrashLog::done();
         if (!_latest.length()) { _say(msg, MUI::BONES); return; }
-        if (_latest == OsUpdate::current()) {
-            _state = S_CURRENT;
-            _say("You have the newest build.", MUI::GREEN);
-        } else {
+        _lessons = OsUpdate::studyInstalled();
+        // Lessons this build can run and doesn't have yet.
+        _lessonsNew = pack.length() && pack != _lessons && engine <= study::kEngine ? pack : String();
+        if (_latest != OsUpdate::current()) {
             _state = S_NEWER;
-            _say("New build found. Enter downloads it.", MUI::YELLOW);
+            _say(_lessonsNew.length() ? "New build and lessons found. Enter downloads them."
+                                      : "New build found. Enter downloads it.", MUI::YELLOW);
+        } else if (_lessonsNew.length()) {
+            _state = S_LESSONS;
+            _say("New lessons found. Enter installs them.", MUI::YELLOW);
+        } else {
+            _state = S_CURRENT;
+            _say(pack.length() || _lessons.length() ? "You have the newest build and lessons."
+                                                    : "You have the newest build.", MUI::GREEN);
         }
+    }
+
+    // Downloads and unpacks the lesson pack. After a build download
+    // (`quiet`), a failure here doesn't hide that the build is saved.
+    bool _getLessons(bool quiet) {
+        if (!_online()) return false;
+        _self = this; _pct = 0;
+        _say("Getting lessons...", MUI::CYAN); _draw();
+        String msg;
+        CrashLog::crumb("molt lessons");
+        int n;
+        { Hold h; n = OsUpdate::studyUpdate(&MoltApp::_progress, msg); }
+        CrashLog::done();
+        _pct = -1;
+        if (n < 0) {
+            if (!quiet) _say(String("Lessons: ") + msg, MUI::BONES);
+            return false;
+        }
+        study::Library::get().invalidate();
+        _lessons = OsUpdate::studyInstalled();
+        _lessonsNew = "";
+        if (!quiet) {
+            _state = S_CURRENT;
+            _say(String("Lessons updated (") + n + " files). Open Shugyo or Harae.", MUI::GREEN);
+        }
+        return true;
     }
 
     static void _progress(size_t done, size_t total) {
@@ -103,8 +150,11 @@ private:
         CrashLog::done();
         _pct = -1;
         if (!_path.length()) { _say(msg, MUI::BONES); return; }
+        bool lessonsOk = !_lessonsNew.length() || _getLessons(true);
         _state = S_READY;
-        _say("Saved. R restarts; install it from Launcher > SD.", MUI::GREEN);
+        _say(lessonsOk ? "Saved. R restarts; install it from Launcher > SD."
+                       : "Build saved, lessons failed (try again later). R restarts; install from Launcher > SD.",
+             lessonsOk ? MUI::GREEN : MUI::YELLOW);
     }
 
     void _draw() {
@@ -120,6 +170,10 @@ private:
         e = MUI::text(_canvas, MUI::small(), "NEWEST ", x, y, MUI::WHITE);
         MUI::text(_canvas, MUI::small(), _latest.length() ? _latest.c_str() : "?", e, y,
                   _state == S_NEWER || _state == S_READY ? MUI::YELLOW : MUI::LABEL);
+        y += 13;
+        e = MUI::text(_canvas, MUI::small(), "LESSONS ", x, y, MUI::WHITE);
+        MUI::text(_canvas, MUI::small(), _lessonsNew.length() ? _lessonsNew.c_str() : _lessons.length() ? _lessons.c_str() : "none",
+                  e, y, _lessonsNew.length() ? MUI::YELLOW : MUI::LABEL);
         y += 16;
         if (_pct >= 0) {
             snprintf(buf, sizeof(buf), "%d%%", _pct);
@@ -137,7 +191,7 @@ private:
         {
             const int w = SCREEN_W - 3 - x;
             String rest = _msg, line;
-            for (int row = 0; row < 5 && rest.length(); row++) {
+            for (int row = 0; row < 5 && rest.length() && y + 10 <= SCREEN_H - FOOTER_H; row++) {
                 int cut = rest.length();
                 while (cut > 0 && MUI::width(_canvas, MUI::small(), rest.substring(0, cut).c_str()) > w) {
                     int sp = rest.lastIndexOf(' ', cut - 1);
@@ -150,7 +204,8 @@ private:
             }
         }
 
-        const char* foot = _state == S_NEWER ? "ENT download" : _state == S_READY ? "R restart" : "ENT check";
+        const char* foot = _state == S_NEWER ? "ENT download" : _state == S_LESSONS ? "ENT install" :
+                           _state == S_READY ? "R restart" : "ENT check";
         MUI::footer(_canvas, foot, MUI::DIM, nullptr, MUI::GREEN);
         { DispLock _lk; _canvas.pushSprite(0, 0); }
     }

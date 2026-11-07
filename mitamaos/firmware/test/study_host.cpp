@@ -1,15 +1,18 @@
 // Host check for Shugyo and Harae content (no device needed). CI runs it:
 //   g++ -std=gnu++17 -DLUA_32BITS=1 -Ilib/lua/src -Isrc/study test/study_host.cpp \
 //       src/study/*.cpp -x c lib/lua/src/lua_all.c -lm -o study_host && ./study_host
-// Every built-in lesson and drill must load, every drill must be fair (each
-// round stoppable), every Ward and study link must name a real lesson with a
-// task, and the hardware-free lessons must have a solution that passes.
+// Every lesson and drill (the built-in set and the SD pack) must load, every
+// drill must be fair (each round stoppable), every Ward and study link must
+// name a real lesson with a task, and the hardware-free lessons must have a
+// solution that passes. The built-in set must also stand on its own, since a
+// device without the SD pack sees only that.
 #include <cstdio>
 #include <map>
 #include <set>
 #include <string>
 
 #include "builtin_content.h"
+#include "study_all_content.h"
 #include "game.h"
 #include "lesson.h"
 #include "progress.h"
@@ -70,15 +73,16 @@ static const char* const kStarterMustFail[] = {
   "b1-03-interference-or-jamming", "b1-04-wired-backups",
 };
 
-int main() {
-  FakeHal hal;
+// Checks one content set. `print` lists what was found.
+static void checkSet(FakeHal& hal, const char* set, const BuiltinFile* lessons, int nLessons, const BuiltinFile* drills,
+                     int nDrills, bool print) {
   std::map<std::string, bool> lessonHasTask;
 
-  for (int i = 0; i < kBuiltin_lessons_count; i++) {
+  for (int i = 0; i < nLessons; i++) {
     Lesson l(&hal);
     std::string err;
-    bool ok = l.load(kBuiltin_lessons[i].source, err);
-    CHECK(ok, "lesson %s: %s", kBuiltin_lessons[i].name, err.c_str());
+    bool ok = l.load(lessons[i].source, err);
+    CHECK(ok, "%s lesson %s: %s", set, lessons[i].name, err.c_str());
     if (!ok) continue;
     CHECK(!lessonHasTask.count(l.id()), "lesson id %s used twice", l.id().c_str());
     lessonHasTask[l.id()] = l.hasTask();
@@ -95,24 +99,25 @@ int main() {
     }
     for (const std::string& p : l.prereqs())
       CHECK(p != l.id(), "lesson %s requires itself", l.id().c_str());
-    std::printf("lesson   %-30s %zu pages, %zu quiz%s%s\n", l.id().c_str(), l.pages().size(), l.quiz().size(),
-                l.labSource().empty() ? "" : ", lab", l.card().empty() ? "" : (", card " + l.card()).c_str());
+    if (print)
+      std::printf("lesson   %-30s %zu pages, %zu quiz%s%s\n", l.id().c_str(), l.pages().size(), l.quiz().size(),
+                  l.labSource().empty() ? "" : ", lab", l.card().empty() ? "" : (", card " + l.card()).c_str());
   }
 
-  for (int i = 0; i < kBuiltin_scenarios_count; i++) {
+  for (int i = 0; i < nDrills; i++) {
     Scenario s;
     std::string err;
-    bool ok = loadScenario(&hal, kBuiltin_scenarios[i].source, s, err);
-    CHECK(ok, "drill %s: %s", kBuiltin_scenarios[i].name, err.c_str());
+    bool ok = loadScenario(&hal, drills[i].source, s, err);
+    CHECK(ok, "%s drill %s: %s", set, drills[i].name, err.c_str());
     if (!ok) continue;
     for (const Round& r : s.rounds) {
       for (const Defense& d : r.defenses) {
         if (d.ward.empty()) continue;
-        CHECK(lessonHasTask.count(d.ward) && lessonHasTask[d.ward], "drill %s: ward %s is not a lesson with a task",
-              s.id.c_str(), d.ward.c_str());
+        CHECK(lessonHasTask.count(d.ward) && lessonHasTask[d.ward], "%s drill %s: ward %s is not a lesson with a task",
+              set, s.id.c_str(), d.ward.c_str());
       }
       if (!r.reveal.lesson.empty())
-        CHECK(lessonHasTask.count(r.reveal.lesson), "drill %s: study link %s is not a lesson", s.id.c_str(),
+        CHECK(lessonHasTask.count(r.reveal.lesson), "%s drill %s: study link %s is not a lesson", set, s.id.c_str(),
               r.reveal.lesson.c_str());
     }
     // With every Ward held, nothing is sealed; and a perfect run scores.
@@ -129,10 +134,19 @@ int main() {
     for (const Round& r : s.rounds)
       for (const Evidence& e : r.evidence)
         if (!e.freeWith.empty())
-          CHECK(lessonHasTask.count(e.freeWith), "drill %s: free_with %s is not a lesson", s.id.c_str(), e.freeWith.c_str());
-    std::printf("drill    %-30s %zu rounds, best %d, needs %zu ward(s)\n", s.id.c_str(), s.rounds.size(), g.score(),
-                need.size());
+          CHECK(lessonHasTask.count(e.freeWith), "%s drill %s: free_with %s is not a lesson", set, s.id.c_str(),
+                e.freeWith.c_str());
+    if (print)
+      std::printf("drill    %-30s %zu rounds, best %d, needs %zu ward(s)\n", s.id.c_str(), s.rounds.size(), g.score(),
+                  need.size());
   }
+}
+
+int main() {
+  FakeHal hal;
+  checkSet(hal, "pack", kAll_lessons, kAll_lessons_count, kAll_scenarios, kAll_scenarios_count, true);
+  checkSet(hal, "built-in", kBuiltin_lessons, kBuiltin_lessons_count, kBuiltin_scenarios, kBuiltin_scenarios_count, false);
+  std::printf("built-in fallback: %d lessons, %d drills\n", kBuiltin_lessons_count, kBuiltin_scenarios_count);
 
   // Surge drains uptime but never ends a drill by itself, and a Blessing
   // makes its evidence free.
@@ -165,6 +179,19 @@ int main() {
   CHECK(q.lesson("t0-01-hello-lua")->fieldDone && q.lesson("t0-01-hello-lua")->marks() == 3, "field mark round trip");
   q.parse("L|old|1|2|2\n");
   CHECK(q.hasWard("old") && !q.lesson("old")->fieldDone, "old progress lines still parse");
+  // Progress split into NVS-sized pieces comes back whole.
+  {
+    Progress big;
+    for (int i = 0; i < 200; i++) big.recordTask("lesson-with-a-long-name-" + std::to_string(i), true);
+    big.recordScenario("s02-smart-home", 120);
+    std::vector<std::string> parts = big.chunks(1000);
+    bool fits = parts.size() > 1;
+    for (auto& c : parts) fits = fits && c.size() <= 1000;
+    CHECK(fits, "progress chunks too big or not split (%zu)", parts.size());
+    Progress back;
+    back.parseChunks(parts);
+    CHECK(back.serialize() == big.serialize(), "progress chunks round trip");
+  }
 
   // Sandbox limits hold.
   {

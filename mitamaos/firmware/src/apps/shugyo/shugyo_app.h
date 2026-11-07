@@ -156,7 +156,8 @@ private:
             MUI::text(_c, MUI::small(), subs[i], 9, y + 12, sel ? MUI::YELLOW : MUI::DIM);
         }
         StudyUI::rule(_c, 102);
-        StudyUI::wrap(_c, MUI::small(), _quipText(_quip), 6, 105, 228, 11, 1, MUI::CREAM);
+        if (const char* note = lib.sdNote()) StudyUI::wrap(_c, MUI::small(), note, 6, 105, 228, 11, 1, MUI::YELLOW);
+        else StudyUI::wrap(_c, MUI::small(), _quipText(_quip), 6, 105, 228, 11, 1, MUI::CREAM);
         StudyUI::foot(_c, "; . move   ENT open   ` back");
     }
 
