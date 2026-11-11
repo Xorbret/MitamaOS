@@ -14,6 +14,7 @@ return {
     "Security types, weakest first: open, WEP (broken), WPA/WPA2-PSK (depends on the password), WPA3 (strongest). Open or WEP on a home or office network is a finding.",
     "The attack this Trial seals: a deauthentication flood. Wi-Fi has small \"management frames\" that say hello and goodbye. On WPA2 they aren't signed, so anyone can forge a goodbye from your router and every device drops at once.",
     "The fix is Protected Management Frames (802.11w, often called PMF). The router signs those frames and devices ignore forged ones. WPA3 requires PMF, which is one more reason to move to it.",
+    "Reading the code: n.auth is the network's security type as text, like \"open\" or \"wpa2\". weak = weak + 1 adds one to the count. The if from Rules of Engagement decides when to count.",
   },
   task = "Scan and print each network as: ssid, auth. Then print how many are open or WEP.",
   starter = [[local nets = wifi.scan()
@@ -23,7 +24,7 @@ for _, n in ipairs(nets) do
   -- count weak ones here
 end
 print(weak)]],
-  hint = "Inside the loop add: if n.auth == \"open\" or n.auth == \"wep\" then weak = weak + 1 end",
+  hint = "Replace the -- line with: if n.auth == \"open\" or n.auth == \"wep\" then weak = weak + 1 end",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")

@@ -21,13 +21,15 @@ return {
     "Professionals work from a scope: a written list of what may be tested, by whom, when and how. Anything not on the list is out, even if it's on the same network.",
     "Some things are always fine. Listening is legal: a passive scan only hears what devices already broadcast. That's why MitamaOS only listens and simulates attacks on screen.",
     "Permission must be clear. \"My friend said it was OK\" works for their own laptop if they really agreed. It doesn't cover their employer's network or the cafe they're sitting in.",
+    "Reading the code: if test then ... end runs the middle only when the test is true. == asks \"is it equal?\" (a single = stores a value). or is true if either side is. t.owner is the current target's owner.",
   },
   task = "lab.targets lists seven devices and networks. Print only the ones in scope: things you own, or things the owner gave you permission to test.",
   starter = [[for _, t in ipairs(lab.targets) do
+  local ok = false
   -- in scope: owner is "me", or permission is true
-  print(t.name)
+  if ok then print(t.name) end
 end]],
-  hint = "Wrap the print in an if: if t.owner == \"me\" or t.permission then ... end",
+  hint = "Replace the -- line with: if t.owner == \"me\" or t.permission then ok = true end",
   lab = { targets = TARGETS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end

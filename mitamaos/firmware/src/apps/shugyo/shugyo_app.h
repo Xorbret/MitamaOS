@@ -95,6 +95,11 @@ private:
     // The task card: the full task (and the hint, after fn+H), word-wrapped
     // over the editor. Any key closes it; fn+T opens it again.
     bool _card = false, _cardHint = false;
+    // After fn+R the card shows the whole output (or error), scrollable.
+    bool _cardOut = false;
+    String _outText;
+    uint16_t _outCol = MUI::GREEN;
+    int _outScroll = 0;
     OsUI::Typing _typing;
     bool _passed = false, _firstPass = false;
     String _feedback;
@@ -353,9 +358,10 @@ private:
         }
         if (_lines.empty()) _lines.push_back("");
         _row = (int)_lines.size() - 1; _col = _lines[_row].length(); _top = 0; _left = 0;
-        _con1 = "fn+T shows the task again, fn+H a hint"; _con1Col = MUI::CREAM;
+        _con1 = "fn+T task   fn+H hint   fn+O last output"; _con1Col = MUI::CREAM;
+        _outText = "";
         _con2 = "fn+R run   fn+C check"; _con2Col = MUI::DIM;
-        _card = true; _cardHint = false;
+        _card = true; _cardHint = false; _cardOut = false;
         _typing = OsUI::Typing();
         _scr = S_TASK;
         OsUI::waitRelease();
@@ -375,7 +381,15 @@ private:
         _typing.poll(st, added, del, ent);
         if (!added.length() && !del && !ent) return;
 
-        if (_card) { _card = false; _drawTask(); return; }   // any key closes the task card
+        if (_card) {   // any key closes the card; ; and . scroll the output
+            if (_cardOut && added.length() == 1 && (added[0] == ';' || added[0] == '.')) {
+                _outScroll = max(0, _outScroll + (added[0] == '.' ? 1 : -1));
+            } else {
+                _card = false;
+            }
+            _drawTask();
+            return;
+        }
         if (st.fn) {
             for (size_t i = 0; i < added.length(); i++) {
                 char ch = added[i];
@@ -386,7 +400,8 @@ private:
                 else if (ch == 'r' || ch == 'R') { _run(false); return; }
                 else if (ch == 'c' || ch == 'C') { _run(true); return; }
                 else if (ch == 'h' || ch == 'H') { _hint(); }
-                else if (ch == 't' || ch == 'T') { _card = true; _cardHint = false; }
+                else if (ch == 't' || ch == 'T') { _card = true; _cardHint = false; _cardOut = false; }
+                else if ((ch == 'o' || ch == 'O') && _outText.length()) { _card = true; _cardOut = true; }
                 else if (ch == 'k' || ch == 'K') { _lines[_row] = ""; _col = 0; }
             }
             _drawTask();
@@ -435,9 +450,21 @@ private:
         return true;
     }
 
-    void _hint() { _card = true; _cardHint = true; }
+    void _hint() { _card = true; _cardHint = true; _cardOut = false; }
+
+    void _drawOutput() {
+        const int lh = 11, vis = 8;
+        int y = StudyUI::TOP + 1;
+        MUI::text(_c, MUI::small(), _outCol == MUI::RED ? "ERROR" : "OUTPUT", 5, y, MUI::YELLOW);
+        y += 13;
+        int total = StudyUI::wrap(_c, MUI::small(), _outText.c_str(), 5, 0, 230, lh, 0, 0);
+        _outScroll = constrain(_outScroll, 0, max(0, total - vis));
+        StudyUI::wrap(_c, MUI::small(), _outText.c_str(), 5, y, 230, lh, vis, _outCol, _outScroll);
+        StudyUI::foot(_c, total > vis ? "; . scroll   any key: code" : "any key: back to the code", "fn+O again");
+    }
 
     void _drawCard() {
+        if (_cardOut) { _drawOutput(); return; }
         const int w = 230, lh = 11;
         int y = StudyUI::TOP + 1;
         MUI::text(_c, MUI::small(), "YOUR TASK", 5, y, MUI::YELLOW);
@@ -477,12 +504,21 @@ private:
             if (!g.run.ok) {
                 _con1 = "error"; _con1Col = MUI::RED;
                 _con2 = g.run.error.c_str(); _con2Col = MUI::RED;
+                // printed lines first, then the error, so you can see how far it got
+                _outText = shown.c_str(); if (_outText.length()) _outText += "\n";
+                _outText += g.run.error.c_str(); _outCol = MUI::RED;
             } else if (shown.empty()) {
                 _con1 = "(ran, printed nothing)"; _con1Col = MUI::DIM; _con2 = "";
+                _outText = "";
             } else {
                 String a, b; _splitOut(shown, a, b);
                 _con1 = "> " + a; _con1Col = MUI::GREEN;
                 _con2 = b.length() ? "> " + b : ""; _con2Col = MUI::GREEN;
+                _outText = shown.c_str(); _outText.trim(); _outCol = MUI::GREEN;
+            }
+            // More than fits the two console lines: show it all on the card.
+            if (_outText.length() && (_outText.indexOf('\n') >= 0 || _outText.length() > 36)) {
+                _card = true; _cardOut = true; _cardHint = false; _outScroll = 0;
             }
             OsUI::waitRelease();
             _drawTask();

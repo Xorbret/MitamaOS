@@ -14,7 +14,7 @@ return {
 for i, c in ipairs(checks) do
   -- replace this line with: print(c)
 end]],
-  hint = "Delete the line starting with -- and type print(c) in its place. c is the current check, so the loop prints all four in order.",
+  hint = "Replace the -- line with: print(c)",
   check = function(r)
     if not r.ok then return false, r.error end
     local order = { "wifi", "ip", "gateway", "dns" }
@@ -24,7 +24,7 @@ end]],
       if not at then return false, "Missing or out of order: " .. word end
       pos = at
     end
-    return true, "That order is a solid troubleshooting habit. That opens the smart-home practice drill in Harae."
+    return true, "Solid habit. The smart-home drill in Harae is open."
   end,
   quiz = {
     { q = "Which port is plain (unencrypted) MQTT?", choices = { "443", "1883", "8883" }, answer = 2,

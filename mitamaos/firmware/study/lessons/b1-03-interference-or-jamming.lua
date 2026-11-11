@@ -26,6 +26,7 @@ return {
     "Jamming is deliberate. A jammer buries every channel at once, all day, and no setting turns it off. It's illegal in most countries, including for the person who \"just wanted quiet\".",
     "A simple rule of thumb: if nearly every channel (10 or more of 13) is buried at the same moment, suspect jamming. If a few neighbouring channels are busy, look for an appliance first.",
     "Rule out the boring cause before you call it an attack. Most \"the Wi-Fi is cursed\" tickets are a microwave, a bad spot, or a full channel.",
+    "Reading the code: r.busy is the list of busy channels in one reading, so #r.busy counts them. >= means \"at least\".",
   },
   task = "lab.readings holds five spectrum reads. For each one, print its label, then jamming if 10 or more channels are busy, or interference if fewer are.",
   starter = [[for _, r in ipairs(lab.readings) do
@@ -34,7 +35,7 @@ return {
   -- decide when it's jamming
   print(r.label .. " " .. verdict)
 end]],
-  hint = "Add: if count >= 10 then verdict = \"jamming\" end",
+  hint = "Replace the -- line with: if count >= 10 then verdict = \"jamming\" end",
   lab = { readings = READINGS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
@@ -44,7 +45,7 @@ end]],
       local got = line:match("(%a+)%s*$")
       if got ~= want then return false, label .. " should be " .. want .. ". Count its busy channels again." end
     end
-    return true, "Two walls, three ordinary noises. You earned Spectrum Eye: in Harae the spectrum read is free."
+    return true, "Two walls, three noises. Spectrum Eye earned: free spectrum reads in Harae."
   end,
   quiz = {
     { q = "Break-room Wi-Fi dies every day at 12:10 and nowhere else. Channels 9 to 11 light up. Most likely?",

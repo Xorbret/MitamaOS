@@ -66,10 +66,47 @@ static const std::map<std::string, std::string> kSolutions = {
    "local w=0 for _,d in ipairs(lab.devices) do if d.critical and not d.moves then print(d.name) w=w+1 end end print(w)"},
 };
 
+// What a learner ends up with after following the hint word for word, for
+// hints that aren't "Replace the -- line with: <code>" (those are applied
+// automatically). Every lesson with a task must pass this way, so no hint
+// leaves someone stuck.
+static const std::map<std::string, std::string> kHintResult = {
+  {"t0-01-hello-lua", "print(\"hello, shugyo\")"},
+  {"t0-04-tickets-cia",
+   "local words = {\n  C = { \"leak\", \"outside\", \"photo\" },\n  I = { \"changed\", \"edited\" },\n"
+   "  A = { \"offline\", \"down\", \"timing out\" },\n}\nfor _, t in ipairs(lab.tickets) do\n  local tag = \"?\"\n"
+   "  local text = t.text:lower()\n  print(t.text)\n  for leg, list in pairs(words) do\n    for _, w in ipairs(list) do\n"
+   "      if text:find(w, 1, true) then tag = leg end\n    end\n  end\n  print(t.id .. \" \" .. tag)\nend"},
+  {"t1-01-imu", "local ax, ay, az = imu.read()\n-- find the biggest\nprint(math.max(math.abs(ax), math.abs(ay), math.abs(az)))"},
+  {"t1-02-i2c-scan", "local found = i2c.scan()\nfor _, addr in ipairs(found) do\n  print(string.format(\"0x%02X\", addr))\nend\nprint(#found)"},
+  {"t1-03-gpio-blink", "gpio.mode(2, \"out\")\nfor i = 1, 5 do\n  gpio.write(2, 1)\n  sys.sleep(200)\n  gpio.write(2, 0)\n  sys.sleep(200)\nend\nprint(\"done\")"},
+};
+
+// Applies a "Replace the -- line with: <code>" hint to the starter.
+static bool applyHint(const std::string& starter, const std::string& hint, std::string& out) {
+  const std::string lead = "Replace the -- line with: ";
+  if (hint.compare(0, lead.size(), lead) != 0) return false;
+  std::string code = hint.substr(lead.size());
+  size_t from = 0;
+  out.clear();
+  bool done = false;
+  while (from <= starter.size()) {
+    size_t nl = starter.find('\n', from);
+    if (nl == std::string::npos) nl = starter.size();
+    std::string line = starter.substr(from, nl - from);
+    size_t ind = line.find_first_not_of(' ');
+    if (!done && ind != std::string::npos && line.compare(ind, 2, "--") == 0) { line = line.substr(0, ind) + code; done = true; }
+    out += line;
+    if (nl < starter.size()) out += '\n';
+    from = nl + 1;
+  }
+  return done;
+}
+
 // Lessons whose starter code must not pass as it stands (the learner has
 // something to do).
 static const char* const kStarterMustFail[] = {
-  "t4-01-wifi-recon", "t1-01-imu", "t0-04-tickets-cia", "t0-05-rules-of-engagement", "b1-02-pick-a-network",
+  "t0-02-network-refresher", "t4-01-wifi-recon", "t1-01-imu", "t0-04-tickets-cia", "t0-05-rules-of-engagement", "b1-02-pick-a-network",
   "b1-03-interference-or-jamming", "b1-04-wired-backups",
 };
 
@@ -91,6 +128,17 @@ static void checkSet(FakeHal& hal, const char* set, const BuiltinFile* lessons, 
     if (it != kSolutions.end()) {
       GradeResult g = l.grade(it->second);
       CHECK(g.passed, "lesson %s: solution did not pass: %s", l.id().c_str(), g.feedback.c_str());
+    }
+    if (l.hasTask()) {
+      std::string code;
+      auto hr = kHintResult.find(l.id());
+      bool have = hr != kHintResult.end() ? (code = hr->second, true) : applyHint(l.starter(), l.hint(), code);
+      CHECK(!l.hint().empty(), "%s lesson %s has no hint", set, l.id().c_str());
+      CHECK(have, "%s lesson %s: hint isn't checked (add it to kHintResult)", set, l.id().c_str());
+      if (have) {
+        GradeResult g = l.grade(code);
+        CHECK(g.passed, "%s lesson %s: following the hint doesn't pass: %s", set, l.id().c_str(), g.feedback.c_str());
+      }
     }
     for (const char* id : kStarterMustFail) {
       if (l.id() != id) continue;

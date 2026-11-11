@@ -53,7 +53,7 @@ static const BuiltinFile kBuiltin_lessons[] = {
 for i, c in ipairs(checks) do
   -- replace this line with: print(c)
 end]],
-  hint = "Delete the line starting with -- and type print(c) in its place. c is the current check, so the loop prints all four in order.",
+  hint = "Replace the -- line with: print(c)",
   check = function(r)
     if not r.ok then return false, r.error end
     local order = { "wifi", "ip", "gateway", "dns" }
@@ -63,7 +63,7 @@ end]],
       if not at then return false, "Missing or out of order: " .. word end
       pos = at
     end
-    return true, "That order is a solid troubleshooting habit. That opens the smart-home practice drill in Harae."
+    return true, "Solid habit. The smart-home drill in Harae is open."
   end,
   quiz = {
     { q = "Which port is plain (unencrypted) MQTT?", choices = { "443", "1883", "8883" }, answer = 2,
@@ -97,6 +97,7 @@ return {
     "Confidentiality: leaks, shoulder surfing, a file shared with the wrong person. Integrity: edited records, a tampered update, a fake bank detail. Availability: outages, dropped Wi-Fi, a full disk.",
     "Help Desk already does this. \"The website is down\" is availability. \"My password was used from another country\" starts as confidentiality. Tagging tickets this way tells the security team what to look for.",
     "Harae's factions each attack one leg. Babel goes after availability: it breaks things for fun. The others come later.",
+    "Reading the code: C = { \"leak\" } is a list with one word. To add a word, type a comma and the new word in quotes inside the braces: C = { \"leak\", \"photo\" }. t.text is the current ticket's text, and print(t.text) shows it.",
   },
   task = "Seven tickets are in lab.tickets. The starter tags them by keyword, but some come out as ?. Add the missing keywords so every ticket gets C, I or A.",
   starter = [[local words = {
@@ -114,7 +115,7 @@ for _, t in ipairs(lab.tickets) do
   end
   print(t.id .. " " .. tag)
 end]],
-  hint = "Run it (fn+R) and see which numbers show ?. Read those tickets and add one word from each to the right list.",
+  hint = "Press fn+R: the tickets ending in ? need a word. To read them, add print(t.text) as a new line under local text = .... Then add a word from each ? ticket to its list, like A = { \"offline\", \"down\", \"timing out\" }.",
   lab = { tickets = TICKETS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
@@ -165,13 +166,15 @@ return {
     "Professionals work from a scope: a written list of what may be tested, by whom, when and how. Anything not on the list is out, even if it's on the same network.",
     "Some things are always fine. Listening is legal: a passive scan only hears what devices already broadcast. That's why MitamaOS only listens and simulates attacks on screen.",
     "Permission must be clear. \"My friend said it was OK\" works for their own laptop if they really agreed. It doesn't cover their employer's network or the cafe they're sitting in.",
+    "Reading the code: if test then ... end runs the middle only when the test is true. == asks \"is it equal?\" (a single = stores a value). or is true if either side is. t.owner is the current target's owner.",
   },
   task = "lab.targets lists seven devices and networks. Print only the ones in scope: things you own, or things the owner gave you permission to test.",
   starter = [[for _, t in ipairs(lab.targets) do
+  local ok = false
   -- in scope: owner is "me", or permission is true
-  print(t.name)
+  if ok then print(t.name) end
 end]],
-  hint = "Wrap the print in an if: if t.owner == \"me\" or t.permission then ... end",
+  hint = "Replace the -- line with: if t.owner == \"me\" or t.permission then ok = true end",
   lab = { targets = TARGETS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
@@ -206,12 +209,13 @@ end]],
     "The Cardputer has a 6-axis IMU: 3 axes of acceleration (in g) and 3 of rotation (degrees per second). It talks to the CPU over I2C.",
     "Lying flat, gravity pulls about 1 g on one axis and about 0 on the other two. That is how phones know which way is up.",
     "imu.read() returns ax, ay, az, gx, gy, gz. Lua functions can return several values at once.",
+    "Reading the code: math.abs(x) drops the minus sign, so -0.98 becomes 0.98. math.max(a, b, c) gives the biggest of the numbers you hand it.",
   },
   task = "Lay the Cardputer flat on a table, then print the largest of the three acceleration values (absolute value).",
   starter = [[local ax, ay, az = imu.read()
 -- find the biggest of math.abs(ax), math.abs(ay), math.abs(az)
 print(az)]],
-  hint = "math.max takes several numbers and gives the biggest: print(math.max(math.abs(ax), math.abs(ay), math.abs(az)))",
+  hint = "Replace the last line with: print(math.max(math.abs(ax), math.abs(ay), math.abs(az)))",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")
@@ -241,13 +245,14 @@ print(az)]],
     "I2C is a two-wire bus (SDA and SCL). Each device has a 7-bit address, so the CPU can talk to many sensors on the same two wires.",
     "The Grove port on the Cardputer is an I2C port. Plug in a Grove sensor and it shows up at its address, for example 0x44 for an SHT3x.",
     "Hardware testers scan buses to learn what is inside a device. You will do the same on hardware you own.",
+    "Reading the code: i2c.scan() gives back a list of addresses. Putting # in front of a list gives how many items it holds, so #found is the number of devices.",
   },
   task = "Scan the Grove I2C bus and print how many devices were found (0 is fine if nothing is plugged in).",
   starter = [[local found = i2c.scan()
 for _, addr in ipairs(found) do
   print(string.format("0x%02X", addr))
 end]],
-  hint = "#found is how many items the list holds. Add print(#found) after the loop.",
+  hint = "Add a new last line, after the end: print(#found)",
   check = function(r)
     if not r.ok then return false, r.error end
     local expected = #i2c.scan()
@@ -273,7 +278,8 @@ end]],
   pages = {
     "GPIO pins are switches the CPU controls: output high (3.3 V) or low (0 V), or input to read a button.",
     "Lessons may only use the Grove port pins (G1 and G2). The pins wired to the screen, keyboard and SD card are blocked by the sandbox.",
-    "Wire an LED with a resistor from G2 to GND on a Grove breakout, or a Grove LED unit, to see it blink.",
+    "Wire an LED with a resistor from G2 to GND on a Grove breakout, or a Grove LED unit, to see it blink. Nothing plugged in is fine too: the check reads your code.",
+    "Reading the code: for i = 1, 5 do ... end repeats the middle 5 times. gpio.write(2, 1) turns pin 2 on and gpio.write(2, 0) turns it off. sys.sleep(200) waits 200 milliseconds.",
   },
   task = "Set pin 2 as an output and toggle it 5 times with 200 ms sleeps. Print 'done' at the end.",
   starter = [[gpio.mode(2, "out")
@@ -283,7 +289,7 @@ for i = 1, 5 do
   -- turn it off and wait again
 end
 print("done")]],
-  hint = "Copy the two lines above the comment, but write 0 instead of 1: gpio.write(2, 0) then sys.sleep(200).",
+  hint = "Replace the -- line with two lines: gpio.write(2, 0) and then sys.sleep(200)",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")
