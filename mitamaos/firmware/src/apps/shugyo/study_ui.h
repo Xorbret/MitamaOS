@@ -1,4 +1,6 @@
 #pragma once
+#include <algorithm>
+#include <string>
 // Drawing helpers Shugyo and Harae share, in the Night City look of the
 // approved mockups: black ground, yellow selection bar on dark violet, red
 // bones rules, Rajdhani text.
@@ -55,36 +57,68 @@ inline int textRight(LGFX_Sprite& c, const lgfx::IFont* f, const char* s, int ri
 // Word-wraps s into width w. Draws lines [skip, skip+maxLines) starting at
 // y, `lh` apart, and returns the total number of lines (so callers can
 // scroll). Honours '\n'. maxLines 0 = measure only.
+// A paragraph that starts with '|' is code: drawn in the fixed-width font
+// in cyan, indented, and broken at spaces if it is too long (Lua doesn't
+// mind where a line breaks between words).
 inline int wrap(LGFX_Sprite& c, const lgfx::IFont* f, const char* s, int x, int y, int w, int lh, int maxLines,
                 uint16_t col, int skip = 0) {
-    std::string line, word;
     int n = 0;
     auto emit = [&](const std::string& l) {
         if (n >= skip && n < skip + maxLines) MUI::text(c, f, l.c_str(), x, y + (n - skip) * lh, col);
         n++;
     };
-    auto fits = [&](const std::string& l) { return MUI::width(c, f, l.c_str()) <= w; };
-    for (const char* p = s;; p++) {
-        char ch = *p;
-        if (ch == ' ' || ch == '\n' || ch == 0) {
-            if (!word.empty()) {
-                std::string t = line.empty() ? word : line + " " + word;
-                if (!line.empty() && !fits(t)) { emit(line); line = word; }
-                else line = t;
-                while (!fits(line) && line.size() > 1) {          // a word wider than the box
-                    size_t k = line.size() - 1;
-                    while (k > 1 && !fits(line.substr(0, k))) k--;
-                    emit(line.substr(0, k)); line = line.substr(k);
-                }
-                word.clear();
-            }
-            if (ch == '\n') { emit(line); line.clear(); }
-            if (ch == 0) break;
-        } else {
-            word += ch;
+    auto emitCode = [&](const std::string& l) {
+        if (n >= skip && n < skip + maxLines) {
+            int ly = y + (n - skip) * lh;
+            c.fillRect(x, ly, 2, lh - 2, MUI::BONES_DIM);
+            c.setFont(&lgfx::fonts::Font0); c.setTextSize(1); c.setTextDatum(top_left);
+            c.setTextColor(MUI::CYAN);
+            c.drawString(l.c_str(), x + 6, ly + 2);
         }
+        n++;
+    };
+    auto fits = [&](const std::string& l) { return MUI::width(c, f, l.c_str()) <= w; };
+    auto prose = [&](const std::string& para) {
+        std::string line, word;
+        for (size_t i = 0; i <= para.size(); i++) {
+            char ch = i < para.size() ? para[i] : ' ';
+            if (ch != ' ') { word += ch; continue; }
+            if (word.empty()) continue;
+            std::string t = line.empty() ? word : line + " " + word;
+            if (!line.empty() && !fits(t)) { emit(line); line = word; }
+            else line = t;
+            while (!fits(line) && line.size() > 1) {          // a word wider than the box
+                size_t k = line.size() - 1;
+                while (k > 1 && !fits(line.substr(0, k))) k--;
+                emit(line.substr(0, k)); line = line.substr(k);
+            }
+            word.clear();
+        }
+        emit(line);
+    };
+    auto code = [&](std::string l) {
+        const size_t cols = (size_t)std::max(8, (w - 6) / 6);
+        std::string lead;                      // continuation lines are indented by 2
+        size_t lim = cols;
+        while (l.size() > lim) {
+            size_t cut = l.rfind(' ', lim);
+            if (cut == std::string::npos || cut == 0) cut = lim;
+            emitCode(lead + l.substr(0, cut));
+            l = l.substr(cut + (l[cut] == ' ' ? 1 : 0));
+            lead = "  "; lim = cols - 2;
+        }
+        emitCode(lead + l);
+    };
+    std::string str = s ? s : "";
+    size_t from = 0;
+    for (;;) {
+        size_t nl = str.find('\n', from);
+        std::string para = str.substr(from, nl == std::string::npos ? std::string::npos : nl - from);
+        if (!para.empty() && para[0] == '|') code(para.substr(1));
+        else if (!para.empty() || nl != std::string::npos) prose(para);
+        if (nl == std::string::npos) break;
+        from = nl + 1;
     }
-    if (!line.empty()) emit(line);
     return n;
 }
 

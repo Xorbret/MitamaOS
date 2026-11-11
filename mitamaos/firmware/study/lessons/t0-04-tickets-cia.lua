@@ -21,9 +21,10 @@ return {
     "Confidentiality: leaks, shoulder surfing, a file shared with the wrong person. Integrity: edited records, a tampered update, a fake bank detail. Availability: outages, dropped Wi-Fi, a full disk.",
     "Help Desk already does this. \"The website is down\" is availability. \"My password was used from another country\" starts as confidentiality. Tagging tickets this way tells the security team what to look for.",
     "Harae's factions each attack one leg. Babel goes after availability: it breaks things for fun. The others come later.",
-    "Reading the code: C = { \"leak\" } is a list with one word. To add a word, type a comma and the new word in quotes inside the braces: C = { \"leak\", \"photo\" }. t.text is the current ticket's text, and print(t.text) shows it.",
+    "How the code works:\n|C = { \"leak\" }\nA list of words that mean Confidentiality. To add a word, type a comma, then the word in quotes:\n|C = { \"leak\", \"photo\" }",
+    "The loop reads each ticket and tags it C, I or A when it finds a word from that list. No word found means ?.\n|print(t.text)\nShows the current ticket's words, so you can read the ones that came out ?.",
   },
-  task = "Seven tickets are in lab.tickets. The starter tags them by keyword, but some come out as ?. Add the missing keywords so every ticket gets C, I or A.",
+  task = "Seven help desk tickets get tagged C, I or A by keywords, but some come out as ?. Add keywords until every ticket gets a letter.",
   starter = [[local words = {
   C = { "leak" },
   I = { "changed" },
@@ -39,7 +40,7 @@ for _, t in ipairs(lab.tickets) do
   end
   print(t.id .. " " .. tag)
 end]],
-  hint = "Press fn+R: the tickets ending in ? need a word. To read them, add print(t.text) as a new line under local text = .... Then add a word from each ? ticket to its list, like A = { \"offline\", \"down\", \"timing out\" }.",
+  hint = "Press fn+R. Tickets ending in ? need a word. To read them, add this line under the local text line:\n|print(t.text)\nThen add a word from each ? ticket to its list, for example:\n|A = { \"offline\", \"down\", \"timing out\" }",
   lab = { tickets = TICKETS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end

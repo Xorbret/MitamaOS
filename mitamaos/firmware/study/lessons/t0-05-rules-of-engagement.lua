@@ -21,15 +21,16 @@ return {
     "Professionals work from a scope: a written list of what may be tested, by whom, when and how. Anything not on the list is out, even if it's on the same network.",
     "Some things are always fine. Listening is legal: a passive scan only hears what devices already broadcast. That's why MitamaOS only listens and simulates attacks on screen.",
     "Permission must be clear. \"My friend said it was OK\" works for their own laptop if they really agreed. It doesn't cover their employer's network or the cafe they're sitting in.",
-    "Reading the code: if test then ... end runs the middle only when the test is true. == asks \"is it equal?\" (a single = stores a value). or is true if either side is. t.owner is the current target's owner.",
+    "How the code works:\n|if ok then print(t.name) end\nThe middle part only runs when ok is true.\n|t.owner == \"me\"\nAsks: is the owner me? Two = signs ask a question. One = stores a value.",
+    "|A or B\nTrue if either side is true.\n|t.permission\nTrue when the owner said yes.\n|ok = true\nStores true in ok, so the target gets printed.",
   },
-  task = "lab.targets lists seven devices and networks. Print only the ones in scope: things you own, or things the owner gave you permission to test.",
+  task = "Show only the targets you're allowed to test: ones you own, or ones whose owner said yes. Change the line that starts with --.",
   starter = [[for _, t in ipairs(lab.targets) do
   local ok = false
   -- in scope: owner is "me", or permission is true
   if ok then print(t.name) end
 end]],
-  hint = "Replace the -- line with: if t.owner == \"me\" or t.permission then ok = true end",
+  hint = "Replace the -- line with:\n|if t.owner == \"me\" or t.permission then ok = true end",
   lab = { targets = TARGETS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end

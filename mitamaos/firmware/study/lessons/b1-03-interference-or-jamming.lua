@@ -26,16 +26,16 @@ return {
     "Jamming is deliberate. A jammer buries every channel at once, all day, and no setting turns it off. It's illegal in most countries, including for the person who \"just wanted quiet\".",
     "A simple rule of thumb: if nearly every channel (10 or more of 13) is buried at the same moment, suspect jamming. If a few neighbouring channels are busy, look for an appliance first.",
     "Rule out the boring cause before you call it an attack. Most \"the Wi-Fi is cursed\" tickets are a microwave, a bad spot, or a full channel.",
-    "Reading the code: r.busy is the list of busy channels in one reading, so #r.busy counts them. >= means \"at least\".",
+    "How the code works:\n|#r.busy\nHow many channels were busy in this reading.\n|count >= 10\nAsks: is count 10 or more?",
   },
-  task = "lab.readings holds five spectrum reads. For each one, print its label, then jamming if 10 or more channels are busy, or interference if fewer are.",
+  task = "Decide which readings are jamming: 10 or more busy channels at once. Change the line that starts with --.",
   starter = [[for _, r in ipairs(lab.readings) do
   local count = #r.busy
   local verdict = "interference"
   -- decide when it's jamming
   print(r.label .. " " .. verdict)
 end]],
-  hint = "Replace the -- line with: if count >= 10 then verdict = \"jamming\" end",
+  hint = "Replace the -- line with:\n|if count >= 10 then verdict = \"jamming\" end",
   lab = { readings = READINGS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end

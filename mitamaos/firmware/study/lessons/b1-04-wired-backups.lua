@@ -26,9 +26,9 @@ return {
     "Things that move, like phones and laptops, stay on Wi-Fi. The plan for them is a fallback: mobile data, a hotspot, or a wired desk to sit at.",
     "The attack this Trial seals: jamming. Nothing you set on the router stops it. You go around it, keep the important things up, and report it. In the US that's the FCC, and in the UK it's Ofcom.",
     "The fix, Iron Road: cables for the things that matter, a fallback for the rest, then report the jamming. Write down when it started and what stopped, so the report is useful.",
-    "Reading the code: d.critical is true for devices that matter, and d.moves is true for ones that move around. not flips true and false, so not d.moves means \"stays put\".",
+    "How the code works:\n|d.critical\nTrue if the device matters.\n|d.moves\nTrue if it moves around.\n|not d.moves\nFlips it: true if it stays put.",
   },
-  task = "lab.devices lists eight devices. Print the ones that should have a cable: critical and not moving. Then print how many.",
+  task = "Pick the devices that need a cable: they matter and they don't move. Change the line that starts with --.",
   starter = [[local wired = 0
 for _, d in ipairs(lab.devices) do
   local cable = false
@@ -39,7 +39,7 @@ for _, d in ipairs(lab.devices) do
   end
 end
 print(wired)]],
-  hint = "Replace the -- line with: if d.critical and not d.moves then cable = true end",
+  hint = "Replace the -- line with:\n|if d.critical and not d.moves then cable = true end",
   lab = { devices = DEVICES },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end

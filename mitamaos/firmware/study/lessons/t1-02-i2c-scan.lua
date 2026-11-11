@@ -7,14 +7,14 @@ return {
     "I2C is a two-wire bus (SDA and SCL). Each device has a 7-bit address, so the CPU can talk to many sensors on the same two wires.",
     "The Grove port on the Cardputer is an I2C port. Plug in a Grove sensor and it shows up at its address, for example 0x44 for an SHT3x.",
     "Hardware testers scan buses to learn what is inside a device. You will do the same on hardware you own.",
-    "Reading the code: i2c.scan() gives back a list of addresses. Putting # in front of a list gives how many items it holds, so #found is the number of devices.",
+    "How the code works:\n|local found = i2c.scan()\nA list of the addresses that answered.\n|#found\nA # in front of a list gives how many things are in it.",
   },
-  task = "Scan the Grove I2C bus and print how many devices were found (0 is fine if nothing is plugged in).",
+  task = "Show how many devices are plugged into the Grove port. 0 is fine if nothing is.",
   starter = [[local found = i2c.scan()
 for _, addr in ipairs(found) do
   print(string.format("0x%02X", addr))
 end]],
-  hint = "Add a new last line, after the end: print(#found)",
+  hint = "Add a new last line, after the end:\n|print(#found)",
   check = function(r)
     if not r.ok then return false, r.error end
     local expected = #i2c.scan()

@@ -25,9 +25,10 @@ static const BuiltinFile kAll_lessons[] = {
     "Security types, weakest first: open, WEP (broken), WPA/WPA2-PSK (depends on the password), WPA3 (strongest). Open or WEP on a home or office network is a finding.",
     "The attack this Trial seals: a deauthentication flood. Wi-Fi has small \"management frames\" that say hello and goodbye. On WPA2 they aren't signed, so anyone can forge a goodbye from your router and every device drops at once.",
     "The fix is Protected Management Frames (802.11w, often called PMF). The router signs those frames and devices ignore forged ones. WPA3 requires PMF, which is one more reason to move to it.",
-    "Reading the code: n.auth is the network's security type as text, like \"open\" or \"wpa2\". weak = weak + 1 adds one to the count. The if from Rules of Engagement decides when to count.",
+    "How the code works:\n|n.auth\nThe network's security type, like \"open\" or \"wpa2\".\n|weak = weak + 1\nAdds one to the count.",
+    "|if A or B then ... end\nRuns the middle part if either test is true.",
   },
-  task = "Scan and print each network as: ssid, auth. Then print how many are open or WEP.",
+  task = "Most of the code is written. Finish it so it also counts how many networks are open or WEP. Change the line that starts with --.",
   starter = [[local nets = wifi.scan()
 local weak = 0
 for _, n in ipairs(nets) do
@@ -35,7 +36,7 @@ for _, n in ipairs(nets) do
   -- count weak ones here
 end
 print(weak)]],
-  hint = "Replace the -- line with: if n.auth == \"open\" or n.auth == \"wep\" then weak = weak + 1 end",
+  hint = "Replace the -- line with:\n|if n.auth == \"open\" or n.auth == \"wep\" then weak = weak + 1 end",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")
@@ -94,9 +95,9 @@ return {
     "A careless device joins anything with the right name. A careful one checks the security type too. An \"Office\" that suddenly has no password isn't your office.",
     "The attack this Trial seals: a beacon flood. One device broadcasts hundreds of fake networks. The real one gets buried, and people tap a fake \"Office\" that's open and run by someone else.",
     "The fix, True Name: devices join saved profiles that check the security type, never a name picked from a long list. Forget open networks you don't need, and use WPA3 where you can.",
-    "Reading the code: ~= means \"is not equal to\". and is true only when both sides are. lab.saved.ssid is your saved network's name and lab.saved.auth its security type.",
+    "How the code works:\n|A ~= B\nAsks: are these different?\n|A and B\nTrue only when both sides are true.\n|lab.saved.ssid\nYour saved network's name. lab.saved.auth is its security type.",
   },
-  task = "lab.saved is your saved profile and lab.scan is what's in the air. Print every network with exactly the saved name but a different security type. Then print how many you found.",
+  task = "Find the fake networks: same name as your saved network, but a different security type. Change the line that starts with --.",
   starter = [[local fakes = 0
 for _, n in ipairs(lab.scan) do
   local fake = false
@@ -107,7 +108,7 @@ for _, n in ipairs(lab.scan) do
   end
 end
 print(fakes)]],
-  hint = "Replace the -- line with: if n.ssid == lab.saved.ssid and n.auth ~= lab.saved.auth then fake = true end",
+  hint = "Replace the -- line with:\n|if n.ssid == lab.saved.ssid and n.auth ~= lab.saved.auth then fake = true end",
   lab = { saved = SAVED, scan = SCAN },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
@@ -158,16 +159,16 @@ return {
     "Jamming is deliberate. A jammer buries every channel at once, all day, and no setting turns it off. It's illegal in most countries, including for the person who \"just wanted quiet\".",
     "A simple rule of thumb: if nearly every channel (10 or more of 13) is buried at the same moment, suspect jamming. If a few neighbouring channels are busy, look for an appliance first.",
     "Rule out the boring cause before you call it an attack. Most \"the Wi-Fi is cursed\" tickets are a microwave, a bad spot, or a full channel.",
-    "Reading the code: r.busy is the list of busy channels in one reading, so #r.busy counts them. >= means \"at least\".",
+    "How the code works:\n|#r.busy\nHow many channels were busy in this reading.\n|count >= 10\nAsks: is count 10 or more?",
   },
-  task = "lab.readings holds five spectrum reads. For each one, print its label, then jamming if 10 or more channels are busy, or interference if fewer are.",
+  task = "Decide which readings are jamming: 10 or more busy channels at once. Change the line that starts with --.",
   starter = [[for _, r in ipairs(lab.readings) do
   local count = #r.busy
   local verdict = "interference"
   -- decide when it's jamming
   print(r.label .. " " .. verdict)
 end]],
-  hint = "Replace the -- line with: if count >= 10 then verdict = \"jamming\" end",
+  hint = "Replace the -- line with:\n|if count >= 10 then verdict = \"jamming\" end",
   lab = { readings = READINGS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
@@ -219,9 +220,9 @@ return {
     "Things that move, like phones and laptops, stay on Wi-Fi. The plan for them is a fallback: mobile data, a hotspot, or a wired desk to sit at.",
     "The attack this Trial seals: jamming. Nothing you set on the router stops it. You go around it, keep the important things up, and report it. In the US that's the FCC, and in the UK it's Ofcom.",
     "The fix, Iron Road: cables for the things that matter, a fallback for the rest, then report the jamming. Write down when it started and what stopped, so the report is useful.",
-    "Reading the code: d.critical is true for devices that matter, and d.moves is true for ones that move around. not flips true and false, so not d.moves means \"stays put\".",
+    "How the code works:\n|d.critical\nTrue if the device matters.\n|d.moves\nTrue if it moves around.\n|not d.moves\nFlips it: true if it stays put.",
   },
-  task = "lab.devices lists eight devices. Print the ones that should have a cable: critical and not moving. Then print how many.",
+  task = "Pick the devices that need a cable: they matter and they don't move. Change the line that starts with --.",
   starter = [[local wired = 0
 for _, d in ipairs(lab.devices) do
   local cable = false
@@ -232,7 +233,7 @@ for _, d in ipairs(lab.devices) do
   end
 end
 print(wired)]],
-  hint = "Replace the -- line with: if d.critical and not d.moves then cable = true end",
+  hint = "Replace the -- line with:\n|if d.critical and not d.moves then cable = true end",
   lab = { devices = DEVICES },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
@@ -271,9 +272,9 @@ print(wired)]],
     "Code here is Lua. print() shows text. Variables need no type: local name = \"Robert\". Strings join with two dots: \"Hi \" .. name.",
     "Your code runs in a sandbox: it can only touch the hardware a lesson allows, and a runaway loop is stopped after a few seconds.",
   },
-  task = "Print the text: hello, shugyo",
+  task = "Make the screen show: hello, shugyo",
   starter = [[print("hello")]],
-  hint = "Change the text inside the quotes so the line reads: print(\"hello, shugyo\")",
+  hint = "Change the text inside the quotes so the line reads:\n|print(\"hello, shugyo\")",
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
     if r.output:lower():find("hello, shugyo", 1, true) then
@@ -297,14 +298,15 @@ print(wired)]],
     "Every IoT device on Wi-Fi needs the same things a laptop does: an IP address (usually from DHCP), a gateway, and DNS to turn names into addresses.",
     "Devices then talk on ports. Common IoT ones: 80 HTTP, 443 HTTPS, 1883 MQTT, 8883 MQTT over TLS, 23 Telnet (old and unsafe).",
     "Help Desk tip: when a device 'can't connect', check in order: Wi-Fi joined, IP assigned, gateway reachable, DNS working, then the service port.",
-    "Reading the code: { \"wifi\", \"ip\" } is a list. for i, c in ipairs(checks) do ... end runs the lines inside once per item, with c holding the current item. print(c) shows it on screen.",
+    "How the code works:\n|local checks = { \"wifi\", \"ip\" }\nMakes a list of words named checks.\n|for i, c in ipairs(checks) do\nRepeats the lines below it once per word. Each time round, c holds the next word.",
+    "|print(c)\nShows c on the screen.\n|end\nMarks where the repeated part stops.\nYour job: put print(c) inside the loop, so each word gets shown.",
   },
-  task = "The list of checks is already written for you. Inside the loop, replace the -- comment line with print(c) so each check prints on its own line, then fn+C to check.",
+  task = "Make the loop show each of the four checks on its own line. Change the line that starts with --.",
   starter = [[local checks = { "wifi", "ip", "gateway", "dns" }
 for i, c in ipairs(checks) do
   -- replace this line with: print(c)
 end]],
-  hint = "Replace the -- line with: print(c)",
+  hint = "Replace the -- line with:\n|print(c)",
   check = function(r)
     if not r.ok then return false, r.error end
     local order = { "wifi", "ip", "gateway", "dns" }
@@ -348,9 +350,10 @@ return {
     "Confidentiality: leaks, shoulder surfing, a file shared with the wrong person. Integrity: edited records, a tampered update, a fake bank detail. Availability: outages, dropped Wi-Fi, a full disk.",
     "Help Desk already does this. \"The website is down\" is availability. \"My password was used from another country\" starts as confidentiality. Tagging tickets this way tells the security team what to look for.",
     "Harae's factions each attack one leg. Babel goes after availability: it breaks things for fun. The others come later.",
-    "Reading the code: C = { \"leak\" } is a list with one word. To add a word, type a comma and the new word in quotes inside the braces: C = { \"leak\", \"photo\" }. t.text is the current ticket's text, and print(t.text) shows it.",
+    "How the code works:\n|C = { \"leak\" }\nA list of words that mean Confidentiality. To add a word, type a comma, then the word in quotes:\n|C = { \"leak\", \"photo\" }",
+    "The loop reads each ticket and tags it C, I or A when it finds a word from that list. No word found means ?.\n|print(t.text)\nShows the current ticket's words, so you can read the ones that came out ?.",
   },
-  task = "Seven tickets are in lab.tickets. The starter tags them by keyword, but some come out as ?. Add the missing keywords so every ticket gets C, I or A.",
+  task = "Seven help desk tickets get tagged C, I or A by keywords, but some come out as ?. Add keywords until every ticket gets a letter.",
   starter = [[local words = {
   C = { "leak" },
   I = { "changed" },
@@ -366,7 +369,7 @@ for _, t in ipairs(lab.tickets) do
   end
   print(t.id .. " " .. tag)
 end]],
-  hint = "Press fn+R: the tickets ending in ? need a word. To read them, add print(t.text) as a new line under local text = .... Then add a word from each ? ticket to its list, like A = { \"offline\", \"down\", \"timing out\" }.",
+  hint = "Press fn+R. Tickets ending in ? need a word. To read them, add this line under the local text line:\n|print(t.text)\nThen add a word from each ? ticket to its list, for example:\n|A = { \"offline\", \"down\", \"timing out\" }",
   lab = { tickets = TICKETS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
@@ -417,15 +420,16 @@ return {
     "Professionals work from a scope: a written list of what may be tested, by whom, when and how. Anything not on the list is out, even if it's on the same network.",
     "Some things are always fine. Listening is legal: a passive scan only hears what devices already broadcast. That's why MitamaOS only listens and simulates attacks on screen.",
     "Permission must be clear. \"My friend said it was OK\" works for their own laptop if they really agreed. It doesn't cover their employer's network or the cafe they're sitting in.",
-    "Reading the code: if test then ... end runs the middle only when the test is true. == asks \"is it equal?\" (a single = stores a value). or is true if either side is. t.owner is the current target's owner.",
+    "How the code works:\n|if ok then print(t.name) end\nThe middle part only runs when ok is true.\n|t.owner == \"me\"\nAsks: is the owner me? Two = signs ask a question. One = stores a value.",
+    "|A or B\nTrue if either side is true.\n|t.permission\nTrue when the owner said yes.\n|ok = true\nStores true in ok, so the target gets printed.",
   },
-  task = "lab.targets lists seven devices and networks. Print only the ones in scope: things you own, or things the owner gave you permission to test.",
+  task = "Show only the targets you're allowed to test: ones you own, or ones whose owner said yes. Change the line that starts with --.",
   starter = [[for _, t in ipairs(lab.targets) do
   local ok = false
   -- in scope: owner is "me", or permission is true
   if ok then print(t.name) end
 end]],
-  hint = "Replace the -- line with: if t.owner == \"me\" or t.permission then ok = true end",
+  hint = "Replace the -- line with:\n|if t.owner == \"me\" or t.permission then ok = true end",
   lab = { targets = TARGETS },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
@@ -460,13 +464,13 @@ end]],
     "The Cardputer has a 6-axis IMU: 3 axes of acceleration (in g) and 3 of rotation (degrees per second). It talks to the CPU over I2C.",
     "Lying flat, gravity pulls about 1 g on one axis and about 0 on the other two. That is how phones know which way is up.",
     "imu.read() returns ax, ay, az, gx, gy, gz. Lua functions can return several values at once.",
-    "Reading the code: math.abs(x) drops the minus sign, so -0.98 becomes 0.98. math.max(a, b, c) gives the biggest of the numbers you hand it.",
+    "How the code works:\n|math.abs(-0.98)\nDrops the minus sign, giving 0.98.\n|math.max(1, 3, 2)\nGives the biggest number, here 3.",
   },
-  task = "Lay the Cardputer flat on a table, then print the largest of the three acceleration values (absolute value).",
+  task = "Lay the Cardputer flat, then show the biggest of the three tilt readings, ignoring minus signs. Change the last line.",
   starter = [[local ax, ay, az = imu.read()
 -- find the biggest of math.abs(ax), math.abs(ay), math.abs(az)
 print(az)]],
-  hint = "Replace the last line with: print(math.max(math.abs(ax), math.abs(ay), math.abs(az)))",
+  hint = "Replace the last line with:\n|print(math.max(math.abs(ax), math.abs(ay), math.abs(az)))",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")
@@ -496,14 +500,14 @@ print(az)]],
     "I2C is a two-wire bus (SDA and SCL). Each device has a 7-bit address, so the CPU can talk to many sensors on the same two wires.",
     "The Grove port on the Cardputer is an I2C port. Plug in a Grove sensor and it shows up at its address, for example 0x44 for an SHT3x.",
     "Hardware testers scan buses to learn what is inside a device. You will do the same on hardware you own.",
-    "Reading the code: i2c.scan() gives back a list of addresses. Putting # in front of a list gives how many items it holds, so #found is the number of devices.",
+    "How the code works:\n|local found = i2c.scan()\nA list of the addresses that answered.\n|#found\nA # in front of a list gives how many things are in it.",
   },
-  task = "Scan the Grove I2C bus and print how many devices were found (0 is fine if nothing is plugged in).",
+  task = "Show how many devices are plugged into the Grove port. 0 is fine if nothing is.",
   starter = [[local found = i2c.scan()
 for _, addr in ipairs(found) do
   print(string.format("0x%02X", addr))
 end]],
-  hint = "Add a new last line, after the end: print(#found)",
+  hint = "Add a new last line, after the end:\n|print(#found)",
   check = function(r)
     if not r.ok then return false, r.error end
     local expected = #i2c.scan()
@@ -530,9 +534,9 @@ end]],
     "GPIO pins are switches the CPU controls: output high (3.3 V) or low (0 V), or input to read a button.",
     "Lessons may only use the Grove port pins (G1 and G2). The pins wired to the screen, keyboard and SD card are blocked by the sandbox.",
     "Wire an LED with a resistor from G2 to GND on a Grove breakout, or a Grove LED unit, to see it blink. Nothing plugged in is fine too: the check reads your code.",
-    "Reading the code: for i = 1, 5 do ... end repeats the middle 5 times. gpio.write(2, 1) turns pin 2 on and gpio.write(2, 0) turns it off. sys.sleep(200) waits 200 milliseconds.",
+    "How the code works:\n|for i = 1, 5 do ... end\nRepeats the middle part 5 times.\n|gpio.write(2, 1)\nTurns pin 2 on. A 0 turns it off.\n|sys.sleep(200)\nWaits 200 milliseconds.",
   },
-  task = "Set pin 2 as an output and toggle it 5 times with 200 ms sleeps. Print 'done' at the end.",
+  task = "Make pin 2 blink 5 times. The code turns it on but never off. Change the line that starts with --.",
   starter = [[gpio.mode(2, "out")
 for i = 1, 5 do
   gpio.write(2, 1)
@@ -540,7 +544,7 @@ for i = 1, 5 do
   -- turn it off and wait again
 end
 print("done")]],
-  hint = "Replace the -- line with two lines: gpio.write(2, 0) and then sys.sleep(200)",
+  hint = "Replace the -- line with these two lines:\n|gpio.write(2, 0)\n|sys.sleep(200)",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")

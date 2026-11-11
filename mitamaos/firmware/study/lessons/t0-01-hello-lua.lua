@@ -9,9 +9,9 @@ return {
     "Code here is Lua. print() shows text. Variables need no type: local name = \"Robert\". Strings join with two dots: \"Hi \" .. name.",
     "Your code runs in a sandbox: it can only touch the hardware a lesson allows, and a runaway loop is stopped after a few seconds.",
   },
-  task = "Print the text: hello, shugyo",
+  task = "Make the screen show: hello, shugyo",
   starter = [[print("hello")]],
-  hint = "Change the text inside the quotes so the line reads: print(\"hello, shugyo\")",
+  hint = "Change the text inside the quotes so the line reads:\n|print(\"hello, shugyo\")",
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
     if r.output:lower():find("hello, shugyo", 1, true) then

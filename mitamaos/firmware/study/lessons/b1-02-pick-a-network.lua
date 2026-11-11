@@ -27,9 +27,9 @@ return {
     "A careless device joins anything with the right name. A careful one checks the security type too. An \"Office\" that suddenly has no password isn't your office.",
     "The attack this Trial seals: a beacon flood. One device broadcasts hundreds of fake networks. The real one gets buried, and people tap a fake \"Office\" that's open and run by someone else.",
     "The fix, True Name: devices join saved profiles that check the security type, never a name picked from a long list. Forget open networks you don't need, and use WPA3 where you can.",
-    "Reading the code: ~= means \"is not equal to\". and is true only when both sides are. lab.saved.ssid is your saved network's name and lab.saved.auth its security type.",
+    "How the code works:\n|A ~= B\nAsks: are these different?\n|A and B\nTrue only when both sides are true.\n|lab.saved.ssid\nYour saved network's name. lab.saved.auth is its security type.",
   },
-  task = "lab.saved is your saved profile and lab.scan is what's in the air. Print every network with exactly the saved name but a different security type. Then print how many you found.",
+  task = "Find the fake networks: same name as your saved network, but a different security type. Change the line that starts with --.",
   starter = [[local fakes = 0
 for _, n in ipairs(lab.scan) do
   local fake = false
@@ -40,7 +40,7 @@ for _, n in ipairs(lab.scan) do
   end
 end
 print(fakes)]],
-  hint = "Replace the -- line with: if n.ssid == lab.saved.ssid and n.auth ~= lab.saved.auth then fake = true end",
+  hint = "Replace the -- line with:\n|if n.ssid == lab.saved.ssid and n.auth ~= lab.saved.auth then fake = true end",
   lab = { saved = SAVED, scan = SCAN },
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end

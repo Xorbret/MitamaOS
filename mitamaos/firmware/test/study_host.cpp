@@ -84,7 +84,7 @@ static const std::map<std::string, std::string> kHintResult = {
 
 // Applies a "Replace the -- line with: <code>" hint to the starter.
 static bool applyHint(const std::string& starter, const std::string& hint, std::string& out) {
-  const std::string lead = "Replace the -- line with: ";
+  const std::string lead = "Replace the -- line with:\n|";
   if (hint.compare(0, lead.size(), lead) != 0) return false;
   std::string code = hint.substr(lead.size());
   size_t from = 0;

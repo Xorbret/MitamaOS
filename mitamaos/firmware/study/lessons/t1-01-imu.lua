@@ -7,13 +7,13 @@ return {
     "The Cardputer has a 6-axis IMU: 3 axes of acceleration (in g) and 3 of rotation (degrees per second). It talks to the CPU over I2C.",
     "Lying flat, gravity pulls about 1 g on one axis and about 0 on the other two. That is how phones know which way is up.",
     "imu.read() returns ax, ay, az, gx, gy, gz. Lua functions can return several values at once.",
-    "Reading the code: math.abs(x) drops the minus sign, so -0.98 becomes 0.98. math.max(a, b, c) gives the biggest of the numbers you hand it.",
+    "How the code works:\n|math.abs(-0.98)\nDrops the minus sign, giving 0.98.\n|math.max(1, 3, 2)\nGives the biggest number, here 3.",
   },
-  task = "Lay the Cardputer flat on a table, then print the largest of the three acceleration values (absolute value).",
+  task = "Lay the Cardputer flat, then show the biggest of the three tilt readings, ignoring minus signs. Change the last line.",
   starter = [[local ax, ay, az = imu.read()
 -- find the biggest of math.abs(ax), math.abs(ay), math.abs(az)
 print(az)]],
-  hint = "Replace the last line with: print(math.max(math.abs(ax), math.abs(ay), math.abs(az)))",
+  hint = "Replace the last line with:\n|print(math.max(math.abs(ax), math.abs(ay), math.abs(az)))",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")
