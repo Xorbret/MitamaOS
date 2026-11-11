@@ -23,6 +23,7 @@ for _, n in ipairs(nets) do
   -- count weak ones here
 end
 print(weak)]],
+  hint = "Inside the loop add: if n.auth == \"open\" or n.auth == \"wep\" then weak = weak + 1 end",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")

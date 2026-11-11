@@ -22,6 +22,7 @@ static const BuiltinFile kBuiltin_lessons[] = {
   },
   task = "Print the text: hello, shugyo",
   starter = [[print("hello")]],
+  hint = "Change the text inside the quotes so the line reads: print(\"hello, shugyo\")",
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
     if r.output:lower():find("hello, shugyo", 1, true) then
@@ -45,12 +46,14 @@ static const BuiltinFile kBuiltin_lessons[] = {
     "Every IoT device on Wi-Fi needs the same things a laptop does: an IP address (usually from DHCP), a gateway, and DNS to turn names into addresses.",
     "Devices then talk on ports. Common IoT ones: 80 HTTP, 443 HTTPS, 1883 MQTT, 8883 MQTT over TLS, 23 Telnet (old and unsafe).",
     "Help Desk tip: when a device 'can't connect', check in order: Wi-Fi joined, IP assigned, gateway reachable, DNS working, then the service port.",
+    "Reading the code: { \"wifi\", \"ip\" } is a list. for i, c in ipairs(checks) do ... end runs the lines inside once per item, with c holding the current item. print(c) shows it on screen.",
   },
-  task = "Make a table of the four checks in order and print them, one per line.",
+  task = "The list of checks is already written for you. Inside the loop, replace the -- comment line with print(c) so each check prints on its own line, then fn+C to check.",
   starter = [[local checks = { "wifi", "ip", "gateway", "dns" }
 for i, c in ipairs(checks) do
-  -- print each check here
+  -- replace this line with: print(c)
 end]],
+  hint = "Delete the line starting with -- and type print(c) in its place. c is the current check, so the loop prints all four in order.",
   check = function(r)
     if not r.ok then return false, r.error end
     local order = { "wifi", "ip", "gateway", "dns" }
@@ -208,6 +211,7 @@ end]],
   starter = [[local ax, ay, az = imu.read()
 -- find the biggest of math.abs(ax), math.abs(ay), math.abs(az)
 print(az)]],
+  hint = "math.max takes several numbers and gives the biggest: print(math.max(math.abs(ax), math.abs(ay), math.abs(az)))",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")
@@ -243,6 +247,7 @@ print(az)]],
 for _, addr in ipairs(found) do
   print(string.format("0x%02X", addr))
 end]],
+  hint = "#found is how many items the list holds. Add print(#found) after the loop.",
   check = function(r)
     if not r.ok then return false, r.error end
     local expected = #i2c.scan()
@@ -278,6 +283,7 @@ for i = 1, 5 do
   -- turn it off and wait again
 end
 print("done")]],
+  hint = "Copy the two lines above the comment, but write 0 instead of 1: gpio.write(2, 0) then sys.sleep(200).",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")

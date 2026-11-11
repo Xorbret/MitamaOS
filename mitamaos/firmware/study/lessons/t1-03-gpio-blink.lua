@@ -16,6 +16,7 @@ for i = 1, 5 do
   -- turn it off and wait again
 end
 print("done")]],
+  hint = "Copy the two lines above the comment, but write 0 instead of 1: gpio.write(2, 0) then sys.sleep(200).",
   check = function(r)
     if not r.ok then return false, r.error end
     local code = r.code:gsub("%-%-[^\n]*", "")

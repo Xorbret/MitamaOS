@@ -92,6 +92,9 @@ private:
     int _row = 0, _col = 0, _top = 0, _left = 0;
     String _con1, _con2;
     uint16_t _con1Col = MUI::DIM, _con2Col = MUI::DIM;
+    // The task card: the full task (and the hint, after fn+H), word-wrapped
+    // over the editor. Any key closes it; fn+T opens it again.
+    bool _card = false, _cardHint = false;
     OsUI::Typing _typing;
     bool _passed = false, _firstPass = false;
     String _feedback;
@@ -350,8 +353,9 @@ private:
         }
         if (_lines.empty()) _lines.push_back("");
         _row = (int)_lines.size() - 1; _col = _lines[_row].length(); _top = 0; _left = 0;
-        _con1 = _lesson->task().c_str(); _con1Col = MUI::CREAM;
+        _con1 = "fn+T shows the task again, fn+H a hint"; _con1Col = MUI::CREAM;
         _con2 = "fn+R run   fn+C check"; _con2Col = MUI::DIM;
+        _card = true; _cardHint = false;
         _typing = OsUI::Typing();
         _scr = S_TASK;
         OsUI::waitRelease();
@@ -371,6 +375,7 @@ private:
         _typing.poll(st, added, del, ent);
         if (!added.length() && !del && !ent) return;
 
+        if (_card) { _card = false; _drawTask(); return; }   // any key closes the task card
         if (st.fn) {
             for (size_t i = 0; i < added.length(); i++) {
                 char ch = added[i];
@@ -381,6 +386,7 @@ private:
                 else if (ch == 'r' || ch == 'R') { _run(false); return; }
                 else if (ch == 'c' || ch == 'C') { _run(true); return; }
                 else if (ch == 'h' || ch == 'H') { _hint(); }
+                else if (ch == 't' || ch == 'T') { _card = true; _cardHint = false; }
                 else if (ch == 'k' || ch == 'K') { _lines[_row] = ""; _col = 0; }
             }
             _drawTask();
@@ -429,10 +435,23 @@ private:
         return true;
     }
 
-    void _hint() {
-        const std::string& h = _lesson->hint();
-        _con1 = h.empty() ? "No hint for this one. Re-read the last page." : h.c_str();
-        _con1Col = MUI::CREAM; _con2 = "";
+    void _hint() { _card = true; _cardHint = true; }
+
+    void _drawCard() {
+        const int w = 230, lh = 11;
+        int y = StudyUI::TOP + 1;
+        MUI::text(_c, MUI::small(), "YOUR TASK", 5, y, MUI::YELLOW);
+        y += 13;
+        int n = StudyUI::wrap(_c, MUI::small(), _lesson->task().c_str(), 5, y, w, lh, 5, MUI::CREAM);
+        y += min(n, 5) * lh + 5;
+        if (_cardHint) {
+            const std::string& h = _lesson->hint();
+            MUI::text(_c, MUI::small(), "HINT", 5, y, MUI::YELLOW);
+            y += 13;
+            int left = max(1, (SCREEN_H - FOOTER_H - y) / lh);
+            StudyUI::wrap(_c, MUI::small(), h.empty() ? "No hint for this one yet." : h.c_str(), 5, y, w, lh, left, MUI::CYAN);
+        }
+        StudyUI::foot(_c, "any key: back to the code", _cardHint ? nullptr : "fn+H hint");
     }
 
     static void _splitOut(const std::string& out, String& a, String& b) {
@@ -490,6 +509,7 @@ private:
         String t = "TASK  -  "; String ti = _lesson->title().c_str(); ti.toUpperCase(); t += ti;
         char pos[12]; snprintf(pos, sizeof(pos), "%d:%d", _row + 1, _col + 1);
         StudyUI::head(_c, t.c_str(), pos);
+        if (_card) { _drawCard(); StudyUI::push(_c); return; }
         // editor: the built-in 6x8 font, so columns line up
         const int ey = HEADER_H + 2, lh = 10, vis = 8, gx = 16, cw = 6;
         const int cols = (SCREEN_W - gx - 2) / cw;
@@ -517,7 +537,7 @@ private:
         MUI::text(_c, MUI::small(), _con1.c_str(), 4, 99, _con1Col);
         MUI::text(_c, MUI::small(), _con2.c_str(), 4, 109, _con2Col);
         _c.clearClipRect();
-        StudyUI::foot(_c, "fn+R run  fn+C check  fn+H hint", "` page");
+        StudyUI::foot(_c, "fn+R run  fn+C check  fn+T task", "fn+H hint");
         StudyUI::push(_c);
     }
 

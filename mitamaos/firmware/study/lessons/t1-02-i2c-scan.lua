@@ -13,6 +13,7 @@ return {
 for _, addr in ipairs(found) do
   print(string.format("0x%02X", addr))
 end]],
+  hint = "#found is how many items the list holds. Add print(#found) after the loop.",
   check = function(r)
     if not r.ok then return false, r.error end
     local expected = #i2c.scan()

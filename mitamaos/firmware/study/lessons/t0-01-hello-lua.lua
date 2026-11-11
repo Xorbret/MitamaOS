@@ -11,6 +11,7 @@ return {
   },
   task = "Print the text: hello, shugyo",
   starter = [[print("hello")]],
+  hint = "Change the text inside the quotes so the line reads: print(\"hello, shugyo\")",
   check = function(r)
     if not r.ok then return false, "Your code hit an error: " .. r.error end
     if r.output:lower():find("hello, shugyo", 1, true) then

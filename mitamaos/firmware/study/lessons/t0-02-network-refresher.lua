@@ -7,12 +7,14 @@ return {
     "Every IoT device on Wi-Fi needs the same things a laptop does: an IP address (usually from DHCP), a gateway, and DNS to turn names into addresses.",
     "Devices then talk on ports. Common IoT ones: 80 HTTP, 443 HTTPS, 1883 MQTT, 8883 MQTT over TLS, 23 Telnet (old and unsafe).",
     "Help Desk tip: when a device 'can't connect', check in order: Wi-Fi joined, IP assigned, gateway reachable, DNS working, then the service port.",
+    "Reading the code: { \"wifi\", \"ip\" } is a list. for i, c in ipairs(checks) do ... end runs the lines inside once per item, with c holding the current item. print(c) shows it on screen.",
   },
-  task = "Make a table of the four checks in order and print them, one per line.",
+  task = "The list of checks is already written for you. Inside the loop, replace the -- comment line with print(c) so each check prints on its own line, then fn+C to check.",
   starter = [[local checks = { "wifi", "ip", "gateway", "dns" }
 for i, c in ipairs(checks) do
-  -- print each check here
+  -- replace this line with: print(c)
 end]],
+  hint = "Delete the line starting with -- and type print(c) in its place. c is the current check, so the loop prints all four in order.",
   check = function(r)
     if not r.ok then return false, r.error end
     local order = { "wifi", "ip", "gateway", "dns" }
