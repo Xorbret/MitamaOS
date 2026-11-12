@@ -291,8 +291,12 @@ public:
 
     const Result& result() const { return _r; }
 
-    // Internal-bus chips that belong to the Cardputer-Adv or the LoRa cap.
-    static bool builtIn(uint8_t a) { return a == 0x18 || a == 0x34 || a == 0x43 || a == 0x68; }
+    // Internal-bus chips that belong to the Cardputer-Adv or the LoRa cap:
+    // audio codec 0x18, keyboard 0x34, LoRa cap 0x43, and the board's own
+    // BMI270 motion sensor, which answers at 0x69 (0x68 kept in case a
+    // board revision moves it). Without 0x69 here, the built-in sensor was
+    // listed as a plugged-in "Unit IMU Pro Mini".
+    static bool builtIn(uint8_t a) { return a == 0x18 || a == 0x34 || a == 0x43 || a == 0x68 || a == 0x69; }
 
     // The Grove pin a GPS Unit was found on and saved for the GPS, or -1.
     static int gpsPin() {
