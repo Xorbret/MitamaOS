@@ -83,10 +83,9 @@ private:
     }
 
     void _draw() {
-        using namespace MUI;
         auto& c = Kagami::cfg;
-        _canvas.fillSprite(BG);
-        header(_canvas, "KAGAMI", YELLOW);
+        _canvas.fillSprite(MUI::BG);
+        MUI::header(_canvas, "KAGAMI", MUI::YELLOW);
 
         static const char* NAMES[ROWS] = { "Screen", "Direction", "Colours", "Invert" };
         char val[ROWS][24];
@@ -98,21 +97,21 @@ private:
         int y = HEADER_H + 4;
         for (int i = 0; i < ROWS; i++) {
             bool s = i == _sel;
-            if (s) { _canvas.fillRect(2, y - 1, SCREEN_W - 4, 17, YELLOW_DIM); _canvas.fillRect(2, y - 1, 2, 17, YELLOW); }
+            if (s) { _canvas.fillRect(2, y - 1, SCREEN_W - 4, 17, MUI::YELLOW_DIM); _canvas.fillRect(2, y - 1, 2, 17, MUI::YELLOW); }
             bool dim = i > 0 && c.chip == Kagami::OFF;
-            text(_canvas, small(), NAMES[i], 10, y, dim ? DIM : (s ? WHITE : LABEL));
-            text(_canvas, small(), val[i], 110, y, dim ? DIM : (s ? YELLOW : CYAN));
+            MUI::text(_canvas, MUI::small(), NAMES[i], 10, y, dim ? MUI::DIM : (s ? MUI::WHITE : MUI::LABEL));
+            MUI::text(_canvas, MUI::small(), val[i], 110, y, dim ? MUI::DIM : (s ? MUI::YELLOW : MUI::CYAN));
             y += 18;
         }
 
         const char* state;
-        uint16_t col = DIM;
-        if (Kagami::running) { state = "On: showing the test card"; col = GREEN; }
+        uint16_t col = MUI::DIM;
+        if (Kagami::running) { state = "On: showing the test card"; col = MUI::GREEN; }
         else if (c.chip == Kagami::OFF) state = "Off";
-        else { state = Kagami::why; col = MAGENTA; }
-        text(_canvas, small(), state, 10, y + 2, col);
+        else { state = Kagami::why; col = MUI::MAGENTA; }
+        MUI::text(_canvas, MUI::small(), state, 10, y + 2, col);
 
-        footer(_canvas, "ENT/,/ change   T redraw", DIM, "` back");
+        MUI::footer(_canvas, "ENT/,/ change   T redraw", MUI::DIM, "` back");
         { DispLock _lk; _canvas.pushSprite(0, 0); }
     }
 };
