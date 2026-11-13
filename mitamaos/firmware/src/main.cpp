@@ -39,6 +39,8 @@
 #include "apps/notes/notes.h"
 #include "apps/sysinfo/sysinfo.h"
 #include "apps/tsukumo/tsukumo_app.h"
+#include "apps/kagami/kagami_app.h"
+#include "system/kagami.h"
 #include "net/monster.h"
 #include "apps/calc/calc.h"
 #include "apps/clock/clock_app.h"
@@ -120,6 +122,7 @@ Paint         paintApp(canvas);
 #endif
 SysInfo       sysinfoApp(canvas);
 TsukumoApp    tsukumoApp(canvas);
+KagamiApp     kagamiApp(canvas);
 SettingsApp   settingsApp(canvas);
 #if PAPEROS_ENABLE_MYAI
 MyAiApp       myaiApp(canvas);
@@ -238,6 +241,7 @@ void setup() {
     // probing; see system/tsukumo.h). Before the GPS service claims pins.
     Tsukumo::Scanner::get().scan();
     Monster::get().begin();     // only if an M5MonsterC5 answered
+    Kagami::boot();             // second screen, if switched on (needs the scan's LoRa-cap check)
 
     // WiFi
     WiFiManager::get().loadFromPrefs();
@@ -253,6 +257,7 @@ void setup() {
     AppManager::get().registerApp(&kotodamaApp);
     AppManager::get().registerApp(&kizunaApp);
     AppManager::get().registerApp(&tsukumoApp);   // off the grid; opened from Settings
+    AppManager::get().registerApp(&kagamiApp);    // off the grid; opened from Settings
     AppManager::get().registerApp(&aetherApp);
     AppManager::get().registerApp(&filesApp);
     AppManager::get().registerApp(&notesApp);

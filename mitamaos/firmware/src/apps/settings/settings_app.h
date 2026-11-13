@@ -92,6 +92,10 @@ public:
                     AppManager::get().requestLaunch("Tsukumo");
                     return;
                 }
+                if (strcmp(_menuItems[_menuSel], "Kagami") == 0) {   // second screen
+                    AppManager::get().requestLaunch("Kagami");
+                    return;
+                }
                 _section = _menuSel + 1;
                 if (_section == 1) _tzScroll = constrain(_tzSel - TZ_VISIBLE / 2, 0, max(0, PaperClock::ZONE_COUNT - TZ_VISIBLE));
                 _draw();
@@ -540,5 +544,6 @@ const char* SettingsApp::_menuItems[] = {
     "System",
     "Clock",
     "Tsukumo",
+    "Kagami",
 };
-const int SettingsApp::_menuCount = 8;
+const int SettingsApp::_menuCount = 9;

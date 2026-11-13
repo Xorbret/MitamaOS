@@ -54,6 +54,10 @@ static const Key _SCHEMA[] = {
     { "ki",          "d",      K_STR, 0 },
     { "study",       "p",      K_STR, 0 },   // old single-key progress
     { "study",       "c",      K_STR, 4 },   // progress, c0..c3 (study::Library)
+    { "kagami",      "chip",   K_U8,  0 },   // second screen (system/kagami.h)
+    { "kagami",      "turn",   K_U8,  0 },
+    { "kagami",      "swap",   K_U8,  0 },
+    { "kagami",      "inv",    K_U8,  0 },
 };
 
 inline bool     _dirty = false;
