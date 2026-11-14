@@ -73,7 +73,18 @@ inline void _begin() {
     SdBus::spi->beginTransaction(SPISettings(HZ, MSBFIRST, SPI_MODE0));
     digitalWrite(PIN_CS, LOW);
 }
+// Some boards (Robert's blue 8-pin one included) have no CS pin: CS is tied
+// low on the board, so the panel also hears every SD card transfer. To make
+// that harmless, each of our transactions ends by sending NOP with DC left
+// high. Anything the panel hears afterwards counts as data for NOP, which it
+// ignores, instead of pixels for an open RAMWR or stray commands.
+inline void _park() {
+    digitalWrite(PIN_DC, LOW);
+    SdBus::spi->transfer(0x00);             // NOP
+    digitalWrite(PIN_DC, HIGH);
+}
 inline void _end() {
+    _park();
     digitalWrite(PIN_CS, HIGH);
     SdBus::spi->endTransaction();
 }
